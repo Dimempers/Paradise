@@ -40,7 +40,7 @@
 /obj/item/wrench/cyborg
 	name = "automatic wrench"
 	desc = "Продвинутый роботизированный гаечный ключ. Можно найти у строительных киборгов."
-	ru_names = (
+	ru_names = list(
 		NOMINATIVE = "автоматической ключ",
 		GENITIVE = "автоматического ключа",
 		DATIVE = "автоматическому ключу",
@@ -53,7 +53,7 @@
 /obj/item/wrench/brass
 	name = "brass wrench"
 	desc = "Латунный ключ. Он слегка теплый на ощупь."
-	ru_names = (
+	ru_names = list(
 		NOMINATIVE = "латунный ключ",
 		GENITIVE = "латунного ключа",
 		DATIVE = "латунному ключу",
@@ -68,7 +68,7 @@
 /obj/item/wrench/abductor
 	name = "alien wrench"
 	desc = "Поляризованный ключ. Он заставляет все, что находится между губками, поворачиваться."
-	ru_names = (
+	ru_names = list(
 		NOMINATIVE = "инопланетный ключ",
 		GENITIVE = "инопланетного ключа",
 		DATIVE = "инопланетному ключу",

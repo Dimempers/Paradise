@@ -214,7 +214,7 @@
 /obj/item/weldingtool/largetank
 	name = "industrial welding tool"
 	desc = "Сварочный аппарат, но с баком побольше."
-	ru_names = (
+	ru_names = list(
 		NOMINATIVE = "индустриальный сварочный аппарат",
 		GENITIVE = "индустриального сварочного аппарата",
 		DATIVE = "индустриальному сварочному аппарату",
@@ -231,20 +231,20 @@
 /obj/item/weldingtool/largetank/cyborg
 	name = "integrated welding tool"
 	desc = "Усовершенствованный сварочный аппарат, предназначенный для использования в роботизированных системах."
-	ru_names = (
+	ru_names = list(
 			NOMINATIVE = "встроенный сварочный аппарат",
 			GENITIVE = "встроенного сварочного аппарата",
 			DATIVE = "встроенному сварочному аппарату",
 			ACCUSATIVE = "встроенный сварочный аппарат",
 			INSTRUMENTAL = "встроенным сварочным аппаратом",
 			PREPOSITIONAL = "встроенном сварачном аппарате"
-		)
+	)
 	toolspeed = 0.5
 
 /obj/item/weldingtool/mini
 	name = "emergency welding tool"
 	desc = "Миниатюрный сварочный аппарат, используемый в экстренных случаях."
-	ru_names = (
+	ru_names = list(
 		NOMINATIVE = "экстренный сварочный аппарат",
 		GENITIVE = "экстренного сварочного аппарата",
 		DATIVE = "экстренному сварочному аппарату",
@@ -261,7 +261,7 @@
 /obj/item/weldingtool/abductor
 	name = "alien welding tool"
 	desc = "Инопланетный сварочный аппарат. Какое бы топливо он ни использовал, оно никогда не кончается."
-	ru_names = (
+	ru_names = list(
 		NOMINATIVE = "инопланетный сварочный аппарат",
 		GENITIVE = "инопланетного сварочного аппарата",
 		DATIVE = "инопланетному сварочному аппарату",
@@ -283,7 +283,7 @@
 /obj/item/weldingtool/hugetank
 	name = "upgraded welding tool"
 	desc = "Усовершенствованный сварочный аппарат на базе промышленного сварочного аппарата."
-	ru_names = (
+	ru_names = list(
 		NOMINATIVE = "улучшенный сварочный аппарат",
 		GENITIVE = "улучшеного сварочного аппарата",
 		DATIVE = "улучшенному сварочному аппарату",
@@ -301,7 +301,7 @@
 /obj/item/weldingtool/experimental
 	name = "experimental welding tool"
 	desc = "Экспериментальный сварочный аппарат, способный самостоятельно вырабатывать топливо и менее вредный для глаз."
-	ru_names = (
+	ru_names = list(
 		NOMINATIVE = "экспериментальный сварочный аппарат",
 		GENITIVE = "экспериментального сварочного аппарата",
 		DATIVE = "экспериментальному сварочному аппарату",
@@ -323,7 +323,7 @@
 /obj/item/weldingtool/experimental/mecha
 	name = "integrated welding tool"
 	desc = "Усовершенствованный сварочный аппарат, предназначенный для использования в роботизированных системах."
-	ru_names = (
+	ru_names = list(
 			NOMINATIVE = "встроенный сварочный аппарат",
 			GENITIVE = "встроенного сварочного аппарата",
 			DATIVE = "встроенному сварочному аппарату",
@@ -337,7 +337,7 @@
 /obj/item/weldingtool/experimental/brass
 	name = "brass welding tool"
 	desc = "Латунный сварочный аппарат, который, кажется, постоянно заправляется. Он слегка теплый на ощупь."
-	ru_names = (
+	ru_names = list(
 		NOMINATIVE = "латунный сварочный аппарат",
 		GENITIVE = "латунного сварочного аппарата",
 		DATIVE = "латунному сварочному аппарату",

@@ -67,7 +67,7 @@
 /obj/item/wirecutters/brass
 	name = "brass wirecutters"
 	desc = "Пара кусачек из латуни. Ручка на ощупь ледяная."
-	ru_names = (
+	ru_names = list(
 		NOMINATIVE = "латунные кучаски",
 		GENITIVE = "латунных кусачек",
 		DATIVE = "латунным кучаскам",
@@ -83,7 +83,7 @@
 /obj/item/wirecutters/abductor
 	name = "alien wirecutters"
 	desc = "Очень острые кусачки, изготовленные из серебристо-зеленого металла."
-	ru_names = (
+	ru_names = list(
 		NOMINATIVE = "инопланетные кусачки",
 		GENITIVE = "инопланетных кусачек",
 		DATIVE = "инопланетным кусачкам",
