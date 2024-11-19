@@ -2,7 +2,7 @@
 
 /obj/item/weldingtool
 	name = "welding tool"
-	desc = "A standard edition welder provided by Nanotrasen."
+	desc = "Стандартный сварочный аппарат, предоставленный Nanotrasen."
 	icon = 'icons/obj/tools.dmi'
 	icon_state = "welder"
 	item_state = "welder"
@@ -39,6 +39,7 @@
 	light_power = 0.75
 	light_color = LIGHT_COLOR_FIRE
 	light_on = FALSE
+	ru_names = list(NOMINATIVE = "сварочный аппарат", GENITIVE = "сварочного аппарата", DATIVE = "сварочному аппарату", ACCUSATIVE = "сварочный аппарат", INSTRUMENTAL = "сварочным аппаратом", PREPOSITIONAL = "сварочном аппарате")
 
 /obj/item/weldingtool/Initialize(mapload)
 	. = ..()
@@ -54,15 +55,15 @@
 /obj/item/weldingtool/examine(mob/user)
 	. = ..()
 	if(get_dist(user, src) <= 0)
-		. += "<span class='notice'>It contains [GET_FUEL] unit\s of fuel out of [maximum_fuel].</span>"
+		. += "<span class='notice'>Он содержит [GET_FUEL] юнит/ов топлива из [maximum_fuel].</span>"
 
 /obj/item/weldingtool/suicide_act(mob/user)
-	user.visible_message("<span class='suicide'>[user] welds [user.p_their()] every orifice closed! It looks like [user.p_theyre()] trying to commit suicide!</span>")
+	user.visible_message("<span class='suicide'>[user] заварива[pluralize_ru(user.gender,"ет","ют")] себе все отверстия! Похоже [genderize_ru(user.gender,"он","она","оно","они")] пыта[pluralize_ru(user.gender,"ется","ются")] совершить самоубийство!</span>")
 	return FIRELOSS
 
 /obj/item/weldingtool/can_enter_storage(obj/item/storage/S, mob/user)
 	if(tool_enabled)
-		to_chat(user, "<span class='warning'>[S] can't hold [src] while it's lit!</span>")
+		to_chat(user, "<span class='warning'>[S] не могу положить [src.declent_ru(NOMINATIVE)] пока он горит!</span>")
 		return FALSE
 	else
 		return TRUE
@@ -88,14 +89,14 @@
 
 /obj/item/weldingtool/attack_self(mob/user)
 	if(tool_enabled) //Turn off the welder if it's on
-		to_chat(user, "<span class='notice'>You switch off [src].</span>")
+		to_chat(user, "<span class='notice'>Ты выключил [src.declent_ru(NOMINATIVE)].</span>")
 		toggle_welder()
 		return
 	else if(GET_FUEL) //The welder is off, but we need to check if there is fuel in the tank
-		to_chat(user, "<span class='notice'>You switch on [src].</span>")
+		to_chat(user, "<span class='notice'>Ты включил [src.declent_ru(NOMINATIVE)].</span>")
 		toggle_welder()
 	else //The welder is off and unfuelled
-		to_chat(user, "<span class='notice'>[src] is out of fuel!</span>")
+		to_chat(user, "<span class='notice'>В [src.declent_ru(PREPOSITIONAL)] закончилось топливо!</span>")
 
 /obj/item/weldingtool/proc/toggle_welder(turn_off = FALSE) //Turn it on or off, forces it to deactivate
 	tool_enabled = turn_off ? FALSE : !tool_enabled
@@ -124,13 +125,13 @@
 /obj/item/weldingtool/tool_use_check(mob/living/user, amount, silent = FALSE)
 	if(!tool_enabled)
 		if(!silent)
-			to_chat(user, "<span class='notice'>[src] has to be on to complete this task!</span>")
+			to_chat(user, "<span class='notice'>[src.declent_ru(NOMINATIVE)] должен быть включен для выполнения этой задачи!</span>")
 		return FALSE
 	if(GET_FUEL >= amount * requires_fuel)
 		return TRUE
 	else
 		if(!silent)
-			to_chat(user, "<span class='warning'>You need more welding fuel to complete this task!</span>")
+			to_chat(user, "<span class='warning'>Тебе нужно больше сварочного топлива в [src.declent_ru(PREPOSITIONAL)] для выполнения этой задачи!</span>")
 		return FALSE
 
 // When welding is about to start, run a normal tool_use_check, then flash a mob if it succeeds.
@@ -171,16 +172,16 @@
 	if(!A.reagents)
 		return
 	if(GET_FUEL >= maximum_fuel)
-		to_chat(user, "<span class='notice'>[src] is already full!</span>")
+		to_chat(user, "<span class='notice'>[src.declent_ru(NOMINATIVE)] уже полон!</span>")
 		return
 	var/amount_transferred = A.reagents.trans_id_to(src, "fuel", amount)
 	if(amount_transferred)
-		to_chat(user, "<span class='notice'>You refuel [src] by [amount_transferred] unit\s.</span>")
+		to_chat(user, "<span class='notice'>Ты заполнил [src.declent_ru(NOMINATIVE)] [amount_transferred] юнитами.</span>")
 		playsound(src, 'sound/effects/refill.ogg', 50, 1)
 		update_icon()
 		return amount_transferred
 	else
-		to_chat(user, "<span class='warning'>There's not enough fuel in [A] to refuel [src]!</span>")
+		to_chat(user, "<span class='warning'>В [A] недостатачно топлива для заполнения [src.declent_ru(GENITIVE)]!</span>")
 
 
 /obj/item/weldingtool/update_icon_state()
@@ -205,7 +206,7 @@
 
 /obj/item/weldingtool/largetank
 	name = "industrial welding tool"
-	desc = "A slightly larger welder with a larger tank."
+	desc = "Немного более крупный сварочный аппарат с большим баком."
 	icon_state = "indwelder"
 	belt_icon = "industrial_welding_tool"
 	maximum_fuel = 40
@@ -214,12 +215,12 @@
 
 /obj/item/weldingtool/largetank/cyborg
 	name = "integrated welding tool"
-	desc = "An advanced welder designed to be used in robotic systems."
+	desc = "Усовершенствованный сварочный аппарат, предназначенный для использования в роботизированных системах."
 	toolspeed = 0.5
 
 /obj/item/weldingtool/mini
 	name = "emergency welding tool"
-	desc = "A miniature welder used during emergencies."
+	desc = "Миниатюрный сварочный аппарат, используемый в экстренных случаях."
 	icon_state = "miniwelder"
 	maximum_fuel = 10
 	w_class = WEIGHT_CLASS_TINY
@@ -228,7 +229,7 @@
 
 /obj/item/weldingtool/abductor
 	name = "alien welding tool"
-	desc = "An alien welding tool. Whatever fuel it uses, it never runs out."
+	desc = "Инопланетный сварочный инструмент. Какое бы топливо он ни использовал, оно никогда не кончается."
 	icon = 'icons/obj/abductor.dmi'
 	icon_state = "welder"
 	item_state = "alien_welder"
@@ -242,7 +243,7 @@
 
 /obj/item/weldingtool/hugetank
 	name = "upgraded welding tool"
-	desc = "An upgraded welder based off the industrial welder."
+	desc = "Усовершенствованный сварочный аппарат на базе промышленного сварочного аппарата."
 	icon_state = "upindwelder"
 	item_state = "upindwelder"
 	belt_icon = "upgraded_welding_tool"
@@ -252,7 +253,7 @@
 
 /obj/item/weldingtool/experimental
 	name = "experimental welding tool"
-	desc = "An experimental welder capable of self-fuel generation and less harmful to the eyes."
+	desc = "Экспериментальный сварочный аппарат, способный самостоятельно вырабатывать топливо и менее вредный для глаз."
 	icon_state = "exwelder"
 	item_state = "exwelder"
 	belt_icon = "experimental_welding_tool"
@@ -266,13 +267,13 @@
 
 /obj/item/weldingtool/experimental/mecha
 	name = "integrated welding tool"
-	desc = "An advanced welder designed to be used in robotic systems."
+	desc = "Усовершенствованный сварочный аппарат, предназначенный для использования в роботизированных системах."
 	requires_fuel = FALSE
 	light_intensity = 0
 
 /obj/item/weldingtool/experimental/brass
 	name = "brass welding tool"
-	desc = "A brass welder that seems to constantly refuel itself. It is faintly warm to the touch."
+	desc = "Латунный сварочный аппарат, который, кажется, постоянно заправляется. Он слегка теплый на ощупь."
 	icon_state = "brasswelder"
 	item_state = "brasswelder"
 	resistance_flags = FIRE_PROOF | ACID_PROOF

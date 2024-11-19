@@ -1,6 +1,6 @@
 /obj/item/crowbar
 	name = "pocket crowbar"
-	desc = "A small crowbar. This handy tool is useful for lots of things, such as prying floor tiles or opening unpowered doors."
+	desc = "Небольшой лом. Этот удобный инструмент полезен для многих вещей, таких как поддевание напольной плитки или открытие дверей без электропитания."
 	icon = 'icons/obj/tools.dmi'
 	icon_state = "crowbar"
 	item_state = "crowbar"
@@ -17,7 +17,7 @@
 	origin_tech = "engineering=1;combat=1"
 	attack_verb = list("attacked", "bashed", "battered", "bludgeoned", "whacked")
 	toolspeed = 1
-
+	ru_names = list(NOMINATIVE = "корманный лом", GENITIVE = "корманного лома", DATIVE = "корманному лому", ACCUSATIVE = "корманный лом", INSTRUMENTAL = "корманным ломом", PREPOSITIONAL = "корманном ломе")
 	armor = list("melee" = 0, "bullet" = 0, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 50, "acid" = 30)
 	tool_behaviour = TOOL_CROWBAR
 
@@ -36,26 +36,28 @@
 
 /obj/item/crowbar/brass
 	name = "brass crowbar"
-	desc = "A brass crowbar. It feels faintly warm to the touch."
+	desc = "Латунный лом. На ощупь он слегка теплый."
 	icon_state = "crowbar_brass"
 	item_state = "crowbar_brass"
 	toolspeed = 0.5
+	ru_names = list(NOMINATIVE = "латунный лом", GENITIVE = "латунного лома", DATIVE = "латунному лому", ACCUSATIVE = "латунный лом", INSTRUMENTAL = "латунным ломом", PREPOSITIONAL = "латунном ломе")
 	resistance_flags = FIRE_PROOF | ACID_PROOF
 
 /obj/item/crowbar/abductor
 	name = "alien crowbar"
-	desc = "A hard-light crowbar. It appears to pry by itself, without any effort required."
+	desc = "Инопланетный лом. Кажется, что он сам выполняет работу, не требуя никаких усилий."
 	icon = 'icons/obj/abductor.dmi'
 	usesound = 'sound/weapons/sonic_jackhammer.ogg'
 	icon_state = "crowbar"
 	item_state = "alien_crowbar"
 	belt_icon = "alien_crowbar"
 	toolspeed = 0.1
+	ru_names = list(NOMINATIVE = "инопланетный лом", GENITIVE = "инопланетного лома", DATIVE  = "инопланетному лому", ACCUSATIVE = "инопланетный лом", INSTRUMENTAL = "инопланетным ломом", PREPOSITIONAL = "инопланетном ломе")
 	origin_tech = "combat=4;engineering=4;abductor=3"
 
 /obj/item/crowbar/large
 	name = "crowbar"
-	desc = "It's a big crowbar. It doesn't fit in your pockets, because its too big."
+	desc = "Это большой лом. Он не поместится в кармане, потому что он слишком большой."
 	force = 12
 	w_class = WEIGHT_CLASS_NORMAL
 	throw_speed = 3
@@ -64,17 +66,19 @@
 	icon_state = "crowbar_large"
 	item_state = "crowbar_large"
 	toolspeed = 0.5
+	ru_names = list(NOMINATIVE = "большой лом", GENITIVE = "большого лома", DATIVE = "большому лому", ACCUSATIVE = "большой лом", INSTRUMENTAL = "большим ломом", PREPOSITIONAL = "большом ломе")
 
 /obj/item/crowbar/cyborg
 	name = "hydraulic crowbar"
-	desc = "A hydraulic prying tool, compact but powerful. Designed to replace crowbar in construction cyborgs."
+	desc = "Гидравлический лом, компактный, но мощный. Разработан для замены лома в строительных киборгах."
 	usesound = 'sound/items/jaws_pry.ogg'
 	force = 10
 	toolspeed = 0.5
+	ru_names = list(NOMINATIVE = "гидравлический лом", GENITIVE = "гидравлического лома", DATIVE = "гидравлическому лому", ACCUSATIVE = "гидравлический лом", INSTRUMENTAL = "гидравлическим ломом", PREPOSITIONAL = "гидравлическом ломе")
 
 /obj/item/crowbar/power
 	name = "jaws of life"
-	desc = "A set of jaws of life, the magic of science has managed to fit it down into a device small enough to fit in a tool belt. It's fitted with a prying head."
+	desc = "Набор челюстей жизни, магия науки сумела втиснуть его в устройство, достаточно маленькое, чтобы поместиться на поясе для инструментов. Он оснащен выдвигающейся головкой."
 	icon_state = "jaws_pry"
 	item_state = "jawsoflife"
 	belt_icon = "jaws_of_life"
@@ -98,6 +102,6 @@
 /obj/item/crowbar/power/attack_self(mob/user)
 	playsound(get_turf(user), 'sound/items/change_jaws.ogg', 50, 1)
 	var/obj/item/wirecutters/power/cutjaws = new /obj/item/wirecutters/power
-	to_chat(user, "<span class='notice'>You attach the cutting jaws to [src].</span>")
+	to_chat(user, "<span class='notice'>Ты присоеденяешь режущую головку к [src.declent_ru(GENITIVE)].</span>")
 	qdel(src)
 	user.put_in_active_hand(cutjaws)

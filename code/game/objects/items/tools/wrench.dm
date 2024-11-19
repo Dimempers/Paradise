@@ -1,7 +1,7 @@
 //Wrench
 /obj/item/wrench
 	name = "wrench"
-	desc = "A wrench with common uses. Can be found in your hand."
+	desc = "Гаечный ключ общего назначения. Может быть найден в вашей руке."
 	icon = 'icons/obj/tools.dmi'
 	icon_state = "wrench"
 	belt_icon = "wrench"
@@ -19,31 +19,32 @@
 	toolspeed = 1
 	armor = list("melee" = 0, "bullet" = 0, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 50, "acid" = 30)
 	tool_behaviour = TOOL_WRENCH
+	ru_names = list(NOMINATIVE = "гаечный ключ", GENITIVE = "гаечного ключа", DATIVE = "гаечному ключу", ACCUSATIVE = "гаечный ключ", INSTRUMENTAL = "гаечным ключем", PREPOSITIONAL = "гаечном ключе")
 
 /obj/item/wrench/Initialize(mapload)
 	. = ..()
 	AddElement(/datum/element/falling_hazard, damage = force, hardhat_safety = TRUE, crushes = FALSE, impact_sound = hitsound)
 
 /obj/item/wrench/suicide_act(mob/user)
-	user.visible_message("<span class='suicide'>[user] is beating [user.p_them()]self to death with [src]! It looks like [user.p_theyre()] trying to commit suicide!</span>")
+	user.visible_message("<span class='suicide'>[user] избивает себя до смерти [src.declent_ru(INSTRUMENTAL)]! Похоже, [genderize_ru(user.gender,"он","она","оно","они")] пыта[pluralize_ru(user.gender,"ется","ются")] совершить самоубийсто!</span>")
 	playsound(loc, 'sound/weapons/genhit.ogg', 50, 1, -1)
 	return BRUTELOSS
 
 /obj/item/wrench/cyborg
 	name = "automatic wrench"
-	desc = "An advanced robotic wrench. Can be found in construction cyborgs."
+	desc = "Продвинутый роботизированный гаечный ключ. Можно найти у строительных киборгов."
 	toolspeed = 0.5
 
 /obj/item/wrench/brass
 	name = "brass wrench"
-	desc = "A brass wrench. It's faintly warm to the touch."
+	desc = "Латунный ключ. Он слегка теплый на ощупь."
 	icon_state = "wrench_brass"
 	toolspeed = 0.5
 	resistance_flags = FIRE_PROOF | ACID_PROOF
 
 /obj/item/wrench/abductor
 	name = "alien wrench"
-	desc = "A polarized wrench. It causes anything placed between the jaws to turn."
+	desc = "Поляризованный ключ. Он заставляет все, что находится между губками, поворачиваться."
 	icon = 'icons/obj/abductor.dmi'
 	icon_state = "wrench"
 	item_state = "alien_wrench"
@@ -54,7 +55,7 @@
 
 /obj/item/wrench/power
 	name = "hand drill"
-	desc = "A simple powered drill with a bolt bit."
+	desc = "Простая электрическая дрель с болтовым сверлом."
 	icon_state = "drill_bolt"
 	item_state = "drill"
 	belt_icon = "hand_drill"
@@ -65,29 +66,31 @@
 	throwforce = 8
 	attack_verb = list("drilled", "screwed", "jabbed")
 	toolspeed = 0.25
+	ru_names = list(NOMINATIVE = "ручная дрель", GENITIVE = "ручной дрели", DATIVE = "ручную дрель", ACCUSATIVE = "ручную дрель", INSTRUMENTAL = "ручной дрелью", PREPOSITIONAL = "ручной дрели")
 
 /obj/item/wrench/power/attack_self(mob/user)
 	playsound(get_turf(user),'sound/items/change_drill.ogg', 50, 1)
 	var/obj/item/wirecutters/power/s_drill = new /obj/item/screwdriver/power
-	to_chat(user, "<span class='notice'>You attach the screwdriver bit to [src].</span>")
+	to_chat(user, "<span class='notice'>Ты присоеденяешь головку отвертки к [src.declent_ru(GENITIVE)].</span>")
 	qdel(src)
 	user.put_in_active_hand(s_drill)
 
 /obj/item/wrench/power/suicide_act(mob/user)
-	user.visible_message("<span class='suicide'>[user] is pressing [src] against [user.p_their()] head! It looks like [user.p_theyre()] trying to commit suicide!")
+	user.visible_message("<span class='suicide'>[user] нажимает [src.declent_ru(INSTRUMENTAL)] против [genderize_ru(user.gender,"его","её","его","их")] головы! Похоже, [genderize_ru(user.gender,"он","она","оно","они")] пыта[pluralize_ru(user.gender,"ется","ются")] совершить самоубийство!")
 	return BRUTELOSS
 
 /obj/item/wrench/medical
 	name = "medical wrench"
-	desc = "A medical wrench with common (medical?) uses. Can be found in your hand."
+	desc = "Медицинский ключ с общим (медицинским?) Использование. Можно найти в руке."
 	icon_state = "wrench_medical"
 	force = 2 //MEDICAL
 	throwforce = 4
 	origin_tech = "materials=1;engineering=1;biotech=3"
 	attack_verb = list("wrenched", "medicaled", "tapped", "jabbed", "whacked")
+	ru_names = list(NOMINATIVE = "медецинский ключ", GENITIVE = "медецинского ключа", DATIVE = "медецинскому ключу", ACCUSATIVE = "медецинской ключ", INSTRUMENTAL = "медецинским ключем", PREPOSITIONAL = "медецинском ключе")
 
 /obj/item/wrench/medical/suicide_act(mob/living/user)
-	user.visible_message("<span class='suicide'>[user] is praying to the medical wrench to take [user.p_their()] soul. It looks like [user.p_theyre()] trying to commit suicide!</span>")
+	user.visible_message("<span class='suicide'>[user] молится медецинскому ключу чтобы он взял [genderize_ru(user.gender,"его","её","его","их")] душу. Похоже, [genderize_ru(user.gender,"он","она","оно","они")] пыта[pluralize_ru(user.gender,"ется","ются")] совершить самоубийство!</span>")
 	// TODO Make them glow with the power of the M E D I C A L W R E N C H
 	// during their ascension
 
