@@ -43,7 +43,7 @@
 	random_color = FALSE
 
 /obj/item/screwdriver/suicide_act(mob/user)
-	user.visible_message("span_suicide("[user] кол[pluralize_ru(user.gender,"ет","ют")] себя [declent_ru(INSTRUMENTAL)] в [pick("висок", "сердце")]! Похоже на то, что [genderize_ru(user.gender, "он", "она", "оно", "они")] пыта[pluralize_ru(user.gender,"ет","ют")]ся совершить самоубийство!")
+	user.visible_message(span_suicide("[user] кол[pluralize_ru(user.gender, "ет", "ют")] себя [declent_ru(INSTRUMENTAL)] в [pick("висок", "сердце")]! Похоже на то, что [genderize_ru(user.gender, "он", "она", "оно", "они")] пыта[pluralize_ru(user.gender, "ет", "ют")]ся совершить самоубийство!"))
 	return BRUTELOSS
 
 /obj/item/screwdriver/Initialize(mapload)
@@ -75,11 +75,11 @@
 	name = "brass screwdriver"
 	desc = "Отвёртка из латуни. Ручка кажется ледяной."
 	ru_names = list(
-		NOMINATIVE = "латунная отвёртка"
-		GENITIVE = "латунной отвёртки"
-		DATIVE = "латунной отвёртке"
-		ACCUSATIVE = "латунную отвёртку"
-		INSTRUMENTAL = "латунной отвёрткой"
+		NOMINATIVE = "латунная отвёртка",
+		GENITIVE = "латунной отвёртки",
+		DATIVE = "латунной отвёртке",
+		ACCUSATIVE = "латунную отвёртку",
+		INSTRUMENTAL = "латунной отвёрткой",
 		PREPOSITIONAL = "латунной отвёртке"
 	)
 	icon_state = "screwdriver_brass"
@@ -91,11 +91,11 @@
 	name = "alien screwdriver"
 	desc = "Ультразвуковая отвёртка."
 	ru_names = list(
-		NOMINATIVE = "инопланетная отвёртка"
-		GENITIVE = "инопланетной отвёртки"
-		DATIVE = "инопланетной отвёртке"
-		ACCUSATIVE = "инопланетную отвёртку"
-		INSTRUMENTAL = "инопланетной отвёрткой"
+		NOMINATIVE = "инопланетная отвёртка",
+		GENITIVE = "инопланетной отвёртки",
+		DATIVE = "инопланетной отвёртке",
+		ACCUSATIVE = "инопланетную отвёртку",
+		INSTRUMENTAL = "инопланетной отвёрткой",
 		PREPOSITIONAL = "инопланетной отвёртке"
 	)
 	icon = 'icons/obj/abductor.dmi'
@@ -136,13 +136,13 @@
 	ADD_TRAIT(src, TRAIT_ADVANCED_SURGICAL, ROUNDSTART_TRAIT)
 
 /obj/item/screwdriver/power/suicide_act(mob/user)
-	user.visible_message("span_suicide("[user] став[pluralize_ru(user.gender,"ит","ят")] [declent_ru(ACCUSATIVE)] к своему виску. Похоже [genderize_ru(user.gender,"он","она","оно","они")] пыта[pluralize_ru(user.gender,"ет","ют")]ся совершить самоубийство!")")
+	user.visible_message(span_suicide("[user] став[pluralize_ru(user.gender, "ит", "ят")] [declent_ru(ACCUSATIVE)] к своему виску. Похоже [genderize_ru(user.gender, "он", "она", "оно", "они")] пыта[pluralize_ru(user.gender, "ет", "ют")]ся совершить самоубийство!"))
 	return BRUTELOSS
 
 /obj/item/screwdriver/power/attack_self(mob/user)
 	playsound(get_turf(user), 'sound/items/change_drill.ogg', 50, 1)
 	var/obj/item/wrench/power/b_drill = new /obj/item/wrench/power
-	to_chat(user, "span_notice("Вы присоеденяете головку болтового сверла к [declent_ru(GENITIVE)].")")
+	to_chat(user, span_notice("Вы присоеденяете головку болтового сверла к [declent_ru(GENITIVE)]."))
 	qdel(src)
 	user.put_in_active_hand(b_drill)
 

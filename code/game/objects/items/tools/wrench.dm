@@ -33,7 +33,7 @@
 	AddElement(/datum/element/falling_hazard, damage = force, hardhat_safety = TRUE, crushes = FALSE, impact_sound = hitsound)
 
 /obj/item/wrench/suicide_act(mob/user)
-	user.visible_message("span_suicide("[user] избивает себя до смерти с помощью [declent_ru(GENITIVE)]! Похоже, [genderize_ru(user.gender,"он","она","оно","они")] пыта[pluralize_ru(user.gender,"ет","ют"ся)] совершить самоубийсто!")
+	user.visible_message(span_suicide("[user] избивает себя до смерти с помощью [declent_ru(GENITIVE)]! Похоже, [genderize_ru(user.gender, "он", "она", "оно", "они")] пыта[pluralize_ru(user.gender, "ет", "ют")]ся совершить самоубийсто!"))
 	playsound(loc, 'sound/weapons/genhit.ogg', 50, 1, -1)
 	return BRUTELOSS
 
@@ -41,11 +41,11 @@
 	name = "automatic wrench"
 	desc = "Продвинутый роботизированный гаечный ключ. Можно найти у строительных киборгов."
 	ru_names = (
-		NOMINATIVE = "автоматической ключ"
-		GENITIVE = "автоматического ключа"
-		DATIVE = "автоматическому ключу"
-		ACCUSATIVE = "автоматический ключ"
-		INSTRUMENTAL = "автоматическим ключем"
+		NOMINATIVE = "автоматической ключ",
+		GENITIVE = "автоматического ключа",
+		DATIVE = "автоматическому ключу",
+		ACCUSATIVE = "автоматический ключ",
+		INSTRUMENTAL = "автоматическим ключем",
 		PREPOSITIONAL = "автоматическом ключе"
 	)
 	toolspeed = 0.5
@@ -54,11 +54,11 @@
 	name = "brass wrench"
 	desc = "Латунный ключ. Он слегка теплый на ощупь."
 	ru_names = (
-		NOMINATIVE = "латунный ключ"
-		GENITIVE = "латунного ключа"
-		DATIVE = "латунному ключу"
-		ACCUSATIVE = "латунный ключ"
-		INSTRUMENTAL = "латунным ключем"
+		NOMINATIVE = "латунный ключ",
+		GENITIVE = "латунного ключа",
+		DATIVE = "латунному ключу",
+		ACCUSATIVE = "латунный ключ",
+		INSTRUMENTAL = "латунным ключем",
 		PREPOSITIONAL = "латунном ключе"
 	)
 	icon_state = "wrench_brass"
@@ -69,11 +69,11 @@
 	name = "alien wrench"
 	desc = "Поляризованный ключ. Он заставляет все, что находится между губками, поворачиваться."
 	ru_names = (
-		NOMINATIVE = "инопланетный ключ"
-		GENITIVE = "инопланетного ключа"
-		DATIVE = "инопланетному ключу"
-		ACCUSATIVE = "инопланетный ключ"
-		INSTRUMENTAL = "инопланетным ключем"
+		NOMINATIVE = "инопланетный ключ",
+		GENITIVE = "инопланетного ключа",
+		DATIVE = "инопланетному ключу",
+		ACCUSATIVE = "инопланетный ключ",
+		INSTRUMENTAL = "инопланетным ключем",
 		PREPOSITIONAL = "инопланетном ключе"
 	)
 	icon = 'icons/obj/abductor.dmi'
@@ -109,12 +109,12 @@
 /obj/item/wrench/power/attack_self(mob/user)
 	playsound(get_turf(user),'sound/items/change_drill.ogg', 50, 1)
 	var/obj/item/wirecutters/power/s_drill = new /obj/item/screwdriver/power
-	to_chat(user, "span_notice("Ты присоеденяешь головку отвертки к [declent_ru(GENITIVE)].")
+	to_chat(user, span_notice("Ты присоеденяешь головку отвертки к [declent_ru(GENITIVE)]."))
 	qdel(src)
 	user.put_in_active_hand(s_drill)
 
 /obj/item/wrench/power/suicide_act(mob/user)
-	user.visible_message("span_suicide("[user] нажимает [declent_ru(INSTRUMENTAL)] против своей головы! Похоже, [genderize_ru(user.gender,"он","она","оно","они")] пыта[pluralize_ru(user.gender,"ет","ют")]ся совершить самоубийство!")
+	user.visible_message(span_suicide("[user] нажимает [declent_ru(INSTRUMENTAL)] против своей головы! Похоже, [genderize_ru(user.gender, "он", "она", "оно", "они")] пыта[pluralize_ru(user.gender, "ет", "ют")]ся совершить самоубийство!"))
 	return BRUTELOSS
 
 /obj/item/wrench/medical
@@ -135,7 +135,7 @@
 	attack_verb = list("wrenched", "medicaled", "tapped", "jabbed", "whacked")
 
 /obj/item/wrench/medical/suicide_act(mob/living/user)
-	user.visible_message("span_suicide("[user] молится медецинскому ключу чтобы он взял [genderize_ru(user.gender,"его","её","его","их")] душу. Похоже, [genderize_ru(user.gender,"он","она","оно","они")] пыта[pluralize_ru(user.gender,"ет","ют")]ся совершить самоубийство!")
+	user.visible_message(span_suicide("[user] молится медецинскому ключу чтобы он взял [genderize_ru(user.gender, "его", "её", "его", "их")] душу. Похоже, [genderize_ru(user.gender, "он", "она", "оно", "они")] пыта[pluralize_ru(user.gender, "ет", "ют")]ся совершить самоубийство!"))
 	// TODO Make them glow with the power of the M E D I C A L W R E N C H
 	// during their ascension
 

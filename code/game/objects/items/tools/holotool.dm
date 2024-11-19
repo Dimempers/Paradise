@@ -23,7 +23,7 @@ Holotool. All instruments in one object
 
 /obj/item/holotool/examine(mob/user)
 	. = ..()
-	. += span_notice("span_notice("It is currently set to [current_tool ? current_tool.name : "'off'"] mode.")
+	. += (span_notice("It is currently set to [current_tool ? current_tool.name : "'off'"] mode."))
 
 /obj/item/holotool/ui_action_click(mob/user, datum/action/action)
 	var/C = input(user, "Select Color", "Select color", "#48D1CC") as null|color

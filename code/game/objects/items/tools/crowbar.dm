@@ -137,13 +137,13 @@
 	ADD_TRAIT(src, TRAIT_ADVANCED_SURGICAL, ROUNDSTART_TRAIT)
 
 /obj/item/crowbar/power/suicide_act(mob/user)
-	user.visible_message("span_suicide("[user] помеща[pluralize_ru(user.gender,"ет","ют")] свою голову между лезвиями [declent_ru(GENITIVE)]. Похоже, [genderize_ru(user.gender,"он","она","оно","они")] пыта[pluralize_ru(user.gender,"ется","ются")] использовать [declent_ru(ACCUSATIVE)] для самоубийства!")
+	user.visible_message(span_suicide("[user] помеща[pluralize_ru(user.gender, "ет", "ют")] свою голову между лезвиями [declent_ru(GENITIVE)]. Похоже, [genderize_ru(user.gender, "он", "она", "оно", "они")] пыта[pluralize_ru(user.gender, "ет", "ют")]ся использовать [declent_ru(ACCUSATIVE)] для самоубийства!"))
 	playsound(loc, 'sound/items/jaws_pry.ogg', 50, 1, -1)
 	return BRUTELOSS
 
 /obj/item/crowbar/power/attack_self(mob/user)
 	playsound(get_turf(user), 'sound/items/change_jaws.ogg', 50, 1)
 	var/obj/item/wirecutters/power/cutjaws = new /obj/item/wirecutters/power
-	to_chat(user, "span_notice("Вы присоеденяете режущую головку к [declent_ru(GENITIVE)].")
+	to_chat(user, span_notice("Вы присоеденяете режущую головку к [declent_ru(GENITIVE)]."))
 	qdel(src)
 	user.put_in_active_hand(cutjaws)
