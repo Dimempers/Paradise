@@ -9,6 +9,14 @@
 /obj/item/multitool
 	name = "multitool"
 	desc = "Используется для пульсации проводов, чтобы проверить, какой из них следует разрезать. Не рекомендуется врачами."
+	ru_names = list(
+		NOMINATIVE = "мультитул",
+		GENITIVE = "мультитула",
+		DATIVE = "мультитулу",
+		ACCUSATIVE = "мультитул",
+		INSTRUMENTAL = "мультитулом",
+		PREPOSITIONAL = "мультитуле"
+	)
 	icon = 'icons/obj/device.dmi'
 	icon_state = "multitool"
 	belt_icon = "multitool"
@@ -28,7 +36,6 @@
 	var/shows_wire_information = FALSE // shows what a wire does if set to TRUE
 	var/obj/machinery/buffer // simple machine buffer for device linkage
 	var/datum/multitool_menu_host/menu
-	ru_names = list(NOMINATIVE = "мультитул", GENITIVE = "мультитула", DATIVE = "мультитулу", ACCUSATIVE = "мультитул", INSTRUMENTAL = "мультитулом", PREPOSITIONAL = "мультитуле")
 
 /obj/item/multitool/Initialize()
 	. = ..()
@@ -47,7 +54,7 @@
 		balloon_alert(user,"это не машина")
 		return
 	buffer = M
-	to_chat(user, "<span class='notice'>Ты загрузил [M] в внутренний буфер [src.declent_ru(GENITIVE)].</span>")
+	to_chat(user, "span_notice("Ты загрузил [M] во внутренний буфер [declent_ru(GENITIVE)].")
 	return TRUE
 
 /obj/item/multitool/attack_self(mob/user)
@@ -112,7 +119,7 @@
 				break
 
 /obj/item/multitool/ai_detect/admin
-	desc = "Используется для пульсации проводов, чтобы проверить, какой из них следует разрезать. Не рекомендуется врачами. Имеет странную бирку с надписью  'Гриф в безопастности'" //What else should I say for a meme item?
+	desc = "Используется для пульсации проводов, чтобы проверить, какой из них следует разрезать. Не рекомендуется врачами. Имеет странную бирку с надписью  'Гриферить в удовольствие!'" //What else should I say for a meme item?
 	track_delay = 5
 	shows_wire_information = TRUE
 
@@ -134,18 +141,32 @@
 /obj/item/multitool/abductor
 	name = "alien multitool"
 	desc = "Универсальный технологичный интерфейс."
+	ru_names = list(
+		NOMINATIVE = "инопланетный мультитул",
+		GENITIVE = "инопланетного мультитула",
+		DATIVE = "инопланетному мультитулу",
+		ACCUSATIVE = "инопланетный мультитул",
+		INSTRUMENTAL = "инопланетным мультитулом",
+		PREPOSITIONAL = "инопланетном мультитуле"
+	)
 	icon = 'icons/obj/abductor.dmi'
 	icon_state = "multitool"
 	belt_icon = "alien_multitool"
 	toolspeed = 0.1
 	origin_tech = "magnets=5;engineering=5;abductor=3"
 	shows_wire_information = TRUE
-	ru_names = list(NOMINATIVE = "инопланетный мультитул", GENITIVE = "инопланетного мультитула", DATIVE = "инопланетному мультитулу", ACCUSATIVE = "инопланетный мультитул", INSTRUMENTAL = "инопланетным мультитулом", PREPOSITIONAL = "инопланетном мультитуле")
 
 /obj/item/multitool/brass
 	name = "brass multitool"
 	desc = "Мультитул из латуни. Вы чувствуете, что из него исходят какие-то сигналы."
+	ru_names = list(
+		NOMINATIVE = "латунный мультитул",
+		GENITIVE = "латунного мультитула",
+		DATIVE = "латунному мультитулу",
+		ACCUSATIVE = "латунный мультитул",
+		INSTRUMENTAL = "латунным мультитулом",
+		PREPOSITIONAL = "латунном мультитуле"
+	)
 	icon_state = "multitool_brass"
 	toolspeed = 0.5
 	resistance_flags = FIRE_PROOF | ACID_PROOF
-	ru_names = list(NOMINATIVE = "латунный мультитул", GENITIVE = "латунного мультитула", DATIVE = "латунному мультитулу", ACCUSATIVE = "латунный мультитул", INSTRUMENTAL = "латунным мультитулом", PREPOSITIONAL = "латунном мультитуле")

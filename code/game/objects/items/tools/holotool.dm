@@ -6,7 +6,7 @@ Holotool. All instruments in one object
 
 /obj/item/holotool
 	name = "experimental holotool"
-	desc = "Высокоэкспериментальный голографический инструмент-проектор."
+	desc = "A highly experimental holographic tool projector."
 	icon = 'icons/obj/holotool.dmi'
 	icon_state = "holotool"
 	slot_flags = ITEM_SLOT_BELT
@@ -14,8 +14,6 @@ Holotool. All instruments in one object
 	actions_types = list(/datum/action/item_action/change_ht_color)
 	resistance_flags = FIRE_PROOF | ACID_PROOF
 	w_class = WEIGHT_CLASS_SMALL
-	ru_names = list(NOMINATIVE = "эксперементальный голо-тул", GENITIVE = "эксперементального голо-тула", DATIVE = "эксперементальному голо-тулу", ACCUSATIVE = "эксперементальный голо-тул", INSTRUMENTAL = "эксперементальным голо-тулом", PREPOSITIONAL = "эксперементальном голо-туле")
-
 	var/datum/holotool_mode/current_tool
 	var/list/available_modes
 	var/list/mode_names
@@ -25,7 +23,7 @@ Holotool. All instruments in one object
 
 /obj/item/holotool/examine(mob/user)
 	. = ..()
-	. += span_notice("На данный момент установлен [current_tool ? current_tool.name : "'off'"] режим.")
+	. += span_notice("span_notice("It is currently set to [current_tool ? current_tool.name : "'off'"] mode.")
 
 /obj/item/holotool/ui_action_click(mob/user, datum/action/action)
 	var/C = input(user, "Select Color", "Select color", "#48D1CC") as null|color
