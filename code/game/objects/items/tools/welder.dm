@@ -103,7 +103,7 @@
 		balloon_alert(user, ("Вы включили [declent_ru(ACCUSATIVE)]."))
 		toggle_welder()
 	else //The welder is off and unfuelled
-		balloon_alert(user, ("В [declent_ru(PREPOSITIONAL)] закончилось топливо!"))
+		balloon_alert(user, ("В сварочном аппарате закончилось топливо!"))
 
 /obj/item/weldingtool/proc/toggle_welder(turn_off = FALSE) //Turn it on or off, forces it to deactivate
 	tool_enabled = turn_off ? FALSE : !tool_enabled
@@ -183,7 +183,7 @@
 		return
 	var/amount_transferred = A.reagents.trans_id_to(src, "fuel", amount)
 	if(amount_transferred)
-		balloon_alert(user, ("Ты заполнил [declent_ru(NOMINATIVE)] [amount_transferred] u топлива."))
+		balloon_alert(user, ("Ты заполнил сварочный аппарат [amount_transferred] u топлива."))
 		playsound(src, 'sound/effects/refill.ogg', 50, 1)
 		update_icon()
 		return amount_transferred
