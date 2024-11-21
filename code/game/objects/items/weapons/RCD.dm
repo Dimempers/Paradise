@@ -138,7 +138,7 @@
 /obj/item/rcd/examine(mob/user)
 	. = ..()
 	. += span_notice("Материя: [matter]/[max_matter] юнитов-материи.")
-	. += span_notice("Мод: [mode].")
+	. += span_notice("Режим: [mode].")
 
 /obj/item/rcd/Destroy()
 	QDEL_NULL(spark_system)
@@ -246,7 +246,7 @@
 		else
 			return
 	playsound(src, 'sound/effects/pop.ogg', 50, 0)
-	to_chat(user, span_notice("You change [src]'s mode to '[choice]")) // Оставляю другим локализаторам на перевод
+	to_chat(user, span_notice("You change [src]'s mode to '[choice]"))
 
 
 /obj/item/rcd/attack_self(mob/user)

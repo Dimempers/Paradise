@@ -28,7 +28,7 @@ By design, d1 is the smallest direction and d2 is the highest
 	on_blueprints = TRUE
 	var/datum/powernet/powernet
 	name = "power cable"
-	desc = "Гибкий сверхпроводящий кабель для передачи электроэнергии в сложных условиях"
+	desc = "Гибкий сверхпроводящий кабель для передачи электроэнергии в суровых условиях"
 	ru_names = list(
 		NOMINATIVE = "провод",
 		GENITIVE = "провода",

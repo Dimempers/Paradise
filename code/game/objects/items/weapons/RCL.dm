@@ -56,7 +56,7 @@
 	. = TRUE
 	if(!I.use_tool(src, user, 0, volume = I.tool_volume))
 		return
-	to_chat(user, span_notice("Вы откручиваете сбоку винты панели, что позваляет вам отсоеденить её и снять провода."))
+	to_chat(user, span_notice("Вы откручиваете сбоку винты панели, что позволяет вам отсоединить её и снять провода."))
 	while(loaded.amount > 30) //There are only two kinds of situations: "nodiff" (60,90), or "diff" (31-59, 61-89)
 		var/diff = loaded.amount % 30
 		if(diff)

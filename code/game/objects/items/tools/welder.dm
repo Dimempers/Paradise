@@ -138,7 +138,7 @@
 		return TRUE
 	else
 		if(!silent)
-			balloon_alert(user, ("Тебе нужно больше сварочного топлива в [declent_ru(PREPOSITIONAL)]!"))
+			balloon_alert(user, ("Нужно больше топлива в [declent_ru(PREPOSITIONAL)]!"))
 		return FALSE
 
 // When welding is about to start, run a normal tool_use_check, then flash a mob if it succeeds.
@@ -213,7 +213,7 @@
 
 /obj/item/weldingtool/largetank
 	name = "industrial welding tool"
-	desc = "Сварочный аппарат, но с баком побольше."
+	desc = "Сварочный аппарат с увеличенным объемом бака."
 	ru_names = list(
 		NOMINATIVE = "индустриальный сварочный аппарат",
 		GENITIVE = "индустриального сварочного аппарата",

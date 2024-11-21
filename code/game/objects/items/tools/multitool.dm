@@ -49,7 +49,7 @@
 /obj/item/multitool/multitool_check_buffer(user, silent = FALSE)
 	return TRUE
 
-/obj/item/multitool/proc/set_multitool_buffer(mob/user, obj/machinery/M)	//Loads a machine into memory, returns TRUE if it does
+/obj/item/multitool/proc/set_multitool_buffer(mob/user, obj/machinery/M)	// Loads a machine into memory, returns TRUE if it does
 	if(!ismachinery(M))
 		balloon_alert(user,"это не машина")
 		return
@@ -119,7 +119,7 @@
 				break
 
 /obj/item/multitool/ai_detect/admin
-	desc = "Используется для пульсации проводов, чтобы проверить, какой из них следует разрезать. Не рекомендуется врачами. Имеет странную бирку с надписью  'Гриферить в удовольствие!'" //What else should I say for a meme item?
+	desc = "Используется для пульсации проводов, чтобы проверить, какой из них следует разрезать. Не рекомендуется врачами. Имеет странную бирку с надписью  'Гриферить в удовольствие!'" // What else should I say for a meme item?
 	track_delay = 5
 	shows_wire_information = TRUE
 

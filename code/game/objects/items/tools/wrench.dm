@@ -121,12 +121,12 @@
 	name = "medical wrench"
 	desc = "Медецинский гаечный ключ. Используется для закручивания или откручивания чего либо. Не спрашивайте, что отличает эту модель от обычного ключа."
 	ru_names = list(
-		NOMINATIVE = "медецинский ключ",
-		GENITIVE = "медецинского ключа",
-		DATIVE = "медецинскому ключу",
-		ACCUSATIVE = "медецинской ключ",
-		INSTRUMENTAL = "медецинским ключом",
-		PREPOSITIONAL = "медецинском ключе"
+		NOMINATIVE = "медицинский ключ",
+		GENITIVE = "медицинского ключа",
+		DATIVE = "медицинскому ключу",
+		ACCUSATIVE = "медицинской ключ",
+		INSTRUMENTAL = "медицинским ключом",
+		PREPOSITIONAL = "медицинском ключе"
 	)
 	icon_state = "wrench_medical"
 	force = 2 //MEDICAL

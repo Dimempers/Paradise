@@ -147,6 +147,6 @@
 /obj/item/wirecutters/power/attack_self(mob/user)
 	playsound(get_turf(user), 'sound/items/change_jaws.ogg', 50, 1)
 	var/obj/item/crowbar/power/pryjaws = new /obj/item/crowbar/power
-	to_chat(user, span_notice("Вы присоеденяете поддевающую головку к [declent_ru(DATIVE)]."))
+	to_chat(user, span_notice("Вы присоединяете поддевающую головку к [declent_ru(DATIVE)]."))
 	qdel(src)
 	user.put_in_active_hand(pryjaws)

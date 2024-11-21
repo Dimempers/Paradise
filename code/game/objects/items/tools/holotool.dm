@@ -6,14 +6,14 @@ Holotool. All instruments in one object
 
 /obj/item/holotool
 	name = "experimental holotool"
-	desc = "Эксперементальный голографический инструмент-проектор."
+	desc = "Экспериментальный голографический инструмент-проектор."
 	ru_names = list(
-		NOMINATIVE = "эксперементальный голотул",
-		GENITIVE = "эксперементального голотула",
-		DATIVE = "эксперементальному голотулу",
-		ACCUSATIVE = "эксперементальный голотул",
-		INSTRUMENTAL = "эксперементальным голотулом",
-		PREPOSITIONAL = "эксперементальном голотуле"
+		NOMINATIVE = "экспериментальный голотул",
+		GENITIVE = "экспериментального голотула",
+		DATIVE = "экспериментальному голотулу",
+		ACCUSATIVE = "экспериментальный голотул",
+		INSTRUMENTAL = "экспериментальным голотулом",
+		PREPOSITIONAL = "экспериментальном голотуле"
 	)
 	icon = 'icons/obj/holotool.dmi'
 	icon_state = "holotool"
