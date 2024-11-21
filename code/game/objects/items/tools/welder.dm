@@ -132,13 +132,13 @@
 /obj/item/weldingtool/tool_use_check(mob/living/user, amount, silent = FALSE)
 	if(!tool_enabled)
 		if(!silent)
-			balloon_alert(user, ("[capitalize(declent_ru(NOMINATIVE))] должен быть включён!"))
+			balloon_alert(user, ("[declent_ru(NOMINATIVE))] должен быть включён!")
 		return FALSE
 	if(GET_FUEL >= amount * requires_fuel)
 		return TRUE
 	else
 		if(!silent)
-			balloon_alert(user, ("Нужно больше топлива в [declent_ru(PREPOSITIONAL)]!"))
+			balloon_alert(user, ("Недостаточно топлива!"))
 		return FALSE
 
 // When welding is about to start, run a normal tool_use_check, then flash a mob if it succeeds.
