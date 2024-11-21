@@ -70,7 +70,7 @@
 
 /obj/item/weldingtool/can_enter_storage(obj/item/storage/S, mob/user)
 	if(tool_enabled)
-		to_chat(user, span_warning("[capitalize(declent_ru(NOMINATIVE))] невозможно положить пока он включен!"))
+		to_chat(user, span_warning("[capitalize(declent_ru(ACCUSATIVE))] невозможно положить, пока он включён!"))
 		return FALSE
 	else
 		return TRUE
@@ -96,14 +96,14 @@
 
 /obj/item/weldingtool/attack_self(mob/user)
 	if(tool_enabled) //Turn off the welder if it's on
-		to_chat(user, span_notice("Вы выключили [declent_ru(NOMINATIVE)]."))
+		balloon_alert(user, ("Вы выключили [declent_ru(ACCUSATIVE)]."))
 		toggle_welder()
 		return
 	else if(GET_FUEL) //The welder is off, but we need to check if there is fuel in the tank
-		to_chat(user, span_notice("Вы включили [declent_ru(NOMINATIVE)]."))
+		balloon_alert(user, ("Вы включили [declent_ru(ACCUSATIVE)]."))
 		toggle_welder()
 	else //The welder is off and unfuelled
-		to_chat(user, span_notice("В [declent_ru(PREPOSITIONAL)] закончилось топливо!"))
+		balloon_alert(user, ("В [declent_ru(PREPOSITIONAL)] закончилось топливо!"))
 
 /obj/item/weldingtool/proc/toggle_welder(turn_off = FALSE) //Turn it on or off, forces it to deactivate
 	tool_enabled = turn_off ? FALSE : !tool_enabled
@@ -132,13 +132,13 @@
 /obj/item/weldingtool/tool_use_check(mob/living/user, amount, silent = FALSE)
 	if(!tool_enabled)
 		if(!silent)
-			to_chat(user, span_notice("[capitalize(declent_ru(NOMINATIVE))] должен быть включён для выполнения этой задачи!"))
+			balloon_alert(user, ("[capitalize(declent_ru(NOMINATIVE))] должен быть включён!"))
 		return FALSE
 	if(GET_FUEL >= amount * requires_fuel)
 		return TRUE
 	else
 		if(!silent)
-			to_chat(user, span_warning("Тебе нужно больше сварочного топлива в [declent_ru(PREPOSITIONAL)] для выполнения этой задачи!"))
+			balloon_alert(user, ("Тебе нужно больше сварочного топлива в [declent_ru(PREPOSITIONAL)]!"))
 		return FALSE
 
 // When welding is about to start, run a normal tool_use_check, then flash a mob if it succeeds.
@@ -179,16 +179,16 @@
 	if(!A.reagents)
 		return
 	if(GET_FUEL >= maximum_fuel)
-		to_chat(user, span_notice("[capitalize(declent_ru(NOMINATIVE))] уже полон!"))
+		balloon_alert(user, ("[declent_ru(NOMINATIVE)] уже полон!"))
 		return
 	var/amount_transferred = A.reagents.trans_id_to(src, "fuel", amount)
 	if(amount_transferred)
-		to_chat(user, span_notice("Ты заполнил [declent_ru(NOMINATIVE)] [amount_transferred] u.</span>"))
+		balloon_alert(user, ("Ты заполнил [declent_ru(NOMINATIVE)] [amount_transferred] u топлива."))
 		playsound(src, 'sound/effects/refill.ogg', 50, 1)
 		update_icon()
 		return amount_transferred
 	else
-		balloon_alert(user, span_warning("В [A] недостатачно топлива!</span>"))
+		balloon_alert(user, ("В [A] недостатачно топлива!"))
 
 
 /obj/item/weldingtool/update_icon_state()
@@ -237,7 +237,7 @@
 			DATIVE = "встроенному сварочному аппарату",
 			ACCUSATIVE = "встроенный сварочный аппарат",
 			INSTRUMENTAL = "встроенным сварочным аппаратом",
-			PREPOSITIONAL = "встроенном сварачном аппарате"
+			PREPOSITIONAL = "встроенном сварочном аппарате"
 	)
 	toolspeed = 0.5
 
@@ -282,7 +282,7 @@
 
 /obj/item/weldingtool/hugetank
 	name = "upgraded welding tool"
-	desc = "Усовершенствованный сварочный аппарат на базе промышленного сварочного аппарата."
+	desc = "Усовершенствованная версия промышленного сварочного аппарата. С баком побольше!"
 	ru_names = list(
 		NOMINATIVE = "улучшенный сварочный аппарат",
 		GENITIVE = "улучшеного сварочного аппарата",
@@ -329,7 +329,7 @@
 			DATIVE = "встроенному сварочному аппарату",
 			ACCUSATIVE = "встроенный сварочный аппарат",
 			INSTRUMENTAL = "встроенным сварочным аппаратом",
-			PREPOSITIONAL = "встроенном сварачном аппарате"
+			PREPOSITIONAL = "встроенном сварочном аппарате"
 	)
 	requires_fuel = FALSE
 	light_intensity = 0

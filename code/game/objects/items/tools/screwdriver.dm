@@ -38,6 +38,14 @@
 /obj/item/screwdriver/nuke
 	name = "screwdriver"
 	desc = "Отвёртка с ультратонким наконечником."
+	ru_names = list(
+		NOMINATIVE = "отвёртка",
+		GENITIVE = "отвёртки",
+		DATIVE = "отвёртке",
+		ACCUSATIVE = "отвёртку",
+		INSTRUMENTAL = "отвёрткой",
+		PREPOSITIONAL = "отвёртке"
+	)
 	icon_state = "screwdriver_nuke"
 	toolspeed = 0.5
 	random_color = FALSE
@@ -111,7 +119,7 @@
 	ru_names = list(
 		NOMINATIVE = "ручная дрель",
 		GENITIVE = "ручной дрели",
-		DATIVE = "ручную дрель",
+		DATIVE = "ручной дрели",
 		ACCUSATIVE = "ручную дрель",
 		INSTRUMENTAL = "ручной дрелью",
 		PREPOSITIONAL = "ручной дрели"
@@ -136,18 +144,18 @@
 	ADD_TRAIT(src, TRAIT_ADVANCED_SURGICAL, ROUNDSTART_TRAIT)
 
 /obj/item/screwdriver/power/suicide_act(mob/user)
-	user.visible_message(span_suicide("[user] став[pluralize_ru(user.gender, "ит", "ят")] [declent_ru(ACCUSATIVE)] к своему виску. Похоже [genderize_ru(user.gender, "он", "она", "оно", "они")] пыта[pluralize_ru(user.gender, "ет", "ют")]ся совершить самоубийство!"))
+	user.visible_message(span_suicide("[user] приставля[pluralize_ru(user.gender, "ет", "ют")] [declent_ru(ACCUSATIVE)] к своему виску. Похоже, что [genderize_ru(user.gender, "он", "она", "оно", "они")] пыта[pluralize_ru(user.gender, "ет", "ют")]ся совершить самоубийство!"))
 	return BRUTELOSS
 
 /obj/item/screwdriver/power/attack_self(mob/user)
 	playsound(get_turf(user), 'sound/items/change_drill.ogg', 50, 1)
 	var/obj/item/wrench/power/b_drill = new /obj/item/wrench/power
-	to_chat(user, span_notice("Вы присоеденяете головку болтового сверла к [declent_ru(GENITIVE)]."))
+	to_chat(user, span_notice("Вы присоеденяете головку болтового сверла к [declent_ru(DATIVE)]."))
 	qdel(src)
 	user.put_in_active_hand(b_drill)
 
 /obj/item/screwdriver/cyborg
 	name = "powered screwdriver"
-	desc = "Электрическая отвёртка, разработанная для точного и быстрого использования."
+	desc = "Отвёртка с электроприводом, разработанная для точного и быстрого использования."
 	usesound = 'sound/items/drill_use.ogg'
 	toolspeed = 0.5

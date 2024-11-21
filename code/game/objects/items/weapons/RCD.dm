@@ -1,6 +1,14 @@
 /obj/item/rcd
 	name = "rapid-construction-device (RCD)"
-	desc = "A device used to rapidly build and deconstruct walls, floors and airlocks."
+	desc = "Устройство, используемое для быстрого возведения и демонтажа стен, полов и шлюзов."
+	ru_names = list(
+		NOMINATIVE = "Устройство Быстрого Строительства",
+		GENITIVE = "Устройства Быстрого Строительства",
+		DATIVE = "Устройству Быстрого Строительства",
+		ACCUSATIVE = "Устройство Быстрого Строительства",
+		INSTRUMENTAL = "Устройством Быстрого Строительства",
+		PREPOSITIONAL = "Устройстве Быстрого Строительства"
+	)
 	icon = 'icons/obj/tools.dmi'
 	icon_state = "rcd"
 	flags = CONDUCT
@@ -129,8 +137,8 @@
 
 /obj/item/rcd/examine(mob/user)
 	. = ..()
-	. += "<span class='notice'>MATTER: [matter]/[max_matter] matter-units.</span>"
-	. += "<span class='notice'>MODE: [mode].</span>"
+	. += span_notice("Материя: [matter]/[max_matter] юнитов-материи.")
+	. += span_notice("Мод: [mode].")
 
 /obj/item/rcd/Destroy()
 	QDEL_NULL(spark_system)
@@ -178,11 +186,11 @@
 
 /obj/item/rcd/proc/rcd_reload(obj/item/rcd_ammo/rcd_ammo, mob/user)
 	if(matter >= max_matter)
-		to_chat(user, "<span class='notice'>The RCD can't hold any more matter-units.</span>")
+		to_chat(user, span_notice("УБС не может принять больше юнитов-материи."))
 		return
 
 	if(!user.drop_item_ground(rcd_ammo))
-		to_chat(user, "<span class='warning'>[rcd_ammo] is stuck to your hand!</span>")
+		to_chat(user, span_warning("[rcd_ammo] is stuck to your hand!"))
 		return
 
 	user.put_in_active_hand(rcd_ammo)
@@ -190,9 +198,9 @@
 		matter = min(matter + rcd_ammo.ammoamt, max_matter)
 		qdel(rcd_ammo)
 		playsound(loc, 'sound/machines/click.ogg', 50, 1)
-		to_chat(user, "<span class='notice'>The RCD now holds [matter]/[max_matter] matter-units.</span>")
+		to_chat(user, span_notice("Теперь в УБС [matter]/[max_matter] юнитов-материи."))
 	else
-		to_chat(user, "<span class='warning'>This matter cartridge is incompatible with your RCD</span>")
+		to_chat(user, span_warning("Этот картридж материи несовместим с вашим УБС"))
 	SStgui.update_uis(src)
 
 /**
@@ -238,7 +246,7 @@
 		else
 			return
 	playsound(src, 'sound/effects/pop.ogg', 50, 0)
-	to_chat(user, "<span class='notice'>You change [src]'s mode to '[choice]'.</span>")
+	to_chat(user, span_notice("You change [src]'s mode to '[choice]")) // Оставляю другим локализаторам на перевод
 
 
 /obj/item/rcd/attack_self(mob/user)
@@ -313,7 +321,7 @@
 
 		if("set_lock")
 			if(!allowed(usr))
-				to_chat(usr, "<span class='warning'>Access denied.</span>")
+				to_chat(usr, span_warning("В доступе отказано."))
 				return FALSE
 			locked = params["new_lock"] == "lock" ? TRUE : FALSE
 
@@ -376,7 +384,7 @@
 		return
 	var/area/check_area = get_area(target)
 	if(check_area?.type in areas_blacklist)
-		to_chat(user, span_warning("Something prevents you from using [src] in here..."))
+		to_chat(user, span_warning("Чтото мешает вам использовать [declent_ru(NOMINATIVE)] здесь..."))
 		return
 	target.rcd_act(user, src, mode)
 	SStgui.update_uis(src)
@@ -434,7 +442,7 @@
 /obj/item/rcd/proc/detonate_pulse()
 	if(is_taipan(z) || is_admin_level(z)) //Защищает тайпан и админские Z-lvla от взрыва RCD
 		return
-	audible_message("<span class='danger'><b>[src] begins to vibrate and buzz loudly!</b></span>", "<span class='danger'><b>[src] begins vibrating violently!</b></span>")
+	audible_message(span_danger("<b>[capitalize(declent_ru(ACCUSATIVE))] начинает громко вибрировать и жужжать!</b>"), span_danger("<b>[capitalize(declent_ru(ACCUSATIVE))] начинает сильно вибрировать!</b>"))
 	// 5 seconds to get rid of it
 	addtimer(CALLBACK(src, PROC_REF(detonate_pulse_explode)), 50)
 
@@ -458,7 +466,15 @@
 
 /obj/item/rcd_ammo
 	name = "compressed matter cartridge"
-	desc = "Highly compressed matter for the RCD."
+	desc = "Сильно спресованная материя в картриджи для УБС."
+	ru_names = list(
+		NOMINATIVE = "картридж материи",
+		GENITIVE = "картриджа материи",
+		DATIVE = "картриджу материи",
+		ACCUSATIVE = "картридж материи",
+		INSTRUMENTAL = "картриджом материи",
+		PREPOSITIONAL = "картридже материи"
+	)
 	icon = 'icons/obj/weapons/ammo.dmi'
 	icon_state = "rcd"
 	item_state = "rcdammo"
@@ -471,7 +487,7 @@
 
 /obj/item/rcd/mecha_ref
 	name = "Mecha inner RCD"
-	desc = "You should not be able to see it..."
+	desc = "Вы не должны этого видеть..."
 	power_use_multiplier = 250
 	var/obj/mecha/chassis = null
 

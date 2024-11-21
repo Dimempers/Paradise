@@ -1,6 +1,14 @@
 /obj/item/twohanded/rcl
 	name = "rapid cable layer (RCL)"
-	desc = "A device used to rapidly deploy cables. It has screws on the side which can be removed to slide off the cables."
+	desc = "Устройство, используемое для быстрой прокладки кабелей. Сбоку имеются винты, которые можно открутить, чтобы снять провода."
+	ru_names = list(
+		NOMINATIVE = "Быстрый Укладчик Проводов",
+		GENITIVE = "Быстрого Укладчика Проводов",
+		DATIVE = "Быстрому Укладчику Проводов",
+		ACCUSATIVE = "Быстрый Укладчик Проводов",
+		INSTRUMENTAL = "Быстрым Укладчиком Проводов",
+		PREPOSITIONAL = "Быстром Укладчике Проводов"
+	)
 	icon = 'icons/obj/tools.dmi'
 	icon_state = "rcl-0"
 	item_state = "rcl-0"
@@ -26,17 +34,17 @@
 			loaded = coil
 			loaded.max_amount = max_amount //We store a lot.
 			update_icon(UPDATE_ICON_STATE)
-			to_chat(user, span_notice("You add the cables to the [src]. It now contains [loaded.amount]."))
+			to_chat(user, span_notice("Вы загрузили провода в [declent_ru(ACCUSATIVE)]. В хранилище теперь [loaded.amount]."))
 			return ATTACK_CHAIN_BLOCKED_ALL
 		if(loaded.amount >= max_amount)
-			to_chat(user, span_warning("The [name]'s cable storage is full."))
+			balloon_alert(user, ("Хранилище проводов в [declent_ru(PREPOSITIONAL)] заполнено."))
 			return ATTACK_CHAIN_PROCEED
-		to_chat(user, span_notice("You load some cable into [src]."))
+		balloon_alert(user, ("Вы загрузили провода в [declent_ru(ACCUSATIVE)]."))
 		var/amount = min(loaded.amount + coil.amount, max_amount)
 		coil.use(amount - loaded.amount)
 		loaded.amount = amount
 		update_icon(UPDATE_ICON_STATE)
-		to_chat(user, span_notice("You add the cables to the [src]. It now contains [loaded.amount]."))
+		to_chat(user, span_notice("Вы загрузили провода в [declent_ru(ACCUSATIVE)]. В хранилище теперь [loaded.amount]."))
 		return ATTACK_CHAIN_PROCEED_SUCCESS
 
 	return ..()
@@ -48,7 +56,7 @@
 	. = TRUE
 	if(!I.use_tool(src, user, 0, volume = I.tool_volume))
 		return
-	to_chat(user, "<span class='notice'>You loosen the securing screws on the side, allowing you to lower the guiding edge and retrieve the wires.</span>")
+	to_chat(user, span_notice("Вы откручиваете сбоку винты панели, что позваляет вам отсоеденить её и снять провода."))
 	while(loaded.amount > 30) //There are only two kinds of situations: "nodiff" (60,90), or "diff" (31-59, 61-89)
 		var/diff = loaded.amount % 30
 		if(diff)
@@ -66,7 +74,7 @@
 /obj/item/twohanded/rcl/examine(mob/user)
 	. = ..()
 	if(loaded)
-		. += "<span class='notice'>It contains [loaded.amount]/[max_amount] cables.</span>"
+		. += span_notice("В хранилище [loaded.amount]/[max_amount] проводов.")
 
 /obj/item/twohanded/rcl/Destroy()
 	QDEL_NULL(loaded)
@@ -99,7 +107,7 @@
 	update_icon(UPDATE_ICON_STATE)
 	if(!loaded || !loaded.amount)
 		if(loud)
-			to_chat(user, "<span class='notice'>The last of the cables unreel from [src].</span>")
+			to_chat(user, span_notice("Последний провод был размотан с [declent_ru(GENITIVE)]."))
 		if(loaded)
 			qdel(loaded)
 			loaded = null
@@ -135,7 +143,7 @@
 
 /obj/item/twohanded/rcl/proc/trigger(mob/user)
 	if(is_empty(user, 0))
-		to_chat(user, "<span class='warning'>\The [src] is empty!</span>")
+		balloon_alert(user, ("[declent_ru(ACCUSATIVE)] пуст!"))
 		return
 	if(last)
 		if(get_dist(last, user) == 1) //hacky, but it works

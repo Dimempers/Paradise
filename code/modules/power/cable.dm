@@ -28,7 +28,15 @@ By design, d1 is the smallest direction and d2 is the highest
 	on_blueprints = TRUE
 	var/datum/powernet/powernet
 	name = "power cable"
-	desc = "A flexible superconducting cable for heavy-duty power transfer"
+	desc = "Гибкий сверхпроводящий кабель для передачи электроэнергии в сложных условиях"
+	ru_names = list(
+		NOMINATIVE = "провод",
+		GENITIVE = "провода",
+		DATIVE = "проводу",
+		ACCUSATIVE = "провод",
+		INSTRUMENTAL = "проводом",
+		PREPOSITIONAL = "проводе"
+	)
 	icon = 'icons/obj/engines_and_power/power_cond/power_cond_white.dmi'
 	icon_state = "0-1"
 	var/d1 = 0
@@ -166,14 +174,14 @@ By design, d1 is the smallest direction and d2 is the highest
 		return ATTACK_CHAIN_BLOCKED_ALL
 
 	if((our_turf.transparent_floor == TURF_TRANSPARENT) || our_turf.intact)
-		to_chat(user, span_danger("You cannot interact with something that's under the floor!"))
+		to_chat(user, span_danger("Вы не можете взаимодействовать с тем, что находится под полом!"))
 		return ATTACK_CHAIN_BLOCKED_ALL
 
 	if(iscoil(I))
 		add_fingerprint(user)
 		var/obj/item/stack/cable_coil/coil = I
 		if(coil.get_amount() < 1)
-			to_chat(user, span_warning("Not enough cable!"))
+			balloon_alert(user, ("Не хватает провода!"))
 			return ATTACK_CHAIN_PROCEED
 		coil.cable_join(src, user)
 		return ATTACK_CHAIN_BLOCKED_ALL
@@ -182,7 +190,7 @@ By design, d1 is the smallest direction and d2 is the highest
 		add_fingerprint(user)
 		var/obj/item/twohanded/rcl/rcl = I
 		if(!rcl.loaded)
-			to_chat(user, span_warning("The [rcl.name] has no cable!"))
+			to_chat(user, span_warning("В [rcl.declent_ru(PREPOSITIONAL)] нет проводов!"))
 			return ATTACK_CHAIN_PROCEED
 		rcl.loaded.cable_join(src, user)
 		rcl.is_empty(user)
@@ -209,22 +217,22 @@ By design, d1 is the smallest direction and d2 is the highest
 	if(!I.use_tool(src, user, 0, volume = I.tool_volume))
 		return
 	if(powernet && (powernet.avail > 0))		// is it powered?
-		to_chat(user, "<span class='danger'>Total power: [DisplayPower(powernet.avail)]\nLoad: [DisplayPower(powernet.load)]\nExcess power: [DisplayPower(surplus())]</span>")
+		to_chat(user, span_danger("Общая мощность: [DisplayPower(powernet.avail)]\nЗагруженность: [DisplayPower(powernet.load)]\nИзбыточная мощность: [DisplayPower(surplus())]"))
 	else
-		to_chat(user, "<span class='danger'>The cable is not powered.</span>")
+		to_chat(user, span_danger("Провод обесточен."))
 	shock(user, 5, 0.2)
 
 /obj/structure/cable/wirecutter_act(mob/user, obj/item/I)
 	. = TRUE
 	var/turf/T = get_turf(src)
 	if((T.transparent_floor == TURF_TRANSPARENT) || T.intact)
-		to_chat(user, "<span class='danger'>You can't interact with something that's under the floor!</span>")
+		to_chat(user, span_danger("Вы не можете взаимодействовать с тем, что находится под полом!"))
 		return
 	if(!I.use_tool(src, user, 0, volume = I.tool_volume))
 		return
 	if(shock(user, 50))
 		return
-	user.visible_message("[user] cuts the cable.", "<span class='notice'>You cut the cable.</span>")
+	user.visible_message("[user] обрезал провода.", span_notice("Вы обрезали провода."))
 	investigate_log("was cut by [key_name_log(usr)] at [COORD(T)]", INVESTIGATE_WIRES)
 	deconstruct()
 

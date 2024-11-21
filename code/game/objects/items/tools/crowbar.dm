@@ -1,6 +1,6 @@
 /obj/item/crowbar
 	name = "pocket crowbar"
-	desc = "Небольшой лом. Этот удобный инструмент полезен для многих вещей, таких как поддевание напольной плитки или открытие обесточеных шлюзов."
+	desc = "Небольшой лом. Этот удобный инструмент полезен для многих вещей, таких как поддевание напольной плитки или открытие обесточенных шлюзов."
 	ru_names = list(
 		NOMINATIVE = "карманный лом",
 		GENITIVE = "карманного лома",
@@ -137,7 +137,7 @@
 	ADD_TRAIT(src, TRAIT_ADVANCED_SURGICAL, ROUNDSTART_TRAIT)
 
 /obj/item/crowbar/power/suicide_act(mob/user)
-	user.visible_message(span_suicide("[user] помеща[pluralize_ru(user.gender, "ет", "ют")] свою голову между лезвиями [declent_ru(GENITIVE)]. Похоже, [genderize_ru(user.gender, "он", "она", "оно", "они")] пыта[pluralize_ru(user.gender, "ет", "ют")]ся использовать [declent_ru(ACCUSATIVE)] для самоубийства!"))
+	user.visible_message(span_suicide("[user] помеща[pluralize_ru(user.gender, "ет", "ют")] свою голову между лезвиями [declent_ru(GENITIVE)]. Похоже, что [genderize_ru(user.gender, "он", "она", "оно", "они")] пыта[pluralize_ru(user.gender, "ет", "ют")]ся использовать [declent_ru(ACCUSATIVE)] для самоубийства!"))
 	playsound(loc, 'sound/items/jaws_pry.ogg', 50, 1, -1)
 	return BRUTELOSS
 

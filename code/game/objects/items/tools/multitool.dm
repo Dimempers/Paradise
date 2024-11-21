@@ -54,7 +54,7 @@
 		balloon_alert(user,"это не машина")
 		return
 	buffer = M
-	to_chat(user, span_notice("Ты загрузил [M] во внутренний буфер [declent_ru(GENITIVE)]."))
+	to_chat(user, span_notice("Вы загрузили [M] во внутренний буфер [declent_ru(GENITIVE)]."))
 	return TRUE
 
 /obj/item/multitool/attack_self(mob/user)

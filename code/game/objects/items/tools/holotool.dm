@@ -6,7 +6,15 @@ Holotool. All instruments in one object
 
 /obj/item/holotool
 	name = "experimental holotool"
-	desc = "A highly experimental holographic tool projector."
+	desc = "Эксперементальный голографический инструмент-проектор."
+	ru_names = list(
+		NOMINATIVE = "эксперементальный голотул",
+		GENITIVE = "эксперементального голотула",
+		DATIVE = "эксперементальному голотулу",
+		ACCUSATIVE = "эксперементальный голотул",
+		INSTRUMENTAL = "эксперементальным голотулом",
+		PREPOSITIONAL = "эксперементальном голотуле"
+	)
 	icon = 'icons/obj/holotool.dmi'
 	icon_state = "holotool"
 	slot_flags = ITEM_SLOT_BELT
