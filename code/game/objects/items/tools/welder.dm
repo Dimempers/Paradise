@@ -96,11 +96,11 @@
 
 /obj/item/weldingtool/attack_self(mob/user)
 	if(tool_enabled) //Turn off the welder if it's on
-		balloon_alert(user, ("Вы выключили [declent_ru(ACCUSATIVE)]."))
+		balloon_alert(user, ("Вы выключили сварочный аппарат."))
 		toggle_welder()
 		return
 	else if(GET_FUEL) //The welder is off, but we need to check if there is fuel in the tank
-		balloon_alert(user, ("Вы включили [declent_ru(ACCUSATIVE)]."))
+		balloon_alert(user, ("Вы включили сварочный аппарат."))
 		toggle_welder()
 	else //The welder is off and unfuelled
 		balloon_alert(user, ("В сварочном аппарате закончилось топливо!"))
@@ -132,7 +132,7 @@
 /obj/item/weldingtool/tool_use_check(mob/living/user, amount, silent = FALSE)
 	if(!tool_enabled)
 		if(!silent)
-			balloon_alert(user, ("[declent_ru(NOMINATIVE))] должен быть включён!")
+			balloon_alert(user, ("сварочный аппарат должен быть включён!"))
 		return FALSE
 	if(GET_FUEL >= amount * requires_fuel)
 		return TRUE
@@ -179,7 +179,7 @@
 	if(!A.reagents)
 		return
 	if(GET_FUEL >= maximum_fuel)
-		balloon_alert(user, ("[declent_ru(NOMINATIVE)] уже полон!"))
+		balloon_alert(user, ("сварочный аппарат уже полон!"))
 		return
 	var/amount_transferred = A.reagents.trans_id_to(src, "fuel", amount)
 	if(amount_transferred)
