@@ -95,15 +95,23 @@
 	remove_fuel(maximum_fuel)
 
 /obj/item/weldingtool/attack_self(mob/user)
+	if(try_toggle_welder(user))
+		return ..()
+
+/obj/item/weldingtool/proc/try_toggle_welder(mob/user, manual_toggle = TRUE)
 	if(tool_enabled) //Turn off the welder if it's on
-		balloon_alert(user, ("Вы выключили сварочный аппарат."))
-		toggle_welder()
-		return
+		balloon_alert(user, "выключено")
+		if(manual_toggle)
+			toggle_welder()
+		return TRUE
 	else if(GET_FUEL) //The welder is off, but we need to check if there is fuel in the tank
-		balloon_alert(user, ("Вы включили сварочный аппарат."))
-		toggle_welder()
+		balloon_alert(user, "включено")
+		if(manual_toggle)
+			toggle_welder()
+		return TRUE
 	else //The welder is off and unfuelled
-		balloon_alert(user, ("В сварочном аппарате закончилось топливо!"))
+		balloon_alert(user, "нет топлива!")
+		return FALSE
 
 /obj/item/weldingtool/proc/toggle_welder(turn_off = FALSE) //Turn it on or off, forces it to deactivate
 	tool_enabled = turn_off ? FALSE : !tool_enabled
