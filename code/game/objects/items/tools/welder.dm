@@ -70,7 +70,7 @@
 
 /obj/item/weldingtool/can_enter_storage(obj/item/storage/S, mob/user)
 	if(tool_enabled)
-		to_chat(user, span_warning("[capitalize(declent_ru(ACCUSATIVE))] невозможно положить, пока он включён!"))
+		balloon_alert(user, "включено!")
 		return FALSE
 	else
 		return TRUE
@@ -140,13 +140,13 @@
 /obj/item/weldingtool/tool_use_check(mob/living/user, amount, silent = FALSE)
 	if(!tool_enabled)
 		if(!silent)
-			balloon_alert(user, ("сварочный аппарат должен быть включён!"))
+			balloon_alert(user, "выключено!")
 		return FALSE
 	if(GET_FUEL >= amount * requires_fuel)
 		return TRUE
 	else
 		if(!silent)
-			balloon_alert(user, ("Недостаточно топлива!"))
+			balloon_alert(user, "недостаточно топлива!")
 		return FALSE
 
 // When welding is about to start, run a normal tool_use_check, then flash a mob if it succeeds.
@@ -187,16 +187,16 @@
 	if(!A.reagents)
 		return
 	if(GET_FUEL >= maximum_fuel)
-		balloon_alert(user, ("сварочный аппарат уже полон!"))
+		balloon_alert(user, "топливный бак полон!")
 		return
 	var/amount_transferred = A.reagents.trans_id_to(src, "fuel", amount)
 	if(amount_transferred)
-		balloon_alert(user, ("Ты заполнил сварочный аппарат [amount_transferred] u топлива."))
+		balloon_alert(user, "заправлено")
 		playsound(src, 'sound/effects/refill.ogg', 50, 1)
 		update_icon()
 		return amount_transferred
 	else
-		balloon_alert(user, ("В [A] недостатачно топлива!"))
+		balloon_alert(user, "недостаточно топлива!")
 
 
 /obj/item/weldingtool/update_icon_state()
@@ -221,7 +221,7 @@
 
 /obj/item/weldingtool/largetank
 	name = "industrial welding tool"
-	desc = "Сварочный аппарат с увеличенным объемом бака."
+	desc = "Сварочный аппарат с баком побольше."
 	ru_names = list(
 		NOMINATIVE = "индустриальный сварочный аппарат",
 		GENITIVE = "индустриального сварочного аппарата",

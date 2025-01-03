@@ -48,8 +48,8 @@
 /obj/item/wirecutters/attack(mob/living/carbon/target, mob/living/user, params, def_zone, skip_attack_anim = FALSE)
 	if(istype(target) && istype(target.handcuffed, /obj/item/restraints/handcuffs/cable))
 		var/obj/item/cuffs = target.handcuffed
-		user.visible_message(
-			balloon_alert("стяжки перерезаны!"),
+		visible_message("[user] перерезае[pluralize_ru(user.gender, "ет", "ют")] стяжки [target], используя [declent_ru(ACCUSATIVE)]!")
+			balloon_alert(user, "стяжки перерезаны")
 			span_notice("Ты перерезал стяжки [target]'s с помощью [declent_ru(GENITIVE)]!"),
 		)
 		play_tool_sound(target, 100)
@@ -147,6 +147,6 @@
 /obj/item/wirecutters/power/attack_self(mob/user)
 	playsound(get_turf(user), 'sound/items/change_jaws.ogg', 50, 1)
 	var/obj/item/crowbar/power/pryjaws = new /obj/item/crowbar/power
-	to_chat(user, span_notice("Вы присоединяете поддевающую головку к [declent_ru(DATIVE)]."))
+	balloon_alert(user, "режим монтировки")
 	qdel(src)
 	user.put_in_active_hand(pryjaws)

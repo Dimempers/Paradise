@@ -34,17 +34,17 @@
 			loaded = coil
 			loaded.max_amount = max_amount //We store a lot.
 			update_icon(UPDATE_ICON_STATE)
-			to_chat(user, span_notice("Вы загрузили провода в [declent_ru(ACCUSATIVE)]. В хранилище теперь [loaded.amount]."))
+			balloon_alert(user, "провода загружены")
 			return ATTACK_CHAIN_BLOCKED_ALL
 		if(loaded.amount >= max_amount)
-			balloon_alert(user, ("Хранилище проводов в [declent_ru(PREPOSITIONAL)] заполнено."))
+			balloon_alert(user, "нет места!")
 			return ATTACK_CHAIN_PROCEED
-		balloon_alert(user, ("Вы загрузили провода в [declent_ru(ACCUSATIVE)]."))
+		balloon_alert(user, "провода загружены")
 		var/amount = min(loaded.amount + coil.amount, max_amount)
 		coil.use(amount - loaded.amount)
 		loaded.amount = amount
 		update_icon(UPDATE_ICON_STATE)
-		to_chat(user, span_notice("Вы загрузили провода в [declent_ru(ACCUSATIVE)]. В хранилище теперь [loaded.amount]."))
+		balloon_alert(user, "провода загружены")
 		return ATTACK_CHAIN_PROCEED_SUCCESS
 
 	return ..()
@@ -56,7 +56,7 @@
 	. = TRUE
 	if(!I.use_tool(src, user, 0, volume = I.tool_volume))
 		return
-	to_chat(user, span_notice("Вы откручиваете сбоку винты панели, что позволяет вам отсоединить её и снять провода."))
+	balloon_alert("боковые винты откручены")
 	while(loaded.amount > 30) //There are only two kinds of situations: "nodiff" (60,90), or "diff" (31-59, 61-89)
 		var/diff = loaded.amount % 30
 		if(diff)
@@ -107,7 +107,7 @@
 	update_icon(UPDATE_ICON_STATE)
 	if(!loaded || !loaded.amount)
 		if(loud)
-			to_chat(user, span_notice("Последний провод был размотан с [declent_ru(GENITIVE)]."))
+			balloon_alert(user, "провода закончились!")
 		if(loaded)
 			qdel(loaded)
 			loaded = null
@@ -143,7 +143,7 @@
 
 /obj/item/twohanded/rcl/proc/trigger(mob/user)
 	if(is_empty(user, 0))
-		balloon_alert(user, ("[declent_ru(ACCUSATIVE)] пуст!"))
+		balloon_alert(user, "провода отсутствуют!")
 		return
 	if(last)
 		if(get_dist(last, user) == 1) //hacky, but it works

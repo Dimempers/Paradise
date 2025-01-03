@@ -137,7 +137,7 @@
 
 /obj/item/rcd/examine(mob/user)
 	. = ..()
-	. += span_notice("Материя: [matter]/[max_matter] юнитов-материи.")
+	. += span_notice("Материя: [matter]/[max_matter] единиц.")
 	. += span_notice("Режим: [mode].")
 
 /obj/item/rcd/Destroy()
@@ -186,11 +186,11 @@
 
 /obj/item/rcd/proc/rcd_reload(obj/item/rcd_ammo/rcd_ammo, mob/user)
 	if(matter >= max_matter)
-		to_chat(user, span_notice("УБС не может принять больше юнитов-материи."))
+		balloon_alert(user, "нет места!")
 		return
 
 	if(!user.drop_item_ground(rcd_ammo))
-		to_chat(user, span_warning("[rcd_ammo] is stuck to your hand!"))
+		balloon_alert(user, "невозможно отцепить!")
 		return
 
 	user.put_in_active_hand(rcd_ammo)
@@ -198,9 +198,9 @@
 		matter = min(matter + rcd_ammo.ammoamt, max_matter)
 		qdel(rcd_ammo)
 		playsound(loc, 'sound/machines/click.ogg', 50, 1)
-		to_chat(user, span_notice("Теперь в УБС [matter]/[max_matter] юнитов-материи."))
+		balloon_alert(user, "картридж вставлен")
 	else
-		to_chat(user, span_warning("Этот картридж материи несовместим с вашим УБС"))
+		balloon_alert(user, "несовместимо!")
 	SStgui.update_uis(src)
 
 /**
@@ -246,7 +246,8 @@
 		else
 			return
 	playsound(src, 'sound/effects/pop.ogg', 50, 0)
-	to_chat(user, span_notice("You change [src]'s mode to '[choice]"))
+	to_chat(user, span_notice("Вы меняете режим [declent_ru(GENITIVE)] на [choice]."))
+	balloon_alert(user, "режим изменён")
 
 
 /obj/item/rcd/attack_self(mob/user)
@@ -384,7 +385,8 @@
 		return
 	var/area/check_area = get_area(target)
 	if(check_area?.type in areas_blacklist)
-		to_chat(user, span_warning("Чтото мешает вам использовать [declent_ru(NOMINATIVE)] здесь..."))
+		to_chat(user, span_warning("Что-то мешает вам использовать [declent_ru(ACCUSATIVE)] здесь."))
+		balloon_alert(user, "невозможно!")
 		return
 	target.rcd_act(user, src, mode)
 	SStgui.update_uis(src)
@@ -442,7 +444,7 @@
 /obj/item/rcd/proc/detonate_pulse()
 	if(is_taipan(z) || is_admin_level(z)) //Защищает тайпан и админские Z-lvla от взрыва RCD
 		return
-	audible_message(span_danger("<b>[capitalize(declent_ru(ACCUSATIVE))] начинает громко вибрировать и жужжать!</b>"), span_danger("<b>[capitalize(declent_ru(ACCUSATIVE))] начинает сильно вибрировать!</b>"))
+	audible_message(span_danger("<b>[capitalize(declent_ru(NOMINATIVE))] начинает громко вибрировать и жужжать!</b>"), span_danger("<b>[capitalize(declent_ru(NOMINATIVE))] начинает сильно вибрировать!</b>"))
 	// 5 seconds to get rid of it
 	addtimer(CALLBACK(src, PROC_REF(detonate_pulse_explode)), 50)
 
@@ -466,14 +468,14 @@
 
 /obj/item/rcd_ammo
 	name = "compressed matter cartridge"
-	desc = "Сильно спресованная материя в картриджи для УБС."
+	desc = "Картридж для УБС, содержащий в себе спрессованную материю."
 	ru_names = list(
-		NOMINATIVE = "картридж материи",
-		GENITIVE = "картриджа материи",
-		DATIVE = "картриджу материи",
-		ACCUSATIVE = "картридж материи",
-		INSTRUMENTAL = "картриджом материи",
-		PREPOSITIONAL = "картридже материи"
+		NOMINATIVE = "картридж УБС",
+		GENITIVE = "картриджа УБС",
+		DATIVE = "картриджу УБС",
+		ACCUSATIVE = "картридж УБС",
+		INSTRUMENTAL = "картриджем УБС",
+		PREPOSITIONAL = "картридже УБС"
 	)
 	icon = 'icons/obj/weapons/ammo.dmi'
 	icon_state = "rcd"

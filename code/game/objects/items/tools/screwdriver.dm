@@ -150,7 +150,7 @@
 /obj/item/screwdriver/power/attack_self(mob/user)
 	playsound(get_turf(user), 'sound/items/change_drill.ogg', 50, 1)
 	var/obj/item/wrench/power/b_drill = new /obj/item/wrench/power
-	to_chat(user, span_notice("Вы присоединяете головку болтового сверла к [declent_ru(DATIVE)]."))
+	balloon_alert(user, "режим гаечного ключа")
 	qdel(src)
 	user.put_in_active_hand(b_drill)
 

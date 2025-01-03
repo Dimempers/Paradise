@@ -109,7 +109,7 @@
 /obj/item/wrench/power/attack_self(mob/user)
 	playsound(get_turf(user),'sound/items/change_drill.ogg', 50, 1)
 	var/obj/item/wirecutters/power/s_drill = new /obj/item/screwdriver/power
-	to_chat(user, span_notice("Вы присоеденяете головку отвёртки к [declent_ru(DATIVE)]."))
+	balloon_alert(user, "режим отвёртки")
 	qdel(src)
 	user.put_in_active_hand(s_drill)
 
@@ -135,7 +135,7 @@
 	attack_verb = list("wrenched", "medicaled", "tapped", "jabbed", "whacked")
 
 /obj/item/wrench/medical/suicide_act(mob/living/user)
-	user.visible_message(span_suicide("[user] молится [declent_ru(DATIVE)] чтобы он взял [genderize_ru(user.gender, "его", "её", "его", "их")] душу. Похоже, что [genderize_ru(user.gender, "он", "она", "оно", "они")] пыта[pluralize_ru(user.gender, "ет", "ют")]ся совершить самоубийство!"))
+	user.visible_message(span_suicide("[user] мол[pluralize_ru(user.gender, "ит", "ят")]ся [declent_ru(DATIVE)], чтобы он взял [genderize_ru(user.gender, "его", "её", "его", "их")] душу. Похоже, что [genderize_ru(user.gender, "он", "она", "оно", "они")] пыта[pluralize_ru(user.gender, "ет", "ют")]ся совершить самоубийство!"))
 	// TODO Make them glow with the power of the M E D I C A L W R E N C H
 	// during their ascension
 
