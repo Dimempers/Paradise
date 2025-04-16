@@ -12,6 +12,8 @@
 	)
 	icon = 'icons/obj/tools.dmi'
 	icon_state = "screwdriver_map"
+	righthand_file = 'icons/mob/inhands/tools_righthand.dmi'
+	lefthand_file = 'icons/mob/inhands/tools_lefthand.dmi'
 	belt_icon = "screwdriver"
 	flags = CONDUCT
 	slot_flags = ITEM_SLOT_BELT
@@ -23,7 +25,7 @@
 	drop_sound = 'sound/items/handling/screwdriver_drop.ogg'
 	pickup_sound =  'sound/items/handling/screwdriver_pickup.ogg'
 	materials = list(MAT_METAL=75)
-	attack_verb = list("stabbed")
+	attack_verb = list("уколол", "тыкнул")
 	hitsound = 'sound/weapons/bladeslice.ogg'
 	usesound = 'sound/items/screwdriver.ogg'
 	toolspeed = 1
@@ -54,19 +56,17 @@
 	user.visible_message(span_suicide("[user] кол[pluralize_ru(user.gender, "ет", "ют")] себя [declent_ru(INSTRUMENTAL)] в [pick("висок", "сердце")]! Похоже на то, что [genderize_ru(user.gender, "он", "она", "оно", "они")] пыта[pluralize_ru(user.gender, "ет", "ют")]ся совершить самоубийство!"))
 	return BRUTELOSS
 
-/obj/item/screwdriver/Initialize(mapload)
+/obj/item/screwdriver/Initialize(mapload, param_color = null)
 	. = ..()
-	AddElement(/datum/element/falling_hazard, damage = force, hardhat_safety = TRUE, crushes = FALSE, impact_sound = hitsound)
-
-/obj/item/screwdriver/New(loc, var/param_color = null)
-	..()
 	if(random_color)
 		if(!param_color)
 			param_color = pick("red","blue","pink","brown","green","cyan","yellow")
 		icon_state = "screwdriver_[param_color]"
 
-	if (prob(75))
-		src.pixel_y = rand(0, 16)
+	if(prob(75))
+		pixel_y = rand(0, 16)
+
+	AddElement(/datum/element/falling_hazard, damage = force, hardhat_safety = TRUE, crushes = FALSE, impact_sound = hitsound)
 
 
 /obj/item/screwdriver/attack(mob/living/target, mob/living/user, params, def_zone, skip_attack_anim = FALSE)
@@ -133,7 +133,7 @@
 	throwforce = 8
 	throw_speed = 2
 	throw_range = 3//it's heavier than a screw driver/wrench, so it does more damage, but can't be thrown as far
-	attack_verb = list("drilled", "screwed", "jabbed","whacked")
+	attack_verb = list("продырявил", "уколол", "огрел")
 	hitsound = 'sound/items/drill_hit.ogg'
 	usesound = 'sound/items/drill_use.ogg'
 	toolspeed = 0.25

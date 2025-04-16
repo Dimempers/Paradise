@@ -24,6 +24,9 @@
 
 	light_system = MOVABLE_LIGHT
 
+	hud_type = /datum/hud/bot
+
+
 	var/obj/machinery/bot_core/bot_core = null
 	var/bot_core_type = /obj/machinery/bot_core
 	var/list/users = list() //for dialog updates
@@ -218,6 +221,8 @@
 	bot_core = new bot_core_type(src)
 	addtimer(CALLBACK(src, PROC_REF(add_bot_filter)), 3 SECONDS)
 
+	ADD_TRAIT(src, TRAIT_WET_IMMUNITY, INNATE_TRAIT)
+
 	prepare_huds()
 	for(var/datum/atom_hud/data/diagnostic/diag_hud in GLOB.huds)
 		diag_hud.add_to_hud(src)
@@ -239,6 +244,9 @@
 
 /mob/living/simple_animal/bot/can_strip()
 	return FALSE
+
+/mob/living/simple_animal/bot/can_unarmed_attack()
+	return on
 
 /mob/living/simple_animal/bot/med_hud_set_health()
 	return diag_hud_set_bothealth() //we use a different hud
@@ -514,7 +522,7 @@
 	)
 
 
-/mob/living/simple_animal/bot/bullet_act(obj/item/projectile/Proj)
+/mob/living/simple_animal/bot/bullet_act(obj/projectile/Proj)
 	if(Proj && (Proj.damage_type == BRUTE || Proj.damage_type == BURN))
 		if(prob(75) && Proj.damage > 0)
 			do_sparks(5, 1, src)
@@ -875,7 +883,7 @@ Pass the desired type path itself, declaring a temporary var beforehand is not r
 			to_chat(src, span_warningbig("НАЧАТЬ ПАТРУЛИРОВАНИЕ"))
 		if("summon")
 			var/area/our_area = get_area(user_turf)
-			to_chat(src, span_warningbig(">ПРИОРИТЕТНОЕ ОПОВЕЩЕНИЕ: [user] в локации [our_area.name]!"))
+			to_chat(src, span_warningbig(">ПРИОРИТЕТНОЕ Оповещение: [user] в локации [our_area.name]!"))
 		if("home")
 			to_chat(src, span_warningbig("ВЕРНУТЬСЯ ДОМОЙ!"))
 		if("ejectpai")
@@ -1166,10 +1174,10 @@ Pass the desired type path itself, declaring a temporary var beforehand is not r
 /mob/living/simple_animal/bot/proc/hack(mob/user)
 	var/hack
 	if(issilicon(user) || user.can_admin_interact()) //Allows silicons or admins to toggle the emag status of a bot.
-		hack += "[emagged == 2 ? "Программное обеспечение взломано! Устройство может вести себя опасно или нестабильно." : "Устройство работает в нормальном режиме. Отключить протоколы безопасности?"]<BR>"
-		hack += "Протоколы безопасности: <a href='byond://?src=[UID()];operation=hack'>[emagged ? span_bad("Отключены") : "Включены"]</A><BR>"
+		hack += "[emagged == 2 ? "Программное обеспечение взломано! Устройство может вести себя опасно или нестабильно." : "Устройство работает в нормальном режиме. Отключить протоколы безопасности?"]<br>"
+		hack += "Протоколы безопасности: <a href='byond://?src=[UID()];operation=hack'>[emagged ? span_bad("Отключены") : "Включены"]</a><br>"
 	else if(!locked) //Humans with access can use this option to hide a bot from the AI's remote control panel and PDA control.
-		hack += "Удалённое радиоуправление: <a href='byond://?src=[UID()];operation=remote'>[remote_disabled ? "Отключено" : "Включено"]</A><BR>"
+		hack += "Удалённое радиоуправление: <a href='byond://?src=[UID()];operation=remote'>[remote_disabled ? "Отключено" : "Включено"]</a><br>"
 	return hack
 
 
@@ -1180,15 +1188,15 @@ Pass the desired type path itself, declaring a temporary var beforehand is not r
 			eject += "Состояние ПИИ: "
 			if(paicard)
 				if(client)
-					eject += "<a href='byond://?src=[UID()];operation=ejectpai'>Активирован</A>"
+					eject += "<a href='byond://?src=[UID()];operation=ejectpai'>Активирован</a>"
 				else
-					eject += "<a href='byond://?src=[UID()];operation=ejectpai'>Отключён</A>"
+					eject += "<a href='byond://?src=[UID()];operation=ejectpai'>Отключён</a>"
 			else if(!allow_pai || key)
 				eject += "Нет доступа"
 			else
 				eject += "Отсутствует"
-			eject += "<BR>"
-		eject += "<BR>"
+			eject += "<br>"
+		eject += "<br>"
 	return eject
 
 

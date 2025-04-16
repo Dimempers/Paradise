@@ -11,6 +11,8 @@
 	)
 	icon = 'icons/obj/tools.dmi'
 	icon_state = "crowbar"
+	righthand_file = 'icons/mob/inhands/tools_righthand.dmi'
+	lefthand_file = 'icons/mob/inhands/tools_lefthand.dmi'
 	item_state = "crowbar"
 	belt_icon = "pocket_crowbar"
 	usesound = 'sound/items/crowbar.ogg'
@@ -23,7 +25,7 @@
 	drop_sound = 'sound/items/handling/crowbar_drop.ogg'
 	pickup_sound =  'sound/items/handling/crowbar_pickup.ogg'
 	origin_tech = "engineering=1;combat=1"
-	attack_verb = list("attacked", "bashed", "battered", "bludgeoned", "whacked")
+	attack_verb = list("атаковал", "ударил", "огрел")
 	toolspeed = 1
 	armor = list("melee" = 0, "bullet" = 0, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 50, "acid" = 30)
 	tool_behaviour = TOOL_CROWBAR
@@ -71,7 +73,7 @@
 	icon = 'icons/obj/abductor.dmi'
 	usesound = 'sound/weapons/sonic_jackhammer.ogg'
 	icon_state = "crowbar"
-	item_state = "alien_crowbar"
+	item_state = "crowbar_alien"
 	belt_icon = "alien_crowbar"
 	toolspeed = 0.1
 	origin_tech = "combat=4;engineering=4;abductor=3"

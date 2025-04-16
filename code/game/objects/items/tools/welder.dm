@@ -13,6 +13,8 @@
 	)
 	icon = 'icons/obj/tools.dmi'
 	icon_state = "welder"
+	righthand_file = 'icons/mob/inhands/tools_righthand.dmi'
+	lefthand_file = 'icons/mob/inhands/tools_lefthand.dmi'
 	item_state = "welder"
 	belt_icon = "welding_tool"
 	flags = CONDUCT
@@ -218,6 +220,8 @@
 	if(tool_enabled)
 		. += "[initial(icon_state)]-on"
 
+/obj/item/weldingtool/get_heat()
+	return tool_enabled * 2500
 
 /obj/item/weldingtool/largetank
 	name = "industrial welding tool"
@@ -279,7 +283,7 @@
 	)
 	icon = 'icons/obj/abductor.dmi'
 	icon_state = "welder"
-	item_state = "alien_welder"
+	item_state = "alienwelder"
 	belt_icon = "alien_welding_tool"
 	toolspeed = 0.1
 	light_intensity = 0

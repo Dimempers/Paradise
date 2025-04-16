@@ -47,7 +47,7 @@ AI MODULES
 /obj/item/ai_module/proc/add_additional_laws(mob/living/silicon/ai/target, mob/sender, registered_name)
 
 /obj/item/ai_module/proc/log_law_changes(mob/living/silicon/ai/target, mob/sender)
-	GLOB.lawchanges.Add("[time2text(world.realtime,"hh:mm:ss")] <B>:</B> [sender.name]([sender.key]) used [name] on [target.name]([target.key])")
+	GLOB.lawchanges.Add("[time2text(world.realtime,"hh:mm:ss")] <b>:</b> [sender.name]([sender.key]) used [name] on [target.name]([target.key])")
 	log_and_message_admins("used [name] on [target.name]([target.key])")
 
 /******************** Safeguard ********************/
@@ -73,7 +73,7 @@ AI MODULES
 	if(!target_name)
 		to_chat(user, "No name detected on module, please enter one.")
 		return FALSE
-	..()
+	return TRUE
 
 /obj/item/ai_module/safeguard/add_additional_laws(mob/living/silicon/ai/target, mob/sender, registered_name)
 	..()
@@ -106,7 +106,7 @@ AI MODULES
 	if(!target_name)
 		to_chat(user, "No name detected on module, please enter one.")
 		return FALSE
-	..()
+	return TRUE
 
 /obj/item/ai_module/one_crew_member/add_additional_laws(mob/living/silicon/ai/target, mob/sender, registered_name)
 	..()
@@ -192,7 +192,7 @@ AI MODULES
 	if(!new_freeform_law)
 		to_chat(user, "No law detected on module, please create one.")
 		return FALSE
-	..()
+	return TRUE
 
 /******************** Reset ********************/
 /obj/item/ai_module/reset
@@ -369,7 +369,7 @@ AI MODULES
 	if(!new_freeform_law)
 		to_chat(user, "No law detected on module, please create one.")
 		return FALSE
-	..()
+	return TRUE
 
 /******************** Hacked AI Module ******************/
 /obj/item/ai_module/syndicate // Slightly more dynamic freeform module -- TLE
@@ -405,7 +405,7 @@ AI MODULES
 	if(!new_freeform_law)
 		to_chat(user, "No law detected on module, please create one.")
 		return FALSE
-	..()
+	return TRUE
 
 /******************* Ion Module *******************/
 /obj/item/ai_module/toy_ai // -- Incoming //No actual reason to inherit from ion boards here, either. *sigh* ~Miauw

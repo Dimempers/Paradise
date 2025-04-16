@@ -405,8 +405,11 @@
 	if(!robot.weapons_unlock)
 		var/count_secborgs = 0
 
-		for(var/mob/living/silicon/robot/R in GLOB.alive_mob_list)
-			if(R && R.stat != DEAD && R.module && istype(R.module, /obj/item/robot_module/security))
+		for(var/mob/living/silicon/robot/silicon in GLOB.alive_mob_list)
+			if(silicon == robot)
+				continue
+
+			if(silicon.stat != DEAD && silicon.module && istype(silicon.module, /obj/item/robot_module/security))
 				count_secborgs++
 
 		var/max_secborgs = 2
@@ -612,7 +615,7 @@
 	modules += new /obj/item/t_scanner/adv_mining_scanner/cyborg(src)
 	modules += new /obj/item/gun/energy/kinetic_accelerator/cyborg(src)
 	modules += new /obj/item/crowbar/cyborg(src)
-	emag = new /obj/item/borg/stun(src)
+	emag = new /obj/item/storage/bag/kaboom/cyborg(src)
 
 	fix_modules()
 
@@ -882,7 +885,6 @@
 
 /obj/item/robot_module/hunter/on_apply(mob/living/silicon/robot/robot)
 	robot.modtype = "Xeno-Hu"
-
 	return TRUE
 
 /obj/item/robot_module/hunter/add_default_robot_items()
@@ -890,19 +892,19 @@
 
 /obj/item/robot_module/hunter/New()
 	..()
-	modules += new /obj/item/melee/energy/alien/claws(src)
+	modules += new /obj/item/melee/energy/alien_claws(src)
 	modules += new /obj/item/flash/cyborg/alien(src)
-	var/obj/item/reagent_containers/spray/alien/stun/S = new /obj/item/reagent_containers/spray/alien/stun(src)
-	S.reagents.add_reagent("cryogenic_liquid",250) //nerfed to sleeptoxin to make it less instant drop.
-	modules += S
-	var/obj/item/reagent_containers/spray/alien/smoke/A = new /obj/item/reagent_containers/spray/alien/smoke(src)
-	S.reagents.add_reagent("water",50) //Water is used as a dummy reagent for the smoke bombs. More of an ammo counter.
-	modules += A
+	modules += new /obj/item/reagent_containers/spray/alien/smoke(src)
+	modules += new /obj/item/reagent_containers/spray/alien/stun(src)
 	emag = new /obj/item/reagent_containers/spray/alien/acid(src)
-	emag.reagents.add_reagent("facid", 125)
-	emag.reagents.add_reagent("sacid", 125)
-
 	fix_modules()
+
+/obj/item/robot_module/hunter/respawn_consumable(mob/living/silicon/robot/R)
+	if(emag)
+		var/obj/item/reagent_containers/spray/alien/acid/acidSpray = emag
+		acidSpray.reagents.add_reagent("sacid", 3)
+		acidSpray.reagents.add_reagent("facid", 3)
+	..()
 
 /obj/item/robot_module/hunter/add_languages(var/mob/living/silicon/robot/R)
 	..()

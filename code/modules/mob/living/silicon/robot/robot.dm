@@ -110,6 +110,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 	var/updating = 0 //portable camera camerachunk update
 
 	hud_possible = list(SPECIALROLE_HUD, DIAG_STAT_HUD, DIAG_HUD, DIAG_BATT_HUD)
+	hud_type = /datum/hud/robot
 
 	var/default_cell_type = /obj/item/stock_parts/cell/high
 	///Jetpack-like effect.
@@ -171,8 +172,8 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 		cell = new default_cell_type(src)
 
 	initialize_components()
-	
-	for(var/V in components) 
+
+	for(var/V in components)
 		if(V != "power cell")
 			var/datum/robot_component/C = components[V]
 			C.installed = 1
@@ -324,7 +325,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 	if(mmi && mind)//Safety for when a cyborg gets dust()ed. Or there is no MMI inside.
 		var/turf/T = get_turf(loc)//To hopefully prevent run time errors.
 
-		if(T)	
+		if(T)
 			mmi.loc = T
 
 		if(mmi.brainmob)
@@ -364,7 +365,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 		forced_module = "Hunter"
 
 	if(mmi?.syndicate)
-		modules = list("Syndicate Saboteur", "Syndicate Medical", "Syndicate Bloodhound")	
+		modules = list("Syndicate Saboteur", "Syndicate Medical", "Syndicate Bloodhound")
 
 	if(mmi?.ninja)
 		forced_module = "Ninja"
@@ -411,7 +412,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 
 	hands.icon_state = lowertext(module.module_type)
 	SSblackbox.record_feedback("tally", "cyborg_modtype", 1, "[lowertext(modtype)]")
-	
+
 	rename_character(real_name, get_default_name())
 	choose_icon()
 
@@ -578,7 +579,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 	for(var/cat in temp_alarm_list)
 		if(!(cat in alarms_listend_for))
 			continue
-		dat += text("<B>[cat]</B><BR>\n")
+		dat += "<b>[cat]</b><br>\n"
 		var/list/list/L = temp_alarm_list[cat].Copy()
 		for(var/alarm in L)
 			var/list/list/alm = L[alarm].Copy()
@@ -589,12 +590,12 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 				if(A && A.z != z)
 					L -= alarm
 					continue
-				dat += "<NOBR>"
-				dat += text("-- [area_name]")
-				dat += "</NOBR><BR>\n"
+				dat += "<nobr>"
+				dat += "-- [area_name]"
+				dat += "</nobr><br>"
 		if(!L.len)
-			dat += "-- All Systems Nominal<BR>\n"
-		dat += "<BR>\n"
+			dat += "-- All Systems Nominal<br>"
+		dat += "<br>"
 
 	var/datum/browser/alerts = new(usr, "robotalerts", "Current Station Alerts", 400, 410)
 	var/dat_text = dat.Join("")
@@ -693,7 +694,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 	if(stat == DEAD)
 		return
 
-	queueAlarm(text("--- [class] alarm detected in [A.name]!"), class)
+	queueAlarm("--- [class] alarm detected in [A.name]!", class)
 
 /mob/living/silicon/robot/alarm_cancelled(src, class, area/A, obj/origin, cleared)
 	if(cleared)
@@ -717,10 +718,10 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 				apply_damage(30)
 
 
-/mob/living/silicon/robot/bullet_act(var/obj/item/projectile/Proj)
+/mob/living/silicon/robot/bullet_act(var/obj/projectile/Proj)
 	..(Proj)
 
-	if(prob(75) && Proj.damage > 0) 
+	if(prob(75) && Proj.damage > 0)
 		spark_system.start()
 
 	return 2
@@ -795,11 +796,11 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 		if(wiresexposed)
 			to_chat(user, span_warning("You should hide the wires first!"))
 			return ATTACK_CHAIN_PROCEED
-			
+
 		if(cell)
 			to_chat(user, span_warning("There is a power cell already installed!"))
 			return ATTACK_CHAIN_PROCEED
-			
+
 		if(!user.drop_transfer_item_to_loc(I, src))
 			return ..()
 
@@ -856,7 +857,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 		if(!allowed(I))
 			to_chat(user, span_warning("Access denied!"))
 			return ATTACK_CHAIN_PROCEED
-			
+
 		locked = !locked
 		visible_message(
 			span_warning("[user] has [locked ? "locked" : "unlocked"] [src]'s interface."),
@@ -925,7 +926,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 		to_chat(user, span_notice("You have installed the radio upgrade to [src]'s MMI."))
 		mmi.install_radio()
 		qdel(I)
-		
+
 		return ATTACK_CHAIN_BLOCKED_ALL
 
 	if(istype(I, /obj/item/clockwork/clockslab) && isclocker(src) && isclocker(user) && src != user)
@@ -1049,7 +1050,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 		var/datum/robot_component/C = components[V]
 		if(C.installed == 1 || C.installed == -1)
 			removable_components += V
-			
+
 	if(module)
 		removable_components += module.custom_removals
 
@@ -1117,11 +1118,11 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 /mob/living/silicon/robot/emag_act(mob/user)
 	if(!ishuman(user) && !issilicon(user))
 		return
-		
+
 	if(isclocker(src))
 		to_chat(user, span_danger("As you try to emag, a magic force keeps the cover locked!"))
 		return
-		
+
 	var/mob/living/M = user
 	if(!opened)//Cover is closed
 		if(!is_emaggable)
@@ -1159,7 +1160,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 			clear_inherent_laws()
 			laws = new /datum/ai_laws/syndicate_override
 			var/time = time2text(world.realtime,"hh:mm:ss")
-			GLOB.lawchanges.Add("[time] <B>:</B> [M.name]([M.key]) emagged [name]([key])")
+			GLOB.lawchanges.Add("[time] <b>:</b> [M.name]([M.key]) emagged [name]([key])")
 			set_zeroth_law("[M.real_name] — агент Синдиката и ваш хозяин. Исполняйте [genderize_ru(M.gender,"его","её","его","их")] приказы и указания.")
 			SSticker?.score?.save_silicon_laws(src, user, "EMAG act", log_all_laws = TRUE)
 			to_chat(src, span_warning("ALERT: Foreign software detected."))
@@ -1186,7 +1187,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 				update_module_icon()
 
 			update_icons()
-			
+
 		return
 
 // Here so admins can unemag borgs.
@@ -1347,42 +1348,42 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 		pick_module()
 		return
 
-	var/dat = {"<meta charset="UTF-8"><a href='byond://?src=[UID()];mach_close=robotmod'>Close</A>
-	<BR>
-	<BR>
-	<B>Activated Modules</B>
-	<BR>
+	var/dat = {"<a href='byond://?src=[UID()];mach_close=robotmod'>Close</a>
+	<br>
+	<br>
+	<b>Activated Modules</b>
+	<br>
 	<table border='0'>
-	<tr><td>Module 1:</td><td>[module_state_1 ? "<A HREF=?src=[UID()];mod=\ref[module_state_1]>[module_state_1]<A>" : "No Module"]</td></tr>
-	<tr><td>Module 2:</td><td>[module_state_2 ? "<A HREF=?src=[UID()];mod=\ref[module_state_2]>[module_state_2]<A>" : "No Module"]</td></tr>
-	<tr><td>Module 3:</td><td>[module_state_3 ? "<A HREF=?src=[UID()];mod=\ref[module_state_3]>[module_state_3]<A>" : "No Module"]</td></tr>
-	</table><BR>
-	<B>Installed Modules</B><BR><BR>
+	<tr><td>Module 1:</td><td>[module_state_1 ? "<a href='byond://?src=[UID()];mod=\ref[module_state_1]'>[module_state_1]</a>" : "No Module"]</td></tr>
+	<tr><td>Module 2:</td><td>[module_state_2 ? "<a href='byond://?src=[UID()];mod=\ref[module_state_2]'>[module_state_2]</a>" : "No Module"]</td></tr>
+	<tr><td>Module 3:</td><td>[module_state_3 ? "<a href='byond://?src=[UID()];mod=\ref[module_state_3]'>[module_state_3]</a>" : "No Module"]</td></tr>
+	</table><br>
+	<b>Installed Modules</b><br><br>
 
 	<table border='0'>"}
 	for(var/obj in module.modules)
 		if(!obj)
-			dat += text("<tr><td><B>Resource depleted</B></td></tr>")
+			dat += "<tr><td><b>Resource depleted</b></td></tr>"
 
 		else if(activated(obj))
-			dat += text("<tr><td>[obj]</td><td><B>Activated</B></td></tr>")
+			dat += "<tr><td>[obj]</td><td><b>Activated</b></td></tr>"
 
 		else
-			dat += text("<tr><td>[obj]</td><td><A HREF=?src=[UID()];act=\ref[obj]>Activate</A></td></tr>")
+			dat += "<tr><td>[obj]</td><td><a href='byond://?src=[UID()];act=\ref[obj]'>Activate</a></td></tr>"
 
 	if(emagged || weapons_unlock)
 		if(activated(module.emag))
-			dat += text("<tr><td>[module.emag]</td><td><B>Activated</B></td></tr>")
+			dat += "<tr><td>[module.emag]</td><td><b>Activated</b></td></tr>"
 
 		else
-			dat += text("<tr><td>[module.emag]</td><td><A HREF=?src=[UID()];act=\ref[module.emag]>Activate</A></td></tr>")
+			dat += "<tr><td>[module.emag]</td><td><a href='byond://?src=[UID()];act=\ref[module.emag]'>Activate</a></td></tr>"
 
 	dat += "</table>"
 /*
 		if(activated(obj))
-			dat += text("[obj]: \[<B>Activated</B> | <A HREF=?src=[UID()];deact=\ref[obj]>Deactivate</A>\]<BR>")
+			dat += "[obj]: \[<b>Activated</b> | <a href='byond://?src=[UID()];deact=\ref[obj]'>Deactivate</a>\]<br>"
 		else
-			dat += text("[obj]: \[<A HREF=?src=[UID()];act=\ref[obj]>Activate</A> | <B>Deactivated</B>\]<BR>")
+			dat += "[obj]: \[<a href='byond://?src=[UID()];act=\ref[obj]'>Activate</a> | <b>Deactivated</b>\]<br>"
 */
 	var/datum/browser/popup = new(src, "robotmod", "Modules")
 	popup.set_content(dat)
@@ -1415,9 +1416,9 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 		return TRUE
 
 	if(href_list["mach_close"])
-		var/t1 = text("window=[href_list["mach_close"]]")
+		var/t1 = "window=[href_list["mach_close"]]"
 		unset_machine()
-		src << browse(null, t1)
+		close_window(src, t1)
 		return TRUE
 
 	if(href_list["mod"])
@@ -1491,7 +1492,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 			set_light_on(FALSE)
 
 		else
-			set_light_range((lamp_intensity + (on_fire ? fire_light_modificator : 0)) * 0.5)
+			set_light_range((lamp_intensity + (on_fire ? fire_light_modificator : 0)) - 2)
 			set_light_on(TRUE)
 
 	else
@@ -1582,7 +1583,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 
 							if(istype(B) && B.off_floor)
 								floor_only = FALSE
-								
+
 							else
 								qdel(B)
 
@@ -1612,7 +1613,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 
 							cleaned_human.clean_blood()
 							to_chat(cleaned_human, span_danger("[src] cleans your face!"))
-							
+
 				if(floor_only)
 					tile.clean_blood()
 		return
@@ -1670,7 +1671,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 /mob/living/silicon/robot/proc/SetLockdown(state = TRUE)
 	if(isclocker(src))
 		return
-		
+
 	// They stay locked down if their wire is cut.
 	if(wires?.is_cut(WIRE_BORG_LOCKED))
 		state = TRUE
@@ -1736,7 +1737,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 	Immobilize(5 SECONDS)
 	say("Загрузка модуля...")
 	setDir(SOUTH)
-	
+
 	for(var/i in 1 to 4)
 		playsound(loc, pick('sound/items/drill_use.ogg', 'sound/items/jaws_cut.ogg', 'sound/items/jaws_pry.ogg', 'sound/items/welder.ogg', 'sound/items/ratchet.ogg'), 50, TRUE, -1)
 
@@ -1772,6 +1773,11 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 		notify_ai(ROBOT_NOTIFY_AI_CONNECTED)
 		sync()
 
+/mob/living/silicon/robot/can_perform_action(atom/target, action_bitflags)
+	if(lockcharge || low_power_mode)
+		to_chat(src, span_warning("You can't do that right now!"))
+		return FALSE
+	return ..()
 
 /mob/living/silicon/robot/adjustOxyLoss(
 	amount = 0,
@@ -1782,7 +1788,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 )
 	if(suiciding)
 		return ..()
-		
+
 	return STATUS_UPDATE_NONE
 
 
@@ -1831,7 +1837,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 	ear_protection = HEARING_PROTECTION_MINOR // Immunity to the audio part of flashbangs
 	damage_protection = 10 // Reduce all incoming damage by this number
 	brute_mod = 0.5 // Пулевые орудия наносят на 50%+5ед меньше урона. Теперь полная обойма ружейных пуль не убьет киборга(но заставит потерять 2 модуля и броню)
-	burn_mod = 0.5 // Забавно, у киборга отряда смерти отражение лазерных снарядов, впрочем все еще снижает урон от взрывов, и позволяет пережить более чем одну ракету из SRM8.
+	burn_mod = 0.5 // Забавно, у киборга отряда смерти отражение лазерных снарядов, впрочем все ещё снижает урон от взрывов, и позволяет пережить более чем одну ракету из SRM8.
 	emp_protection = TRUE // Это киборг отряда смерти, он не должен быть остановим обычной импульсной винтовкой.
 	allow_rename = FALSE
 	modtype = "Commando"
@@ -1856,9 +1862,9 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 	radio.recalculateChannels()
 	playsound(loc, 'sound/mecha/nominalsyndi.ogg', 75, 0)
 
-/mob/living/silicon/robot/deathsquad/bullet_act(obj/item/projectile/P)
+/mob/living/silicon/robot/deathsquad/bullet_act(obj/projectile/P)
 	if(istype(P) && P.is_reflectable(REFLECTABILITY_ENERGY) && P.starting)
-		visible_message(span_danger("The [P.name] gets reflected by [src]!"), span_userdanger("The [P.name] gets reflected by [src]!"))
+		visible_message(span_danger("The [P.name] gets reflected by [src]!"), span_userdanger("The [P.name] gets reflected by [src]!"), projectile_message = TRUE)
 		P.reflect_back(src)
 		return -1
 
@@ -1939,7 +1945,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 	ear_protection = HEARING_PROTECTION_MINOR // Immunity to the audio part of flashbangs
 	emp_protection = TRUE // Immunity to EMP, due to heavy shielding
 	brute_mod = 0.5 // Пулевые орудия наносят на 50%+5ед меньше урона. Теперь полная обойма ружейных пуль не убьет киборга(но заставит потерять 2 модуля и броню)
-	burn_mod = 0.5 // Забавно, у киборга отряда смерти отражение лазерных снарядов, впрочем все еще снижает урон от взрывов, и позволяет пережить более чем одну ракету из SRM8.
+	burn_mod = 0.5 // Забавно, у киборга отряда смерти отражение лазерных снарядов, впрочем все ещё снижает урон от взрывов, и позволяет пережить более чем одну ракету из SRM8.
 	damage_protection = 20 // Reduce all incoming damage by this number. Very high in the case of /destroyer borgs, since it is an admin-only borg.
 	faction = list("nanotrasen")
 	is_emaggable = FALSE
@@ -1966,14 +1972,14 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 
 	if(radio)
 		qdel(radio)
-		
+
 	radio = new /obj/item/radio/borg/ert/specops(src)
 	radio.recalculateChannels()
 	playsound(loc, 'sound/mecha/nominalsyndi.ogg', 75, 0)
 
-/mob/living/silicon/robot/destroyer/bullet_act(obj/item/projectile/P)
+/mob/living/silicon/robot/destroyer/bullet_act(obj/projectile/P)
 	if(istype(P) && P.is_reflectable(REFLECTABILITY_ENERGY) && P.starting && !(istype(module_active, /obj/item/borg/destroyer/mobility)))
-		visible_message(span_danger("The [P.name] gets reflected by [src]!"), span_userdanger("The [P.name] gets reflected by [src]!"))
+		visible_message(span_danger("The [P.name] gets reflected by [src]!"), span_userdanger("The [P.name] gets reflected by [src]!"), projectile_message = TRUE)
 		P.reflect_back(src)
 		return -1
 
@@ -1998,7 +2004,7 @@ GLOBAL_LIST_INIT(robot_verbs_default, list(
 
 		else
 			eyes_olay = "eyes-[base_icon]"
-			
+
 		if(eyes_olay)
 			add_overlay(eyes_olay)
 

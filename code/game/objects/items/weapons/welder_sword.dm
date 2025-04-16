@@ -90,11 +90,13 @@
 	)
 	icon_state = "fuelsworddouble"
 	item_state = "fuelsworddouble"
+	lefthand_file = 'icons/mob/inhands/twohanded_lefthand.dmi'
+	righthand_file = 'icons/mob/inhands/twohanded_righthand.dmi'
 	force_enabled = 40
 	force = 5
 	block_chance = 75
 	maximum_fuel = 70
-	attack_verb = list("attacked", "slashed", "stabbed", "sliced", "torn", "ripped", "diced", "cut")
+	attack_verb = list("атаковал", "полоснул", "уколол", "поранил", "порезал")
 	origin_tech = "combat=5;magnets=5;plasmatech=6;"
 	combinable = FALSE
 

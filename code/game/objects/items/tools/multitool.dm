@@ -19,6 +19,8 @@
 	)
 	icon = 'icons/obj/device.dmi'
 	icon_state = "multitool"
+	righthand_file = 'icons/mob/inhands/tools_righthand.dmi'
+	lefthand_file = 'icons/mob/inhands/tools_lefthand.dmi'
 	belt_icon = "multitool"
 	flags = CONDUCT
 	force = 5.0

@@ -29,7 +29,7 @@
 	START_PROCESSING(SSobj, src)
 	impact_area = get_area(src)
 
-	if(!impact_area)
+	if(!impact_area || impact_area.outdoors)
 		return INITIALIZE_HINT_QDEL
 
 	drops_core = _drops_core
@@ -55,7 +55,8 @@
 	GLOB.poi_list.Remove(src)
 	STOP_PROCESSING(SSobj, src)
 	QDEL_NULL(countdown)
-	QDEL_NULL(aSignal)
+	if(!ispath(aSignal))
+		QDEL_NULL(aSignal)
 	return ..()
 
 /obj/effect/anomaly/process()
@@ -66,8 +67,8 @@
 			var/amount = rand(1, 3)
 			for (var/i; i <= amount; i++)
 				new /obj/item/relic(get_turf(I))
-				var/datum/effect_system/smoke_spread/smoke = new
-				smoke.set_up(5, get_turf(I))
+				var/datum/effect_system/fluid_spread/smoke/smoke = new
+				smoke.set_up(amount = 5, location = get_turf(I))
 				smoke.start()
 			qdel(I)
 			continue
@@ -93,7 +94,7 @@
 		qdel(src)
 
 /obj/effect/anomaly/proc/anomalyNeutralize()
-	new /obj/effect/particle_effect/smoke/bad(loc)
+	new /obj/effect/particle_effect/fluid/smoke/bad(loc)
 
 	if(drops_core)
 		aSignal.forceMove(drop_location())
@@ -115,9 +116,11 @@
 	name = "gravitational anomaly"
 	icon_state = "shield2"
 	density = FALSE
+	appearance_flags = PIXEL_SCALE|LONG_GLIDE
 	var/boing = FALSE
 	var/knockdown = FALSE
 	aSignal = /obj/item/assembly/signaler/anomaly/grav
+	var/obj/effect/warp_effect/supermatter/warp
 
 
 /obj/effect/anomaly/grav/Initialize(mapload, new_lifespan, _drops_core)
@@ -126,7 +129,16 @@
 		COMSIG_ATOM_ENTERED = PROC_REF(on_entered),
 	)
 	AddElement(/datum/element/connect_loc, loc_connections)
+	apply_wibbly_filters(src)
 
+	warp = new(src)
+	vis_contents += warp
+	apply_wibbly_filters(warp)
+
+/obj/effect/anomaly/grav/Destroy()
+	vis_contents -= warp
+	QDEL_NULL(warp)  // don't want to leave it hanging
+	return ..()
 
 /obj/effect/anomaly/grav/anomalyEffect()
 	..()
@@ -145,6 +157,9 @@
 			if(target && !target.stat)
 				O.throw_at(target, 5, 10)
 
+	//anomaly quickly contracts then slowly expands it's ring
+	animate(warp, time = 6, transform = matrix().Scale(0.5, 0.5))
+	animate(time = 14, transform = matrix())
 
 /obj/effect/anomaly/grav/proc/on_entered(datum/source, atom/movable/arrived, atom/old_loc, list/atom/old_locs)
 	SIGNAL_HANDLER
@@ -254,7 +269,7 @@
 		investigate_log("teleported [key_name_log(moving_atom)] to [COORD(moving_atom)]", INVESTIGATE_TELEPORTATION)
 
 /obj/effect/anomaly/bluespace/detonate()
-	if(!mass_teleporting)
+	if(!mass_teleporting || impact_area.outdoors)
 		return
 	var/turf/T = pick(get_area_turfs(impact_area))
 	if(T)

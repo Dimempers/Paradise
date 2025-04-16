@@ -187,7 +187,7 @@ GLOBAL_LIST_INIT(default_medbay_channels, list(
 				. = FALSE
 			if(hidden_uplink)
 				if(hidden_uplink.check_trigger(usr, frequency, traitor_frequency))
-					usr << browse(null, "window=radio")
+					close_window(usr, "radio")
 			if(.)
 				set_frequency(sanitize_frequency(tune, freerange))
 		if("ichannel") // change primary frequency to an internal channel authorized by access
@@ -382,6 +382,10 @@ GLOBAL_LIST_INIT(default_medbay_channels, list(
 		return FALSE
 
 	if(M.is_muzzled())
+		var/obj/item/organ/internal/cyberimp/mouth/translator/translator = M.get_organ_slot(INTERNAL_ORGAN_SPEECH_TRANSLATOR)
+		if(translator) // you can't speak in radio with translator and gag
+			return FALSE
+
 		var/obj/item/clothing/mask/muzzle/muzzle = M.wear_mask
 		if(muzzle.radio_mute)
 			return FALSE
@@ -609,16 +613,10 @@ GLOBAL_LIST_INIT(default_medbay_channels, list(
 			. += "<span class='notice'>\the [src] can not be modified or attached!</span>"
 		. += "<span class='info'>Ctrl-Shift-click on the [name] to toggle speaker.<br/>Alt-click on the [name] to toggle broadcasting.</span>"
 
-/obj/item/radio/AltClick(mob/user)
-	if(!iscarbon(user) && !isrobot(user))
-		return
-	if(!Adjacent(user))
-		return
-	if(user.incapacitated() || HAS_TRAIT(user, TRAIT_HANDS_BLOCKED))
-		to_chat(user, "<span class='warning'>You can't do that right now!</span>")
-		return
+/obj/item/radio/click_alt(mob/user)
 	broadcasting = !broadcasting
 	to_chat(user, "<span class='notice'>You toggle broadcasting [broadcasting ? "on" : "off"].</span>")
+	return CLICK_ACTION_SUCCESS
 
 /obj/item/radio/CtrlShiftClick(mob/user) //weird checks
 	if(!Adjacent(user))

@@ -11,6 +11,8 @@
 	)
 	icon = 'icons/obj/tools.dmi'
 	icon_state = "rcd"
+	righthand_file = 'icons/mob/inhands/tools_righthand.dmi'
+	lefthand_file = 'icons/mob/inhands/tools_lefthand.dmi'
 	flags = CONDUCT
 	item_flags = NOBLUDGEON|NO_MAT_REDEMPTION
 	force = 0
@@ -466,6 +468,10 @@
 	matter = RCD_MATTER_500
 	canRwall = TRUE
 
+/obj/item/rcd/combat/Initialize()
+	. = ..()
+	AddElement(/datum/element/high_value_item)
+
 /obj/item/rcd_ammo
 	name = "compressed matter cartridge"
 	desc = "Картридж для УБС, содержащий в себе спрессованную материю."
@@ -479,6 +485,8 @@
 	)
 	icon = 'icons/obj/weapons/ammo.dmi'
 	icon_state = "rcd"
+	righthand_file = 'icons/mob/inhands/tools_righthand.dmi'
+	lefthand_file = 'icons/mob/inhands/tools_lefthand.dmi'
 	item_state = "rcdammo"
 	origin_tech = "materials=3"
 	materials = list(MAT_METAL=16000, MAT_GLASS=8000)

@@ -181,7 +181,7 @@
 		if(C == src)
 			continue
 		// We dont care about ones on other zlevels
-		if(!atoms_share_level(C, src))
+		if(!are_zs_connected(C, src))
 			continue
 		// If another core is active, return FALSE
 		if(C.active)
@@ -311,7 +311,10 @@
 				log_action(usr, "has uploaded a NTTC JSON configuration: [ADMIN_SHOWDETAILS("Show", json)]", TRUE)
 
 		if("export")
-			usr << browse(nttc.nttc_serialize(), "window=save_nttc")
+			var/datum/browser/popup = new(usr, "save_nttc", "NTTC")
+			popup.set_content(nttc.nttc_serialize())
+			popup.open(FALSE)
+			
 
 		// Set network ID
 		if("network_id")

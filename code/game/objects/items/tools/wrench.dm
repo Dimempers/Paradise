@@ -12,6 +12,8 @@
 	)
 	icon = 'icons/obj/tools.dmi'
 	icon_state = "wrench"
+	righthand_file = 'icons/mob/inhands/tools_righthand.dmi'
+	lefthand_file = 'icons/mob/inhands/tools_lefthand.dmi'
 	belt_icon = "wrench"
 	flags = CONDUCT
 	slot_flags = ITEM_SLOT_BELT
@@ -23,7 +25,7 @@
 	w_class = WEIGHT_CLASS_SMALL
 	materials = list(MAT_METAL=150)
 	origin_tech = "materials=1;engineering=1"
-	attack_verb = list("bashed", "battered", "bludgeoned", "whacked")
+	attack_verb = list("ударил", "огрел")
 	toolspeed = 1
 	armor = list("melee" = 0, "bullet" = 0, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 50, "acid" = 30)
 	tool_behaviour = TOOL_WRENCH
@@ -78,7 +80,7 @@
 	)
 	icon = 'icons/obj/abductor.dmi'
 	icon_state = "wrench"
-	item_state = "alien_wrench"
+	item_state = "wrench_alien"
 	belt_icon = "alien_wrench"
 	usesound = 'sound/effects/empulse.ogg'
 	toolspeed = 0.1
@@ -103,7 +105,7 @@
 	origin_tech = "materials=2;engineering=2" //done for balance reasons, making them high value for research, but harder to get
 	force = 8 //might or might not be too high, subject to change
 	throwforce = 8
-	attack_verb = list("drilled", "screwed", "jabbed")
+	attack_verb = list("продырявил", "уколол")
 	toolspeed = 0.25
 
 /obj/item/wrench/power/attack_self(mob/user)
@@ -132,7 +134,6 @@
 	force = 2 //MEDICAL
 	throwforce = 4
 	origin_tech = "materials=1;engineering=1;biotech=3"
-	attack_verb = list("wrenched", "medicaled", "tapped", "jabbed", "whacked")
 
 /obj/item/wrench/medical/suicide_act(mob/living/user)
 	user.visible_message(span_suicide("[user] мол[pluralize_ru(user.gender, "ит", "ят")]ся [declent_ru(DATIVE)], чтобы он взял [genderize_ru(user.gender, "его", "её", "его", "их")] душу. Похоже, что [genderize_ru(user.gender, "он", "она", "оно", "они")] пыта[pluralize_ru(user.gender, "ет", "ют")]ся совершить самоубийство!"))

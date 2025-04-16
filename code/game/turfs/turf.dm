@@ -126,7 +126,12 @@
 	if(istype(loc, /area/space))
 		force_no_gravity = TRUE
 
+	ComponentInitialize()
 	return INITIALIZE_HINT_NORMAL
+
+/turf/ComponentInitialize()
+	. = ..()
+	AddComponent(/datum/component/blob_turf_consuming, 0)
 
 /turf/Destroy(force)
 	. = QDEL_HINT_IWILLGC
@@ -181,6 +186,9 @@
 /turf/ex_act(severity)
 	return FALSE
 
+/turf/proc/blob_consume()
+	return
+
 /turf/rpd_act(mob/user, obj/item/rpd/our_rpd) //This is the default turf behaviour for the RPD; override it as required
 	if(our_rpd.mode == RPD_ATMOS_MODE)
 		our_rpd.create_atmos_pipe(user, src)
@@ -197,14 +205,14 @@
 	else if(our_rpd.mode == RPD_DELETE_MODE)
 		our_rpd.delete_all_pipes(user, src)
 
-/turf/bullet_act(obj/item/projectile/Proj)
-	if(istype(Proj, /obj/item/projectile/beam/pulse))
+/turf/bullet_act(obj/projectile/Proj)
+	if(istype(Proj, /obj/projectile/beam/pulse))
 		src.ex_act(2)
 	..()
 	return FALSE
 
-/turf/bullet_act(obj/item/projectile/Proj)
-	if(istype(Proj, /obj/item/projectile/bullet/gyro))
+/turf/bullet_act(obj/projectile/Proj)
+	if(istype(Proj, /obj/projectile/bullet/gyro))
 		explosion(src, -1, 0, 2, cause = Proj)
 	..()
 	return FALSE

@@ -103,6 +103,8 @@
 /datum/tgui/proc/send_assets()
 	var/flushqueue = window.send_asset(get_asset_datum(
 		/datum/asset/simple/namespaced/fontawesome))
+	flushqueue |= window.send_asset(get_asset_datum(
+		/datum/asset/json/icon_ref_map))
 	for(var/datum/asset/asset in src_object.ui_assets(user))
 		flushqueue |= window.send_asset(asset)
 	if(flushqueue)
@@ -222,6 +224,7 @@
 			"size" = window_size,
 			"fancy" = (user.client?.prefs?.toggles2 & PREFTOGGLE_2_FANCYUI),
 			"locked" = FALSE,
+			"scale" = (user.client?.prefs.toggles3 & PREFTOGGLE_3_UI_SCALE),
 		),
 		"client" = list(
 			"ckey" = user.client?.ckey,
