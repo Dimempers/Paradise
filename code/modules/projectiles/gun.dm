@@ -1,4 +1,5 @@
 /obj/item/gun
+	abstract_type = /obj/item/gun
 	name = "gun"
 	desc = "It's a gun. It's pretty terrible, though."
 	icon = 'icons/obj/weapons/projectile.dmi'
@@ -85,6 +86,9 @@
 	var/damage_mod = 1
 	/// Stamina modifier for projectile
 	var/stamina_mod = 1
+
+	///Can we hold up our target with this? Default to yes
+	var/can_hold_up = TRUE
 
 /*
  * Gun modules
@@ -642,12 +646,15 @@
 /obj/item/gun/proc/fast_fire(atom/target, mob/user, zone_override)
 	var/old_target = src.target
 	var/old_user = gun_user
+	var/list/old_modifiers = modifiers
 	src.target = target
 	gun_user = user
+	modifiers = null
 	setup_bullet_accuracy()
 	. = process_fire(zone_override)
 	src.target = old_target
 	gun_user = old_user
+	modifiers = old_modifiers
 	setup_bullet_accuracy()
 
 /obj/item/gun/proc/process_fire(zone_override)
@@ -709,7 +716,30 @@
 	SEND_SIGNAL(src, COMSIG_GUN_AFTER_PROCESS_FIRE, target, user)
 	return AUTOFIRE_CONTINUE
 
+/obj/item/gun/interact_with_atom_secondary(atom/interacting_with, mob/living/user, list/modifiers)
+	if(user.a_intent != INTENT_HARM || user == interacting_with || !isliving(interacting_with) || !can_hold_up)
+		return ..()
+
+	if(SEND_SIGNAL(user, COMSIG_LIVING_GUNPOINT_START, user) & COMPONENT_LIVING_ALREADY_HELD_UP)
+		balloon_alert(user, "уже кто-то на мушке!")
+		return ITEM_INTERACT_BLOCKING
+
+	if(SEND_SIGNAL(interacting_with, COMSIG_LIVING_GUNPOINT_START, user) & COMPONENT_LIVING_ALREADY_HELD_UP)
+		balloon_alert(user, "уже на мушке!")
+		return ITEM_INTERACT_BLOCKING
+
+	if(do_after(user, 0.5 SECONDS, interacting_with))
+		if(!user.is_in_hands(src))
+			return ITEM_INTERACT_BLOCKING
+
+		user.AddComponent(/datum/component/gunpoint, interacting_with, src)
+
+	return ITEM_INTERACT_SUCCESS
+
 /obj/item/gun/ranged_interact_with_atom_secondary(atom/interacting_with, mob/living/user, list/modifiers)
+	if(isliving(interacting_with) && IN_GIVEN_RANGE(user, interacting_with, GUNPOINT_SHOOTER_STRAY_RANGE))
+		return interact_with_atom_secondary(interacting_with, user, modifiers)
+
 	if(azoom)
 		zoom(user)
 		return ITEM_INTERACT_SUCCESS
