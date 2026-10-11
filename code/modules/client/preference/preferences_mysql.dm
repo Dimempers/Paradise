@@ -251,11 +251,13 @@ GLOBAL_LIST_INIT(marking_locations, list("head", "body", "tail"))
 		values[column] = player_data[column]
 
 	var/list/assignments = list()
+	var/list/parameters = list()
 	for(var/column in values)
-		assignments += "[column]=:[column]"
-	values["ckey"] = C.account_ckey
+		assignments += "[column]=:[lowertext(column)]"
+		parameters[lowertext(column)] = values[column]
+	parameters["ckey"] = C.account_ckey
 
-	var/datum/db_query/query = SSdbcore.NewQuery("UPDATE [format_table_name("player")] SET [jointext(assignments, ", ")] WHERE ckey=:ckey", values)
+	var/datum/db_query/query = SSdbcore.NewQuery("UPDATE [format_table_name("player")] SET [jointext(assignments, ", ")] WHERE ckey=:ckey", parameters)
 	if(!query.warn_execute())
 		qdel(query)
 		return
@@ -386,21 +388,23 @@ GLOBAL_LIST_INIT(marking_locations, list("head", "body", "tail"))
 	var/exists = firstquery.NextRow()
 	qdel(firstquery)
 
+	var/list/parameters = list()
+	for(var/column in values)
+		parameters[lowertext(column)] = values[column]
+	parameters["ckey"] = C.account_ckey
+	parameters["slot"] = default_slot
+
 	var/datum/db_query/query
 	if(exists)
 		var/list/assignments = list()
 		for(var/column in values)
-			assignments += "[column]=:[column]"
-		values["ckey"] = C.account_ckey
-		values["slot"] = default_slot
-		query = SSdbcore.NewQuery("UPDATE [format_table_name("characters")] SET [jointext(assignments, ", ")] WHERE ckey=:ckey AND slot=:slot", values)
+			assignments += "[column]=:[lowertext(column)]"
+		query = SSdbcore.NewQuery("UPDATE [format_table_name("characters")] SET [jointext(assignments, ", ")] WHERE ckey=:ckey AND slot=:slot", parameters)
 	else
-		values["ckey"] = C.account_ckey
-		values["slot"] = default_slot
-		var/list/parameters = list()
-		for(var/column in values)
-			parameters += ":[column]"
-		query = SSdbcore.NewQuery("INSERT INTO [format_table_name("characters")] ([jointext(assoc_to_keys(values), ", ")]) VALUES ([jointext(parameters, ", ")])", values)
+		var/list/placeholders = list()
+		for(var/parameter in parameters)
+			placeholders += ":[parameter]"
+		query = SSdbcore.NewQuery("INSERT INTO [format_table_name("characters")] ([jointext(assoc_to_keys(parameters), ", ")]) VALUES ([jointext(placeholders, ", ")])", parameters)
 
 	if(!query.warn_execute())
 		qdel(query)

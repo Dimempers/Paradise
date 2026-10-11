@@ -13,12 +13,14 @@ let hideTimer: ReturnType<typeof setTimeout> | undefined;
 let showTimer: ReturnType<typeof setTimeout> | undefined;
 let previewShown = false;
 let previewSize = '';
+let previewPos = '';
 
 export function destroyCharacterPreview(id: string) {
   clearTimeout(hideTimer);
   clearTimeout(showTimer);
   previewShown = false;
   previewSize = '';
+  previewPos = '';
   Byond.winset(id, { parent: '' });
 }
 
@@ -43,13 +45,19 @@ export const CharacterPreview = (props: { height: string; id: string }) => {
 
       const pixelRatio = window.devicePixelRatio ?? 1;
       const rect = element.getBoundingClientRect();
-      previewSize = getSize();
+      const pos = `${Math.round(rect.left * pixelRatio)},${Math.round(rect.top * pixelRatio)}`;
+      const size = getSize();
+      if (visible && pos === previewPos && size === previewSize) {
+        return;
+      }
+      previewPos = visible ? pos : '';
+      previewSize = size;
       Byond.winset(props.id, {
         parent: Byond.windowId,
         type: 'map',
         'is-visible': visible,
-        pos: `${Math.round(rect.left * pixelRatio)},${Math.round(rect.top * pixelRatio)}`,
-        size: previewSize,
+        pos,
+        size,
       });
 
       if (!previewShown) {
@@ -84,6 +92,7 @@ export const CharacterPreview = (props: { height: string; id: string }) => {
       globalEvents.off('window-geometry-finished', debouncedRender);
       hideTimer = setTimeout(() => {
         previewShown = false;
+        previewPos = '';
         Byond.winset(props.id, { 'is-visible': false });
         act('hide_preview');
       });

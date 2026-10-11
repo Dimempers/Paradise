@@ -144,7 +144,8 @@ function ChoicedSelection(props: ChoicedSelectionProps) {
             fill
             title={`Выбор: ${props.name.toLowerCase()}`}
             buttons={
-              supplementalFeature && (
+              supplementalFeature &&
+              supplementalValue !== undefined && (
                 <FeatureValueInput
                   shrink
                   feature={features[supplementalFeature]}

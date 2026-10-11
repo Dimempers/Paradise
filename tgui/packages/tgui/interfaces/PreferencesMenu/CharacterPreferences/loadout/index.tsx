@@ -27,6 +27,7 @@ import { ItemIcon, LoadoutTabDisplay, SearchDisplay } from './ItemDisplay';
 import { LoadoutModifyDimmer } from './ModifyPanel';
 
 export function LoadoutPage(props) {
+  const { data } = useBackend<LoadoutManagerData>();
   const serverData = useServerPrefs();
   const loadout_tabs = serverData?.loadout.loadout_tabs || [];
 
@@ -43,89 +44,17 @@ export function LoadoutPage(props) {
   }
 
   return (
-    <Stack vertical fill>
-      <Stack.Item>
-        {!!modifyItemDimmer && (
-          <LoadoutModifyDimmer
-            modifyItemDimmer={modifyItemDimmer}
-            setModifyItemDimmer={setModifyItemDimmer}
-          />
-        )}
-        <Section
-          fitted
-          title="&nbsp;"
-          buttons={
-            <Input
-              width="200px"
-              onChange={setSearchLoadout}
-              placeholder="Поиск предмета..."
-              value={searchLoadout}
-            />
-          }
-        >
-          <Tabs fluid align="center">
-            {loadout_tabs.map((curTab) => (
-              <Tabs.Tab
-                key={curTab.name}
-                selected={
-                  searchLoadout.length <= 1 && curTab.name === selectedTabName
-                }
-                onClick={() => {
-                  setSelectedTab(curTab.name);
-                  setSearchLoadout('');
-                }}
-              >
-                <Box>
-                  {curTab.category_icon && (
-                    <Icon name={curTab.category_icon} mr={1} />
-                  )}
-                  {curTab.name}
-                </Box>
-              </Tabs.Tab>
-            ))}
-          </Tabs>
-        </Section>
-      </Stack.Item>
-      <Stack.Item grow>
-        <LoadoutTabs
-          loadout_tabs={loadout_tabs}
-          currentTab={selectedTabName}
-          currentSearch={searchLoadout}
-          modifyItemDimmer={modifyItemDimmer}
-          setModifyItemDimmer={setModifyItemDimmer}
-        />
-      </Stack.Item>
-    </Stack>
-  );
-}
-
-type LoadoutTabsProps = {
-  loadout_tabs: LoadoutCategory[];
-  currentTab: string;
-  currentSearch: string;
-  modifyItemDimmer: LoadoutItem | null;
-  setModifyItemDimmer: (dimmer: LoadoutItem | null) => void;
-};
-
-function LoadoutTabs(props: LoadoutTabsProps) {
-  const {
-    loadout_tabs,
-    currentTab,
-    currentSearch,
-    modifyItemDimmer,
-    setModifyItemDimmer,
-  } = props;
-  const activeCategory = loadout_tabs.find((curTab) => {
-    return curTab.name === currentTab;
-  });
-  const searching = currentSearch.length > 1;
-
-  return (
     <Stack fill>
-      <Stack.Item align="center" width="250px" height="100%">
+      <Stack.Item width="220px">
         <Stack vertical fill>
           <Stack.Item>
-            <LoadoutPreviewSection />
+            <LoadoutPreviewControls />
+          </Stack.Item>
+          <Stack.Item>
+            <CharacterPreview
+              height={CHARACTER_PREVIEW_HEIGHT}
+              id={data.character_preview_view}
+            />
           </Stack.Item>
           <Stack.Item grow>
             <LoadoutSelectedSection
@@ -136,40 +65,111 @@ function LoadoutTabs(props: LoadoutTabsProps) {
           </Stack.Item>
         </Stack>
       </Stack.Item>
-      <Stack.Item grow>
-        {searching || activeCategory?.contents ? (
-          <Section
-            title={searching ? 'Результаты поиска' : 'Каталог'}
-            fill
-            scrollable
-            buttons={
-              activeCategory?.category_info ? (
-                <Box italic mt={0.5}>
-                  {activeCategory.category_info}
-                </Box>
-              ) : null
-            }
-          >
-            <Stack vertical>
-              <Stack.Item>
-                {searching ? (
-                  <SearchDisplay
-                    loadout_tabs={loadout_tabs}
-                    currentSearch={currentSearch}
-                  />
-                ) : (
-                  <LoadoutTabDisplay category={activeCategory} />
-                )}
-              </Stack.Item>
-            </Stack>
-          </Section>
-        ) : (
-          <Section fill>
-            <Box>В этой категории ничего нет.</Box>
-          </Section>
-        )}
+      <Stack.Item grow basis={0}>
+        <Stack vertical fill>
+          <Stack.Item>
+            {!!modifyItemDimmer && (
+              <LoadoutModifyDimmer
+                modifyItemDimmer={modifyItemDimmer}
+                setModifyItemDimmer={setModifyItemDimmer}
+              />
+            )}
+            <Section
+              fitted
+              title="&nbsp;"
+              buttons={
+                <Input
+                  width="200px"
+                  onChange={setSearchLoadout}
+                  placeholder="Поиск предмета..."
+                  value={searchLoadout}
+                />
+              }
+            >
+              <Tabs fluid align="center" style={{ flexWrap: 'wrap' }}>
+                {loadout_tabs.map((curTab) => (
+                  <Tabs.Tab
+                    key={curTab.name}
+                    selected={
+                      searchLoadout.length <= 1 &&
+                      curTab.name === selectedTabName
+                    }
+                    onClick={() => {
+                      setSelectedTab(curTab.name);
+                      setSearchLoadout('');
+                    }}
+                  >
+                    <Box>
+                      {curTab.category_icon && (
+                        <Icon name={curTab.category_icon} mr={1} />
+                      )}
+                      {curTab.name}
+                    </Box>
+                  </Tabs.Tab>
+                ))}
+              </Tabs>
+            </Section>
+          </Stack.Item>
+          <Stack.Item grow>
+            <LoadoutTabs
+              loadout_tabs={loadout_tabs}
+              currentTab={selectedTabName}
+              currentSearch={searchLoadout}
+            />
+          </Stack.Item>
+        </Stack>
       </Stack.Item>
     </Stack>
+  );
+}
+
+type LoadoutTabsProps = {
+  loadout_tabs: LoadoutCategory[];
+  currentTab: string;
+  currentSearch: string;
+};
+
+function LoadoutTabs(props: LoadoutTabsProps) {
+  const { loadout_tabs, currentTab, currentSearch } = props;
+  const activeCategory = loadout_tabs.find((curTab) => {
+    return curTab.name === currentTab;
+  });
+  const searching = currentSearch.length > 1;
+
+  if (!searching && !activeCategory?.contents) {
+    return (
+      <Section fill>
+        <Box>В этой категории ничего нет.</Box>
+      </Section>
+    );
+  }
+
+  return (
+    <Section
+      title={searching ? 'Результаты поиска' : 'Каталог'}
+      fill
+      scrollable
+      buttons={
+        activeCategory?.category_info ? (
+          <Box italic mt={0.5}>
+            {activeCategory.category_info}
+          </Box>
+        ) : null
+      }
+    >
+      <Stack vertical>
+        <Stack.Item>
+          {searching ? (
+            <SearchDisplay
+              loadout_tabs={loadout_tabs}
+              currentSearch={currentSearch}
+            />
+          ) : (
+            <LoadoutTabDisplay category={activeCategory} />
+          )}
+        </Stack.Item>
+      </Stack>
+    </Section>
   );
 }
 
@@ -261,9 +261,7 @@ function LoadoutSelectedSection(props: LoadoutSelectedSectionProps) {
           disabled={!loadout_list || Object.keys(loadout_list).length === 0}
           tooltip="Убирает все выбранные предметы из всех категорий."
           onClick={() => act('clear_all_items')}
-        >
-          Очистить
-        </Button.Confirm>
+        />
       }
     >
       {loadout_list &&
@@ -282,55 +280,39 @@ function LoadoutSelectedSection(props: LoadoutSelectedSectionProps) {
   );
 }
 
-function LoadoutPreviewSection() {
+function LoadoutPreviewControls() {
   const { act, data } = useBackend<LoadoutManagerData>();
 
   return (
-    <Section
-      title="Предпросмотр"
-      buttons={
-        <Button.Checkbox
-          align="center"
-          checked={data.job_clothes}
+    <Stack>
+      <Stack.Item>
+        <Button
+          fontSize="22px"
+          icon="undo"
+          tooltip="Повернуть влево"
+          tooltipPosition="top"
+          onClick={() => act('rotate_dummy', { dir: 'left' })}
+        />
+      </Stack.Item>
+      <Stack.Item>
+        <Button
+          fontSize="22px"
+          icon="redo"
+          tooltip="Повернуть вправо"
+          tooltipPosition="top"
+          onClick={() => act('rotate_dummy', { dir: 'right' })}
+        />
+      </Stack.Item>
+      <Stack.Item>
+        <Button
+          fontSize="22px"
+          icon="shirt"
+          selected={data.job_clothes}
+          tooltip="Униформа"
+          tooltipPosition="top"
           onClick={() => act('toggle_job_clothes')}
-        >
-          Униформа
-        </Button.Checkbox>
-      }
-    >
-      <Stack vertical>
-        <Stack.Item align="center">
-          <CharacterPreview
-            height={CHARACTER_PREVIEW_HEIGHT}
-            id={data.character_preview_view}
-          />
-        </Stack.Item>
-        <Stack.Divider />
-        <Stack.Item align="center">
-          <Stack>
-            <Stack.Item>
-              <Button
-                icon="chevron-left"
-                onClick={() =>
-                  act('rotate_dummy', {
-                    dir: 'left',
-                  })
-                }
-              />
-            </Stack.Item>
-            <Stack.Item>
-              <Button
-                icon="chevron-right"
-                onClick={() =>
-                  act('rotate_dummy', {
-                    dir: 'right',
-                  })
-                }
-              />
-            </Stack.Item>
-          </Stack>
-        </Stack.Item>
-      </Stack>
-    </Section>
+        />
+      </Stack.Item>
+    </Stack>
   );
 }
