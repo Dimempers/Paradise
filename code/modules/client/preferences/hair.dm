@@ -1,4 +1,5 @@
-GLOBAL_LIST_INIT(species_with_hair_colour, list(SPECIES_HUMAN, SPECIES_UNATHI, SPECIES_TAJARAN, SPECIES_SKRELL, SPECIES_MACHINEPERSON, SPECIES_WRYN, SPECIES_VULPKANIN, SPECIES_VOX))
+GLOBAL_LIST_INIT(species_with_hair_colour, list(SPECIES_HUMAN, SPECIES_UNATHI, SPECIES_TAJARAN, SPECIES_SKRELL, SPECIES_MACHINEPERSON, SPECIES_WRYN, SPECIES_VULPKANIN, SPECIES_VOX, SPECIES_RESOMI))
+GLOBAL_LIST_INIT(species_with_facial_hair_colour, list(SPECIES_HUMAN, SPECIES_UNATHI, SPECIES_TAJARAN, SPECIES_SKRELL, SPECIES_MACHINEPERSON, SPECIES_WRYN, SPECIES_VULPKANIN, SPECIES_VOX))
 
 /datum/preference/choiced/accessory/hair
 	savefile_key = "hair_style_name"
@@ -194,7 +195,7 @@ GLOBAL_LIST_INIT(species_with_hair_colour, list(SPECIES_HUMAN, SPECIES_UNATHI, S
 	priority = PREFERENCE_PRIORITY_APPEARANCE
 
 /datum/preference/color/facial_hair_color/has_relevant_feature(datum/preferences/preferences)
-	return (preferences.read_preference(/datum/preference/choiced/species) in GLOB.species_with_hair_colour)
+	return (preferences.read_preference(/datum/preference/choiced/species) in GLOB.species_with_facial_hair_colour)
 
 /datum/preference/color/facial_hair_color/create_random_value(datum/preferences/preferences)
 	if(prob(75))
@@ -212,7 +213,7 @@ GLOBAL_LIST_INIT(species_with_hair_colour, list(SPECIES_HUMAN, SPECIES_UNATHI, S
 	priority = PREFERENCE_PRIORITY_APPEARANCE
 
 /datum/preference/color/secondary_facial_hair_color/has_relevant_feature(datum/preferences/preferences)
-	if(!(preferences.read_preference(/datum/preference/choiced/species) in GLOB.species_with_hair_colour))
+	if(!(preferences.read_preference(/datum/preference/choiced/species) in GLOB.species_with_facial_hair_colour))
 		return FALSE
 	var/datum/sprite_accessory/facial_style = GLOB.facial_hair_styles_list[preferences.read_preference(/datum/preference/choiced/accessory/facial_hair)]
 	return facial_style?.secondary_theme && !facial_style.no_sec_colour
