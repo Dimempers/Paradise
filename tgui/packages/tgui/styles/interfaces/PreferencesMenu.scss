@@ -4,10 +4,10 @@
 @use '../base.scss';
 
 $department_map: (
-  'Assistant': var(--color-gray),
-  'Captain': colors.fg(var(--color-blue)),
-  'Cargo': var(--color-brown),
-  'Command': var(--color-yellow),
+  'Civilian': var(--color-gray),
+  'Command': colors.fg(var(--color-blue)),
+  'Supply': var(--color-brown),
+  'Legal': var(--color-violet),
   'Security': var(--color-red),
   'Engineering': hsl(from var(--color-orange) h s calc(l + 7.5)),
   'Medical': var(--color-teal),
@@ -23,6 +23,106 @@ $department_map: (
 }
 
 .PreferencesMenu {
+  &__profiles {
+    transition-property: clip-path;
+    transition-timing-function: ease-out;
+
+    &[data-transition='initial'],
+    &[data-transition='close'] {
+      clip-path: inset(0 0 100% 0);
+    }
+
+    &[data-transition='open'] {
+      clip-path: inset(0);
+    }
+  }
+
+  &__slider.Slider {
+    --progress-bar-color: var(--color-primary);
+    overflow: hidden;
+    padding: 0;
+    border: none;
+    border-radius: var(--border-radius-medium);
+    background-color: hsla(0, 0%, 100%, 0.08);
+
+    .ProgressBar__fill {
+      background-color: hsl(from var(--color-primary) h s l / 0.55);
+      transition: background-color var(--transition-time-fast) ease-out;
+    }
+
+    .ProgressBar__content {
+      text-align: center;
+      font-weight: bold;
+      text-shadow: 0 1px 2px hsla(0, 0%, 0%, 0.8);
+    }
+
+    .Slider__cursor {
+      inset: 0;
+      left: unset;
+      border-left: var(--border-thickness-small) solid hsla(0, 0%, 100%, 0.9);
+      border-radius: 0;
+
+      &::before {
+        display: none;
+      }
+    }
+
+    .Slider__popupValue {
+      display: none;
+    }
+
+    &:hover .ProgressBar__fill {
+      background-color: hsl(from var(--color-primary) h s l / 0.8);
+    }
+  }
+
+  &__HairGradient {
+    &__option {
+      display: block;
+      image-rendering: pixelated;
+      width: 36px;
+      height: 36px;
+      margin: 5px auto;
+    }
+
+    &__preview {
+      cursor: move;
+      user-select: none;
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--border-radius-medium);
+      background-color: hsla(0, 0%, 0%, 0.45);
+      box-shadow: inset 0 0 0 var(--border-thickness-tiny)
+        hsl(from var(--color-primary) h s l / 0.5);
+
+      img {
+        image-rendering: pixelated;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      &--dragging {
+        box-shadow: inset 0 0 0 var(--border-thickness-small)
+          var(--color-primary);
+      }
+
+      &--disabled {
+        cursor: default;
+      }
+    }
+
+    &__offset {
+      position: absolute;
+      bottom: var(--space-s);
+      left: var(--space-s);
+      padding: 0 var(--space-s);
+      border-radius: var(--border-radius-small);
+      background-color: hsla(0, 0%, 0%, 0.6);
+      font-size: 0.9em;
+    }
+  }
+
   &__Antags {
     &__antagSelection {
       gap: var(--space-l);
@@ -150,9 +250,18 @@ $department_map: (
             background: hsla(0, 0%, 0%, 0.2);
             height: 100%;
           }
+
+          &.muted .job-name {
+            opacity: 0.55;
+          }
+
+          .alt-titles {
+            cursor: var(--cursor-pointer);
+            text-decoration: underline dotted;
+          }
         }
 
-        &--Captain {
+        &--Command {
           border: var(--border-thickness-medium)
             outset
             hsla(60, 100%, 39.2%, 1);
@@ -163,7 +272,7 @@ $department_map: (
               hsla(60, 100%, 39.2%, 1);
           }
 
-          .job-name {
+          &.head .job-name {
             font-size: 17px;
           }
         }
@@ -235,6 +344,47 @@ $department_map: (
           }
         }
       }
+    }
+  }
+}
+
+body:has(.PreferencesMenu) .Dropdown__menu--wrapper {
+  --dropdown-menu-background: hsl(from var(--color-base) h s calc(l - 4));
+  --dropdown-menu-border: var(--border-thickness-tiny) solid
+    hsl(from var(--color-primary) h s l / 0.6);
+  --dropdown-entry-background-hover: hsl(
+    from var(--color-primary) h s l / 0.35
+  );
+  --dropdown-entry-background-active: hsl(
+    from var(--color-primary) h s l / 0.5
+  );
+  --dropdown-entry-background-selected: var(--color-primary);
+  backdrop-filter: none;
+  box-shadow: 0 0.4em 1em hsla(0, 0%, 0%, 0.6);
+
+  .Dropdown__menu--entry {
+    padding: var(--space-s) var(--space-m);
+  }
+
+  &.Floating--animated {
+    &[data-transition] {
+      opacity: 1;
+      transform: none;
+      transition-property: clip-path;
+    }
+
+    &[data-transition='initial'],
+    &[data-transition='close'] {
+      clip-path: inset(0 0 100% 0);
+    }
+
+    &[data-position^='top'][data-transition='initial'],
+    &[data-position^='top'][data-transition='close'] {
+      clip-path: inset(100% 0 0 0);
+    }
+
+    &[data-transition='open'] {
+      clip-path: inset(0);
     }
   }
 }

@@ -6,6 +6,8 @@
 /datum/species/shadow
 	name = SPECIES_SHADOW_BASIC
 	name_plural = "Shadows"
+	blurb = "Тени — существа из тьмы. Во мраке их раны затягиваются сами собой, а яркий свет обжигает. Они не дышат, не \
+	болеют и не боятся радиации."
 
 	icobase = 'icons/mob/human_races/r_shadow.dmi'
 	deform = 'icons/mob/human_races/r_shadow.dmi'

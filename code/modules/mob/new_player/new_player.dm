@@ -84,31 +84,6 @@
 	if(href_list["refresh"])
 		close_window(src, "playersetup")		//closes the player setup window
 
-	if(href_list["SelectedJob"])
-
-		if(!GLOB.enter_allowed)
-			to_chat(usr, span_notice("Вход в игру невозможен из-за блокировки администрацией!"))
-			return
-
-		if(client.prefs.toggles2 & PREFTOGGLE_2_RANDOMSLOT)
-			client.prefs.load_random_character_slot(client)
-
-		if(!is_used_species_available(client.prefs.read_preference(/datum/preference/choiced/species)))
-			to_chat(usr, span_warning("Вы не можете играть за выбранную расу персонажа, так как она в данный момент недоступна для вас! Пожалуйста, выберите другую расу."))
-			return
-
-		//Prevents people rejoining as same character.
-		if(!is_admin(usr)) //Админам можно всё
-			for(var/C in GLOB.human_names_list)
-				var/char_name = client.prefs.read_preference(/datum/preference/name/real_name)
-				if(char_name == C)
-					to_chat (usr, span_danger("Уже существует персонаж с таким именем: <b>[C]</b>, пожалуйста, выберите другое имя."))
-					return
-		if(href_list["SelectedJob"] == JOB_TITLE_PRISONER)
-			client.prefs.spawnpoint = "Permabrig"
-		AttemptLateSpawn(href_list["SelectedJob"],client.prefs.spawnpoint)
-		return
-
 /mob/new_player/proc/check_join_access()
 	if(!client.tos_consent)
 		to_chat(src, span_warning("Прежде чем присоединиться, вы должны согласиться с политикой конфиденциальности!"))
@@ -169,7 +144,28 @@
 		return
 	if(SSticker.mode?.late_join(src))
 		return
-	LateChoices()
+	GLOB.latejoin_menu.ui_interact(src)
+
+/mob/new_player/proc/late_join_as(rank)
+	if(!GLOB.enter_allowed)
+		to_chat(src, span_notice("Вход в игру невозможен из-за блокировки администрацией!"))
+		return
+
+	if(client.prefs.toggles2 & PREFTOGGLE_2_RANDOMSLOT)
+		client.prefs.load_random_character_slot(client)
+
+	if(!is_used_species_available(client.prefs.read_preference(/datum/preference/choiced/species)))
+		to_chat(src, span_warning("Вы не можете играть за выбранную расу персонажа, так как она в данный момент недоступна для вас! Пожалуйста, выберите другую расу."))
+		return
+
+	var/char_name = client.prefs.read_preference(/datum/preference/name/real_name)
+	if(!is_admin(src) && (char_name in GLOB.human_names_list))
+		to_chat(src, span_danger("Уже существует персонаж с таким именем: <b>[char_name]</b>, пожалуйста, выберите другое имя."))
+		return
+
+	if(rank == JOB_TITLE_PRISONER)
+		client.prefs.spawnpoint = "Permabrig"
+	AttemptLateSpawn(rank, client.prefs.spawnpoint)
 
 /mob/new_player/proc/make_me_an_observer()
 	if(!check_join_access())
@@ -196,7 +192,7 @@
 	observer.alpha = 127
 
 	var/observer_name = client.prefs.read_preference(/datum/preference/name/real_name)
-	if(client.prefs.read_preference(/datum/preference/toggle/random_name))
+	if(client.prefs.read_preference(/datum/preference/choiced/random_name) == RANDOM_ENABLED)
 		observer_name = random_name(client.prefs.read_preference(/datum/preference/choiced/gender), client.prefs.read_preference(/datum/preference/choiced/species))
 	observer.real_name = observer_name
 	observer.name = observer.real_name
@@ -208,34 +204,31 @@
 	return TRUE
 
 /mob/new_player/proc/IsJobAvailable(rank)
+	return !get_job_unavailable_reason(rank)
+
+/mob/new_player/proc/get_job_unavailable_reason(rank)
 	var/datum/job/job = SSjobs.GetJob(rank)
 	if(!job)
-		return 0
+		return "Должность не найдена"
 	if(!job.is_position_available())
-		return 0
-	if(jobban_isbanned(src,rank))
-		return 0
+		return "Нет свободных мест"
+	if(jobban_isbanned(src, rank))
+		return "Заблокировано"
 	if(!job.player_old_enough(client))
-		return 0
-	if(job.admin_only && !(check_rights(R_ADMIN, FALSE)))
-		return 0
+		return "Аккаунт слишком новый"
+	if(job.admin_only && !check_rights(R_ADMIN, FALSE))
+		return "Только для администрации"
 	if(job.available_in_playtime(client))
-		return 0
+		return "Недостаточно наигранного времени"
 	if(!job.can_novice_play(client))
-		return 0
-
-	if(CONFIG_GET(flag/assistant_limit))
-		if(job.title == JOB_TITLE_CIVILIAN)
-			var/count = 0
-			var/datum/job/security/officer = SSjobs.GetJob(JOB_TITLE_OFFICER)
-			var/datum/job/security/warden = SSjobs.GetJob(JOB_TITLE_WARDEN)
-			var/datum/job/head_of_staff/hos = SSjobs.GetJob(JOB_TITLE_HOS)
-			count += (officer.current_positions + warden.current_positions + hos.current_positions)
-			if(job.current_positions > (CONFIG_GET(number/assistant_ratio) * count))
-				if(count >= 5) // if theres more than 5 security on the station just let assistants join regardless, they should be able to handle the tide
-					return 1
-				return 0
-	return 1
+		return "Только для новичков"
+	if(CONFIG_GET(flag/assistant_limit) && job.title == JOB_TITLE_CIVILIAN)
+		var/datum/job/security/officer = SSjobs.GetJob(JOB_TITLE_OFFICER)
+		var/datum/job/security/warden = SSjobs.GetJob(JOB_TITLE_WARDEN)
+		var/datum/job/head_of_staff/hos = SSjobs.GetJob(JOB_TITLE_HOS)
+		var/security_count = officer.current_positions + warden.current_positions + hos.current_positions
+		if(security_count < 5 && job.current_positions > CONFIG_GET(number/assistant_ratio) * security_count)
+			return "Не хватает службы безопасности"
 
 /mob/new_player/proc/IsAdminJob(rank)
 	var/datum/job/job = SSjobs.GetJob(rank)
@@ -489,100 +482,6 @@
 
 #undef ARRIVALS_ANNOUNCEMENT_COMPUTER
 
-/mob/new_player/proc/LateChoices()
-	var/mills = ROUND_TIME // 1/10 of a second, not real milliseconds but whatever
-	//var/secs = ((mills % 36000) % 600) / 10 //Not really needed, but I'll leave it here for refrence.. or something
-	var/mins = (mills % 36000) / 600
-	var/hours = mills / 36000
-
-	var/dat = {"<html><meta charset="UTF-8"><body><center>"}
-	dat += "Продолжительность раунда: [round(hours)]h [round(mins)]m<br>"
-	dat += "<b>Уровень угрозы на станции: [SSsecurity_level.get_colored_current_security_level_name()]</b><br>"
-
-	if(EMERGENCY_ESCAPED_OR_ENDGAMED)
-		dat += "<span style='color: red;'><b>Экипаж объекта был эвакуирован.</b></span><br>"
-	else if((SSshuttle.emergency?.mode == SHUTTLE_CALL) || EMERGENCY_AT_LEAST_DOCKED)
-		dat += "<span style='color: red;'>В настоящее время экипаж объекта проходит процедуру эвакуации.</span><br>"
-
-	if(length(SSjobs.prioritized_jobs))
-		dat += "<span style='color: lime;'>Объект отметил эти позиции как приоритетные: "
-		var/amt = length(SSjobs.prioritized_jobs)
-		var/amt_count
-		for(var/datum/job/a in SSjobs.prioritized_jobs)
-			amt_count++
-			if(amt_count != amt)
-				dat += " [get_job_title_ru(a.title)], "
-			else
-				dat += " [get_job_title_ru(a.title)]. </span><br>"
-
-	var/num_jobs_available = 0
-	var/list/activePlayers = list()
-	var/list/categorizedJobs = list(
-		STATION_DEPARTMENT_RU_COMMAND = list(jobs = list(), titles = GLOB.command_positions, color = "#aac1ee"),
-		STATION_DEPARTMENT_RU_ENGINEERING = list(jobs = list(), titles = GLOB.engineering_positions, color = "#ffd699"),
-		STATION_DEPARTMENT_RU_SECURITY = list(jobs = list(), titles = GLOB.security_positions, color = "#ff9999"),
-		STATION_DEPARTMENT_RU_OTHER = list(jobs = list(), titles = list(), color = "#ffffff", colBreak = 1),
-		STATION_DEPARTMENT_RU_SILICON = list(jobs = list(), titles = GLOB.nonhuman_positions, color = "#ccffcc"),
-		STATION_DEPARTMENT_RU_SERVICE = list(jobs = list(), titles = GLOB.service_positions, color = "#cccccc"),
-		STATION_DEPARTMENT_RU_MEDICAL = list(jobs = list(), titles = GLOB.medical_positions, color = "#99ffe6", colBreak = 1),
-		STATION_DEPARTMENT_RU_SCIENCE = list(jobs = list(), titles = GLOB.science_positions, color = "#e6b3e6"),
-		STATION_DEPARTMENT_RU_SUPPLY = list(jobs = list(), titles = GLOB.supply_positions, color = "#ead4ae"),
-	)
-	for(var/datum/job/job in SSjobs.occupations)
-		if(job && IsJobAvailable(job.title) && !job.barred_by_disability(client))
-			num_jobs_available++
-			activePlayers[job] = 0
-			var/categorized = 0
-			// Only players with the job assigned and AFK for less than 10 minutes count as active
-			for(var/mob/M in GLOB.player_list) if(M.mind && M.client && M.mind.assigned_role == job.title && M.client.inactivity <= 10 MINUTES)
-				activePlayers[job]++
-			for(var/jobcat in categorizedJobs)
-				var/list/jobs = categorizedJobs[jobcat]["jobs"]
-				if(job.title in categorizedJobs[jobcat]["titles"])
-					categorized = 1
-					if(jobcat == STATION_DEPARTMENT_RU_COMMAND) // Put captain at top of command jobs
-						if(job.title == JOB_TITLE_CAPTAIN)
-							jobs.Insert(1, job)
-						else
-							jobs += job
-					else // Put heads at top of non-command jobs
-						if(job.title in GLOB.command_positions)
-							jobs.Insert(1, job)
-						else
-							jobs += job
-			if(!categorized)
-				categorizedJobs[STATION_DEPARTMENT_RU_OTHER]["jobs"] += job
-
-	if(num_jobs_available)
-		dat += "Выберите из следующих открытых позиций:<br><br>"
-		dat += "<table><tr><td valign='top'>"
-		for(var/jobcat in categorizedJobs)
-			if(categorizedJobs[jobcat]["colBreak"])
-				dat += "</td><td valign='top'>"
-			if(length(categorizedJobs[jobcat]["jobs"]) < 1)
-				continue
-			var/color = categorizedJobs[jobcat]["color"]
-			dat += "<fieldset style='border: 2px solid [color]; display: inline'>"
-			dat += "<legend align='center' style='color: [color]'>[jobcat]</legend>"
-			if(jobcat == STATION_DEPARTMENT_RU_OTHER)
-				dat += "<a href='byond://?src=[UID()];SelectedJob=RandomJob'>Случайно (из доступных)</a><br>"
-			for(var/datum/job/job in categorizedJobs[jobcat]["jobs"])
-				if(job in SSjobs.prioritized_jobs)
-					dat += "<a href='byond://?src=[UID()];SelectedJob=[job.title]'><span style='color: lime;'><b>[get_job_title_ru(job.title)] ([job.current_positions]) (Активно: [activePlayers[job]])</b></span></a><br>"
-				else
-					dat += "<a href='byond://?src=[UID()];SelectedJob=[job.title]'>[get_job_title_ru(job.title)] ([job.current_positions]) (Активно: [activePlayers[job]])</a><br>"
-			dat += "</fieldset><br>"
-
-		dat += "</td></tr></table></center>"
-	else
-		dat += "<br><br><center>Открытые позиции отсутствуют.<br>Попробуйте снова через несколько минут.<br>Или зайдите за наблюдателя.</center>"
-	// Added the new browser window method
-	var/datum/browser/popup = new(src, "latechoices", "Выбор должности", 1250, 600)
-	popup.add_stylesheet("playeroptions", 'html/browser/playeroptions.css')
-	popup.add_script("delay_interactivity", 'html/browser/delay_interactivity.js')
-	popup.set_content(dat)
-	popup.open(0) // 0 is passed to open so that it doesn't use the onclose() proc
-
 // If current character can't be antagonist, try to pick random character, who can.
 /mob/new_player/proc/handle_can_be_antagonist()
 	if(!mind.special_role || client.prefs.read_preference(/datum/preference/toggle/can_be_antagonist))
@@ -600,6 +499,7 @@
 	handle_can_be_antagonist()
 	LAZYADD(persistent_client.joined_as_slots, "[client.prefs.default_slot]")
 
+	client.prefs.apply_character_randomization_prefs(!!mind?.special_role)
 	if(SSticker.random_players || appearance_isbanned(new_character))
 		client.prefs.sync_save_data(PREFERENCE_CHARACTER)
 		var/datum/preferences/random_preferences = new
@@ -621,12 +521,10 @@
 		mind.active = FALSE					// we wish to transfer the key manually
 
 		if(mind.assigned_role == JOB_TITLE_CLOWN)				// give them a clownname if they are a clown
-			new_character.real_name = pick(GLOB.clown_names)	// I hate this being here of all places but unfortunately dna is based on real_name!
-			new_character.rename_self(JOB_TITLE_CLOWN)
+			new_character.rename_character(null, client.prefs.read_preference(/datum/preference/name/clown))
 
 		else if(mind.assigned_role == JOB_TITLE_MIME)
-			new_character.real_name = pick(GLOB.mime_names)
-			new_character.rename_self(JOB_TITLE_MIME)
+			new_character.rename_character(null, client.prefs.read_preference(/datum/preference/name/mime))
 
 		mind.set_original_mob(new_character)
 		mind.transfer_to(new_character)					// won't transfer key since the mind is not active
@@ -643,11 +541,10 @@
 	return FALSE
 
 /mob/new_player/proc/close_spawn_windows()
-	close_window(src, "latechoices") //closes late choices window
+	SStgui.close_user_uis(src, GLOB.latejoin_menu)
 	close_window(src, "playersetup") //closes the player setup window
-	close_window(src, "preferences") //closes preferences
 	if(client?.prefs)
-		SStgui.close_uis(client.prefs.job_menu)
+		SStgui.close_uis(client.prefs)
 
 /mob/new_player/proc/has_admin_rights()
 	return check_rights(R_ADMIN, FALSE, src)

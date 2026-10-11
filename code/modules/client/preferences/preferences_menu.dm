@@ -8,7 +8,6 @@
 	ui = new(user, src, "PreferencesMenu")
 	ui.set_autoupdate(FALSE)
 	ui.open()
-	character_preview_view.display_to(user, ui.window)
 
 /datum/preferences/ui_state(mob/user)
 	return GLOB.always_state
@@ -25,7 +24,6 @@
 
 	data["character_preferences"] = compile_character_preferences(user)
 	data["active_slot"] = default_slot
-	data["saved"] = saved
 
 	for(var/datum/preference_middleware/preference_middleware as anything in middleware)
 		data += preference_middleware.get_ui_data(user)
@@ -38,8 +36,9 @@
 	data["character_profiles"] = create_character_profiles()
 	data["character_preview_view"] = character_preview_view.assigned_map
 	data["window"] = current_window
+	data["starting_page"] = starting_page
+	data["page_request"] = page_request
 	data["content_unlocked"] = unlock_content
-	data["max_save_slots"] = max_save_slots
 
 	for(var/datum/preference_middleware/preference_middleware as anything in middleware)
 		data += preference_middleware.get_ui_static_data(user)
@@ -48,8 +47,7 @@
 
 /datum/preferences/ui_assets(mob/user)
 	var/list/assets = list(
-		get_asset_datum(/datum/asset/spritesheet_batched/sprite_accessories),
-		get_asset_datum(/datum/asset/spritesheet_batched/species),
+		get_asset_datum(/datum/asset/spritesheet_batched/preferences),
 		get_asset_datum(/datum/asset/json/preferences),
 	)
 
@@ -64,16 +62,6 @@
 		return
 
 	switch(action)
-		if("jobs_act")
-			. = job_menu.ui_act(params["action"], params["params"] || list(), ui, state)
-			character_preview_view?.update_body()
-			return
-		if("loadout_act")
-			if(!loadout)
-				loadout = new
-			. = loadout.ui_act(params["action"], params["params"] || list(), ui, state)
-			character_preview_view?.update_body()
-			return
 		if("change_slot")
 			save_character(parent)
 			switch_to_slot(params["slot"])
@@ -82,25 +70,13 @@
 			remove_current_slot()
 			return TRUE
 		if("show_preview")
-			character_preview_view.hide_from(usr)
-			addtimer(CALLBACK(character_preview_view, TYPE_PROC_REF(/atom/movable/screen/map_view, display_to), usr), PREVIEW_REDISPLAY_DELAY)
+			character_preview_view.show_to(usr.client)
+			return FALSE
+		if("hide_preview")
+			usr.client.screen -= character_preview_view
 			return FALSE
 		if("rotate")
 			character_preview_view.dir = turn(character_preview_view.dir, -90)
-			return TRUE
-		if("toggle_job_clothes")
-			character_preview_view.show_job_clothes = !character_preview_view.show_job_clothes
-			character_preview_view.update_body()
-			return TRUE
-		if("save")
-			save_preferences(parent)
-			save_character(parent)
-			return TRUE
-		if("reload")
-			load_preferences(parent)
-			load_character(parent)
-			character_preview_view.update_body()
-			update_static_data(usr, ui)
 			return TRUE
 		if("set_preference")
 			var/requested_preference_key = params["preference"]
@@ -124,8 +100,7 @@
 				preference_middleware.post_set_preference(usr, requested_preference_key, value)
 			return TRUE
 		if("set_color_preference")
-			var/requested_preference_key = params["preference"]
-			var/datum/preference/requested_preference = GLOB.preference_entries_by_key[requested_preference_key]
+			var/datum/preference/requested_preference = GLOB.preference_entries_by_key[params["preference"]]
 			if(!istype(requested_preference, /datum/preference/color))
 				return FALSE
 
@@ -148,11 +123,13 @@
 	save_preferences(parent)
 	QDEL_NULL(character_preview_view)
 
-/datum/preferences/proc/open_window(mob/user, window)
+/datum/preferences/proc/open_window(mob/user, window, page)
 	if(SSatoms.initialized != INITIALIZATION_INNEW_REGULAR)
 		to_chat(user, span_warning("Сервер ещё загружается, подождите немного."))
 		return
 	current_window = window
+	starting_page = page
+	page_request++
 	update_static_data(user)
 	ui_interact(user)
 
@@ -177,10 +154,14 @@
 
 		if(istype(preference, /datum/preference/choiced))
 			var/datum/preference/choiced/choiced_preference = preference
-			valid_choices[preference.savefile_key] = choiced_preference.get_valid_choices(src)
+			var/list/choices = choiced_preference.get_valid_choices(src)
+			if(choices != choiced_preference.get_choices())
+				valid_choices[preference.savefile_key] = choices
 		else if(istype(preference, /datum/preference/numeric))
 			var/datum/preference/numeric/numeric_preference = preference
-			valid_ranges[preference.savefile_key] = numeric_preference.get_valid_range(src)
+			var/list/range = numeric_preference.get_valid_range(src)
+			if(range[1] != numeric_preference.minimum || range[2] != numeric_preference.maximum)
+				valid_ranges[preference.savefile_key] = range
 
 	for(var/datum/preference_middleware/preference_middleware as anything in middleware)
 		var/list/append_character_preferences = preference_middleware.get_character_preferences(user)
@@ -276,16 +257,30 @@
 	if(job_support_low & JOB_FLAG_PRISONER)
 		return SSjobs.GetJob(JOB_TITLE_PRISONER)
 	for(var/datum/job/job as anything in SSjobs.occupations)
-		if(GetJobDepartment(job, 1) & job.flag)
+		if(get_job_preference_level(job) == JP_HIGH)
 			return job
 
 /datum/preferences/proc/render_new_preview_appearance(mob/living/carbon/human/dummy/mannequin, show_job_clothes = TRUE)
 	apply_prefs_to(mannequin, FALSE)
 	var/datum/job/preview_job = get_highest_priority_job()
+	switch(preview_job?.title)
+		if(JOB_TITLE_AI)
+			return image('icons/mob/ai.dmi', icon_state = "ai", dir = SOUTH)
+		if(JOB_TITLE_CYBORG)
+			return image('icons/mob/robots.dmi', icon_state = "robot", dir = SOUTH)
+
+	equip_preview_loadout(mannequin)
 	if(show_job_clothes && preview_job?.outfit)
 		mannequin.equipOutfit(preview_job.outfit, visualsOnly = TRUE)
 	mannequin.regenerate_icons()
 	return mannequin.appearance
+
+/datum/preferences/proc/equip_preview_loadout(mob/living/carbon/human/dummy/mannequin)
+	for(var/gear_name in choosen_gears)
+		var/datum/gear/gear = choosen_gears[gear_name]
+		if(!gear.slot || gear.implantable)
+			continue
+		mannequin.equip_to_slot_or_del(gear.spawn_item(mannequin, get_gear_metadata(gear)), gear.slot, TRUE)
 
 /datum/preferences/proc/create_character_profiles()
 	var/list/profiles = list()
@@ -315,6 +310,7 @@
 	if(!clear_character_slot(parent))
 		return
 	character_data = list()
+	randomise = get_default_randomization()
 	clear_character_cache()
 	randomise_appearance_prefs()
 	character_preview_view?.update_body()
@@ -336,9 +332,21 @@
 	preferences = null
 	return ..()
 
+/atom/movable/screen/map_view/char_preview/proc/show_to(client/viewer)
+	if(!(src in viewer.screen))
+		display_to_client(viewer)
+		return
+	viewer.screen -= src
+	addtimer(CALLBACK(src, PROC_REF(register_to), viewer), PREVIEW_REDISPLAY_DELAY)
+
+/atom/movable/screen/map_view/char_preview/proc/register_to(client/viewer)
+	viewer?.register_map_obj(src)
+
 /atom/movable/screen/map_view/char_preview/proc/update_body()
 	QDEL_NULL(body)
 	body = new
+	var/facing = dir
 	appearance = preferences.render_new_preview_appearance(body, show_job_clothes)
+	dir = facing
 
 #undef PREVIEW_REDISPLAY_DELAY

@@ -24,6 +24,11 @@
 /datum/preference/choiced/accessory/underwear/apply_to_human(mob/living/carbon/human/target, value, datum/preferences/preferences)
 	target.underwear = value
 
+/datum/preference/choiced/accessory/underwear/compile_constant_data()
+	var/list/data = ..()
+	data[SUPPLEMENTAL_FEATURE_KEY] = "underwear_color"
+	return data
+
 /datum/preference/color/underwear_color
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "underwear_color"
@@ -64,6 +69,11 @@
 
 /datum/preference/choiced/accessory/undershirt/apply_to_human(mob/living/carbon/human/target, value, datum/preferences/preferences)
 	target.undershirt = value
+
+/datum/preference/choiced/accessory/undershirt/compile_constant_data()
+	var/list/data = ..()
+	data[SUPPLEMENTAL_FEATURE_KEY] = "undershirt_color"
+	return data
 
 /datum/preference/color/undershirt_color
 	savefile_identifier = PREFERENCE_CHARACTER
@@ -107,14 +117,46 @@
 /datum/preference/choiced/backpack
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "backbag"
+	main_feature_name = "Рюкзак"
+	category = PREFERENCE_CATEGORY_CLOTHING
+	should_generate_icons = TRUE
 	randomize_by_default = FALSE
-	category = PREFERENCE_CATEGORY_NON_CONTEXTUAL
 
 /datum/preference/choiced/backpack/init_possible_values()
 	return GLOB.backbaglist.Copy()
 
 /datum/preference/choiced/backpack/create_default_value()
 	return GBACKPACK
+
+/datum/preference/choiced/backpack/icon_for(value)
+	switch(value)
+		if(GBACKPACK)
+			return /obj/item/storage/backpack
+		if(GSATCHEL)
+			return /obj/item/storage/backpack/satchel_norm
+		if(GDUFFLEBAG)
+			return /obj/item/storage/backpack/duffel
+		if(LSATCHEL)
+			return /obj/item/storage/backpack/satchel
+		if(DBACKPACK)
+			return /obj/item/storage/backpack/medic
+		if(DSATCHEL)
+			return /obj/item/storage/backpack/satchel_med
+		if(DDUFFLEBAG)
+			return /obj/item/storage/backpack/duffel/medical
+
+/datum/preference/choiced/backpack/compile_constant_data()
+	var/list/data = ..()
+	data[CHOICED_PREFERENCE_DISPLAY_NAMES] = list(
+		GBACKPACK = "Серый рюкзак",
+		GSATCHEL = "Серая сумка",
+		GDUFFLEBAG = "Серый вещмешок",
+		LSATCHEL = "Кожаная сумка",
+		DBACKPACK = "Рюкзак отдела",
+		DSATCHEL = "Сумка отдела",
+		DDUFFLEBAG = "Вещмешок отдела",
+	)
+	return data
 
 /datum/preference/choiced/backpack/apply_to_human(mob/living/carbon/human/target, value, datum/preferences/preferences)
 	target.backbag = value

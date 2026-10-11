@@ -10,7 +10,7 @@
 	)
 
 /datum/preference_middleware/keybindings/get_ui_static_data(mob/user)
-	if(preferences.current_window != PREFERENCE_TAB_KEYBINDINGS)
+	if(preferences.current_window == PREFERENCE_TAB_CHARACTER_PREFERENCES)
 		return list()
 
 	var/list/keybindings = list()
@@ -59,7 +59,7 @@
 
 	LAZYINITLIST(preferences.keybindings_overrides)
 	preferences.keybindings_overrides[keybinding.name] = hotkeys
-	apply_overrides(user)
+	preferences.init_keybindings(preferences.keybindings_overrides)
 	return TRUE
 
 /datum/preference_middleware/keybindings/proc/set_custom_emote(list/params, mob/user)

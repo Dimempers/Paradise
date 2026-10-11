@@ -71,23 +71,6 @@ GLOBAL_LIST_INIT(zoom_modes, list(SCALING_METHOD_DISTORT = "Метод ближ�
 	else
 		return max(0, days - C.player_age)
 
-/// Checks whether a role should be disabled due to a mutually exclusive role selection
-/// Civilian/Prisoner/Investor — only one can be selected, the others are disabled
-/proc/is_job_title_muted(job_support_low, job_title)
-	var/any_mutual_role_selected = job_support_low & (JOB_FLAG_CIVILIAN | JOB_FLAG_PRISONER | JOB_FLAG_INVESTOR)
-	if(!any_mutual_role_selected)
-		return FALSE
-
-	// If a special role is selected, disable everything except the selected one
-	if(job_support_low & JOB_FLAG_CIVILIAN)
-		return job_title != JOB_TITLE_CIVILIAN
-	if(job_support_low & JOB_FLAG_PRISONER)
-		return job_title != JOB_TITLE_PRISONER
-	if(job_support_low & JOB_FLAG_INVESTOR)
-		return job_title != JOB_TITLE_INVESTOR
-	return FALSE
-
-
 #define MAX_SAVE_SLOTS 30 // Save slots for regular players
 #define MAX_SAVE_SLOTS_MEMBER 30 // Save slots for BYOND members
 
@@ -144,8 +127,8 @@ GLOBAL_LIST_INIT(zoom_modes, list(SCALING_METHOD_DISTORT = "Метод ближ�
 	var/disabilities = 0
 
 	var/current_window = PREFERENCE_TAB_CHARACTER_PREFERENCES
-
-	var/saved = FALSE // Indicates whether the character comes from the database or not
+	var/starting_page
+	var/page_request = 0
 
 	/// Volume mixer, indexed by channel as TEXT (numerical indexes will not work). Volume goes from 0 to 100.
 	var/list/volume_mixer = list(
@@ -172,7 +155,6 @@ GLOBAL_LIST_INIT(zoom_modes, list(SCALING_METHOD_DISTORT = "Метод ближ�
 
 	//Gear stuff
 	var/list/loadout_gear = list()
-	var/list/tgui_loadout_gear = list()
 	var/list/choosen_gears = list()
 
 	var/discord_id = null
@@ -189,14 +171,12 @@ GLOBAL_LIST_INIT(zoom_modes, list(SCALING_METHOD_DISTORT = "Метод ближ�
 	///TRUE when a player declines to be included for the selection process of game mode antagonists.
 	var/skip_antag = FALSE
 
-	var/datum/ui_module/loadout/loadout
-	var/datum/ui_module/job_preferences/job_menu
-
 	var/action_buttons_screen_locs = list()
 
 	var/list/character_data = list()
 	var/list/player_data = list()
 	var/list/value_cache = list()
+	var/list/randomise = list()
 	var/list/recently_updated_keys = list()
 	var/list/datum/preference_middleware/middleware = list()
 	var/atom/movable/screen/map_view/char_preview/character_preview_view
@@ -206,7 +186,7 @@ GLOBAL_LIST_INIT(zoom_modes, list(SCALING_METHOD_DISTORT = "Метод ближ�
 /datum/preferences/New(client/C)
 	parent = C
 	max_gear_slots = CONFIG_GET(number/max_loadout_points)
-	job_menu = new()
+	randomise = get_default_randomization()
 	for(var/middleware_type in subtypesof(/datum/preference_middleware))
 		middleware += new middleware_type(src)
 
@@ -233,8 +213,6 @@ GLOBAL_LIST_INIT(zoom_modes, list(SCALING_METHOD_DISTORT = "Метод ближ�
 /datum/preferences/Destroy(force)
 	QDEL_NULL(character_preview_view)
 	QDEL_LIST(middleware)
-	QDEL_NULL(job_menu)
-	QDEL_NULL(loadout)
 	value_cache = null
 	parent = null
 	return ..()
@@ -260,10 +238,6 @@ GLOBAL_LIST_INIT(zoom_modes, list(SCALING_METHOD_DISTORT = "Метод ближ�
 	metadata["[tweak]"] = new_metadata
 	tweak.update_gear_intro(new_metadata)
 
-/datum/preferences/proc/SetChoices(mob/user)
-	close_window(user, "preferences")
-	job_menu.ui_interact(user)
-
 /datum/preferences/proc/init_keybindings(overrides, raw)
 	if(raw)
 		try
@@ -282,103 +256,47 @@ GLOBAL_LIST_INIT(zoom_modes, list(SCALING_METHOD_DISTORT = "Метод ближ�
 	parent?.update_active_keybindings()
 	return keybindings
 
-/datum/preferences/proc/SetJobPreferenceLevel(datum/job/job, level)
-	if(!job)
-		return 0
+/datum/preferences/proc/get_job_preference_column(datum/job/job, level)
+	var/static/alist/department_columns = alist(
+		JOBCAT_SUPPORT = "support",
+		JOBCAT_MEDSCI = "medsci",
+		JOBCAT_ENGSEC = "engsec",
+		JOBCAT_KARMA = "karma",
+	)
+	var/static/alist/level_columns = alist(
+		JP_HIGH = "high",
+		JP_MEDIUM = "med",
+		JP_LOW = "low",
+	)
+	var/department = department_columns[job.department_flag]
+	if(department)
+		return "job_[department]_[level_columns[level]]"
 
-	if(level == 1) // to high
-		// remove any other job(s) set to high
-		job_support_med |= job_support_high
-		job_engsec_med |= job_engsec_high
-		job_medsci_med |= job_medsci_high
-		job_karma_med |= job_karma_high
-		job_support_high = 0
-		job_engsec_high = 0
-		job_medsci_high = 0
-		job_karma_high = 0
+/datum/preferences/proc/set_job_preference_level(datum/job/job, level)
+	if(!get_job_preference_column(job, JP_LOW))
+		return FALSE
 
-	if(job.department_flag == JOBCAT_SUPPORT)
-		job_support_low &= ~job.flag
-		job_support_med &= ~job.flag
-		job_support_high &= ~job.flag
+	if(level == JP_HIGH)
+		for(var/department in list("support", "medsci", "engsec", "karma"))
+			vars["job_[department]_med"] |= vars["job_[department]_high"]
+			vars["job_[department]_high"] = 0
 
-		switch(level)
-			if(1)
-				job_support_high |= job.flag
-			if(2)
-				job_support_med |= job.flag
-			if(3)
-				job_support_low |= job.flag
+	if(level && (job.flag & JOB_FLAGS_EXCLUSIVE) && job.department_flag == JOBCAT_SUPPORT)
+		job_support_low &= ~JOB_FLAGS_EXCLUSIVE
 
-		return 1
-	else if(job.department_flag == JOBCAT_ENGSEC)
-		job_engsec_low &= ~job.flag
-		job_engsec_med &= ~job.flag
-		job_engsec_high &= ~job.flag
+	for(var/job_level in list(JP_HIGH, JP_MEDIUM, JP_LOW))
+		vars[get_job_preference_column(job, job_level)] &= ~job.flag
 
-		switch(level)
-			if(1)
-				job_engsec_high |= job.flag
-			if(2)
-				job_engsec_med |= job.flag
-			if(3)
-				job_engsec_low |= job.flag
+	if(level)
+		vars[get_job_preference_column(job, level)] |= job.flag
 
-		return 1
-	else if(job.department_flag == JOBCAT_MEDSCI)
-		job_medsci_low &= ~job.flag
-		job_medsci_med &= ~job.flag
-		job_medsci_high &= ~job.flag
+	return TRUE
 
-		switch(level)
-			if(1)
-				job_medsci_high |= job.flag
-			if(2)
-				job_medsci_med |= job.flag
-			if(3)
-				job_medsci_low |= job.flag
-
-		return 1
-	else if(job.department_flag == JOBCAT_KARMA)
-		job_karma_low &= ~job.flag
-		job_karma_med &= ~job.flag
-		job_karma_high &= ~job.flag
-
-		switch(level)
-			if(1)
-				job_karma_high |= job.flag
-			if(2)
-				job_karma_med |= job.flag
-			if(3)
-				job_karma_low |= job.flag
-
-		return 1
-
-	return 0
-
-/datum/preferences/proc/UpdateJobPreference(mob/user, role, desiredLvl)
-	var/datum/job/job = SSjobs.GetJob(role)
-
-	if(!job)
-		SStgui.close_uis(job_menu)
-		return
-
-	if(!isnum(desiredLvl))
-		to_chat(user, span_warning("UpdateJobPreference – выбранный уровень не был числом. Сообщите о баге!"))
-		return
-
-	if(role == JOB_TITLE_CIVILIAN || role == JOB_TITLE_PRISONER || role == JOB_TITLE_INVESTOR)
-		if(job_support_low & job.flag)
-			job_support_low &= ~job.flag
-		else
-			job_support_low |= job.flag
-			job_support_low &= ~(JOB_FLAG_CIVILIAN | JOB_FLAG_PRISONER | JOB_FLAG_INVESTOR)
-			job_support_low |= job.flag
-		return 1
-
-	SetJobPreferenceLevel(job, desiredLvl)
-
-	return 1
+/datum/preferences/proc/get_job_preference_level(datum/job/job)
+	for(var/level in list(JP_HIGH, JP_MEDIUM, JP_LOW))
+		var/column = get_job_preference_column(job, level)
+		if(column && (vars[column] & job.flag))
+			return level
 
 /datum/preferences/proc/GetPlayerAltTitle(datum/job/job)
 	return player_alt_titles.Find(job.title) > 0 \
@@ -393,222 +311,12 @@ GLOBAL_LIST_INIT(zoom_modes, list(SCALING_METHOD_DISTORT = "Метод ближ�
 	if(job.title != new_title)
 		player_alt_titles[job.title] = new_title
 
-/datum/preferences/proc/SetJob(mob/user, role)
-	var/datum/job/job = SSjobs.GetJob(role)
-	if(!job)
-		SStgui.close_uis(job_menu)
-		return
-
-	if(role == JOB_TITLE_CIVILIAN)
-		if(job_support_low & job.flag)
-			job_support_low &= ~job.flag
-		else
-			job_support_low |= job.flag
-		SetChoices(user)
-		return 1
-
-	if(GetJobDepartment(job, 1) & job.flag)
-		SetJobDepartment(job, 1)
-	else if(GetJobDepartment(job, 2) & job.flag)
-		SetJobDepartment(job, 2)
-	else if(GetJobDepartment(job, 3) & job.flag)
-		SetJobDepartment(job, 3)
-	else//job = Never
-		SetJobDepartment(job, 4)
-
-	SetChoices(user)
-	return 1
-
-/**
- * Rebuilds the `loadout_gear` list of the [active_character], and returns the total end cost.
- *
- * Caches and cuts the existing [/datum/character_save/var/loadout_gear] list and remakes it, checking the `subtype_selection_cost` and overall cost validity of each item.
- *
- * If the item's [/datum/gear/var/subtype_selection_cost] is `FALSE`, any future items with the same [/datum/gear/var/main_typepath] will have their cost skipped.
- * If adding the item will take the total cost over the maximum, it won't be added to the list.
- *
- * Arguments:
- * * new_item - A new [/datum/gear] item to be added to the `loadout_gear` list.
- */
-/datum/preferences/proc/build_loadout(datum/gear/new_item)
-	var/total_cost = 0
-	var/list/type_blacklist = list()
-	var/list/loadout_cache = loadout_gear.Copy()
-	loadout_gear.Cut()
-	tgui_loadout_gear.Cut()
-	choosen_gears.Cut()
-	if(new_item)
-		loadout_cache += "[new_item.index_name]"
-
-	for(var/item in loadout_cache)
-		var/datum/gear/gear = GLOB.gear_datums[item]
-		if(!gear)
-			continue
-		var/added_cost = gear.cost
-		if(!gear.subtype_cost_overlap) // If listings of the same subtype shouldn't have their cost added.
-			if(gear.path in type_blacklist)
-				added_cost = 0
-			else
-				type_blacklist += gear.path
-		if((total_cost + added_cost) > max_gear_slots)
-			continue // If the final cost is too high, don't add the item.
-		var/item_cache = loadout_cache[item]
-		loadout_gear[item] = item_cache ? item_cache : list()
-		var/tgui_data = list()
-		for(var/datum/gear_tweak/tweak in gear.gear_tweaks)
-			var/text_path = "[tweak.type]"
-			if(!(text_path in item_cache))
-				continue
-			var/params = item_cache[text_path]
-			var/list/data =tweak?.get_tgui_data(params)
-			if(!data)
-				continue
-			tgui_data[text_path] = data["display_param"]
-			tgui_data["name"] = data["name"]
-			tgui_data["icon"] = data["icon"]
-			tgui_data["icon_file"] = data["icon_file"]
-			tgui_data["icon_state"] = data["icon_state"]
-		tgui_loadout_gear[gear] = tgui_data
-		choosen_gears[item] = gear
-		total_cost += added_cost
-	return total_cost
-
-/datum/preferences/proc/ResetJobs()
-	job_support_high = 0
-	job_support_med = 0
-	job_support_low = 0
-
-	job_medsci_high = 0
-	job_medsci_med = 0
-	job_medsci_low = 0
-
-	job_engsec_high = 0
-	job_engsec_med = 0
-	job_engsec_low = 0
-
-	job_karma_high = 0
-	job_karma_med = 0
-	job_karma_low = 0
-
 /datum/preferences/proc/GetJobDepartment(datum/job/job, level)
-	if(!job || !level)	return 0
-	switch(job.department_flag)
-		if(JOBCAT_SUPPORT)
-			switch(level)
-				if(1)
-					return job_support_high
-				if(2)
-					return job_support_med
-				if(3)
-					return job_support_low
-		if(JOBCAT_MEDSCI)
-			switch(level)
-				if(1)
-					return job_medsci_high
-				if(2)
-					return job_medsci_med
-				if(3)
-					return job_medsci_low
-		if(JOBCAT_ENGSEC)
-			switch(level)
-				if(1)
-					return job_engsec_high
-				if(2)
-					return job_engsec_med
-				if(3)
-					return job_engsec_low
-		if(JOBCAT_KARMA)
-			switch(level)
-				if(1)
-					return job_karma_high
-				if(2)
-					return job_karma_med
-				if(3)
-					return job_karma_low
-	return 0
-
-/datum/preferences/proc/SetJobDepartment(datum/job/job, level)
-	if(!job || !level)	return 0
-	switch(level)
-		if(1)//Only one of these should ever be active at once so clear them all here
-			job_support_high = 0
-			job_medsci_high = 0
-			job_engsec_high = 0
-			job_karma_high = 0
-			return 1
-		if(2)//Set current highs to med, then reset them
-			job_support_med |= job_support_high
-			job_medsci_med |= job_medsci_high
-			job_engsec_med |= job_engsec_high
-			job_karma_med |= job_karma_high
-			job_support_high = 0
-			job_medsci_high = 0
-			job_engsec_high = 0
-			job_karma_high = 0
-
-	switch(job.department_flag)
-		if(JOBCAT_SUPPORT)
-			switch(level)
-				if(2)
-					job_support_high = job.flag
-					job_support_med &= ~job.flag
-				if(3)
-					job_support_med |= job.flag
-					job_support_low &= ~job.flag
-				else
-					job_support_low |= job.flag
-		if(JOBCAT_MEDSCI)
-			switch(level)
-				if(2)
-					job_medsci_high = job.flag
-					job_medsci_med &= ~job.flag
-				if(3)
-					job_medsci_med |= job.flag
-					job_medsci_low &= ~job.flag
-				else
-					job_medsci_low |= job.flag
-		if(JOBCAT_ENGSEC)
-			switch(level)
-				if(2)
-					job_engsec_high = job.flag
-					job_engsec_med &= ~job.flag
-				if(3)
-					job_engsec_med |= job.flag
-					job_engsec_low &= ~job.flag
-				else
-					job_engsec_low |= job.flag
-		if(JOBCAT_KARMA)
-			switch(level)
-				if(2)
-					job_karma_high = job.flag
-					job_karma_med &= ~job.flag
-				if(3)
-					job_karma_med |= job.flag
-					job_karma_low &= ~job.flag
-				else
-					job_karma_low |= job.flag
-	return 1
+	var/column = job && level && get_job_preference_column(job, JP_HIGH + 1 - level)
+	return column ? vars[column] : 0
 
 /datum/preferences/proc/check_any_job()
 	return(job_support_high || job_support_med || job_support_low || job_medsci_high || job_medsci_med || job_medsci_low || job_engsec_high || job_engsec_med || job_engsec_low || job_karma_high || job_karma_med || job_karma_low)
-
-// Used to display UI_theme in Russian
-/datum/preferences/proc/ui_theme_to_russian(ui_theme)
-	switch(ui_theme)
-		if(UI_THEME_MIDNIGHT)
-			return UI_THEME_MIDNIGHT_RUS
-		if(UI_THEME_PLASMAFIRE)
-			return UI_THEME_PLASMAFIRE_RUS
-		if(UI_THEME_RETRO)
-			return UI_THEME_RETRO_RUS
-		if(UI_THEME_SLIMECORE)
-			return UI_THEME_SLIMECORE_RUS
-		if(UI_THEME_OPERATIVE)
-			return UI_THEME_OPERATIVE_RUS
-		if(UI_THEME_WHITE)
-			return UI_THEME_WHITE_RUS
-		if(UI_THEME_CLOCKWORK)
-			return UI_THEME_CLOCKWORK_RUS
 
 /// Get random charecter with can_be_antagonist on. If no such characters, don't change current.
 /datum/preferences/proc/get_possible_antagonist()

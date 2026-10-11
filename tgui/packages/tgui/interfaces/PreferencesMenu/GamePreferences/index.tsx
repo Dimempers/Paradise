@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Stack } from 'tgui-core/components';
+import { exhaustiveCheck } from 'tgui-core/exhaustive';
 
 import { PageButton } from '../components/PageButton';
 import { GamePreferencesSelectedPage } from '../types';
@@ -15,6 +16,19 @@ export function GamePreferenceWindow(props: Props) {
     props.startingPage ?? GamePreferencesSelectedPage.Settings,
   );
 
+  let pageContents;
+
+  switch (currentPage) {
+    case GamePreferencesSelectedPage.Keybindings:
+      pageContents = <KeybindingsPage />;
+      break;
+    case GamePreferencesSelectedPage.Settings:
+      pageContents = <GamePreferencesPage />;
+      break;
+    default:
+      exhaustiveCheck(currentPage);
+  }
+
   return (
     <Stack vertical fill>
       <Stack.Item>
@@ -28,6 +42,7 @@ export function GamePreferenceWindow(props: Props) {
               Настройки
             </PageButton>
           </Stack.Item>
+
           <Stack.Item grow>
             <PageButton
               currentPage={currentPage}
@@ -39,13 +54,11 @@ export function GamePreferenceWindow(props: Props) {
           </Stack.Item>
         </Stack>
       </Stack.Item>
+
       <Stack.Divider />
+
       <Stack.Item grow shrink basis="1px">
-        {currentPage === GamePreferencesSelectedPage.Keybindings ? (
-          <KeybindingsPage />
-        ) : (
-          <GamePreferencesPage />
-        )}
+        {pageContents}
       </Stack.Item>
     </Stack>
   );

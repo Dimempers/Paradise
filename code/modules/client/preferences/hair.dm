@@ -32,6 +32,11 @@ GLOBAL_LIST_INIT(species_with_hair_colour, list(SPECIES_HUMAN, SPECIES_UNATHI, S
 	var/obj/item/organ/external/head/head = preferences.get_head_organ(target)
 	head?.h_style = value
 
+/datum/preference/choiced/accessory/hair/compile_constant_data()
+	var/list/data = ..()
+	data[SUPPLEMENTAL_FEATURE_KEY] = "hair_colour"
+	return data
+
 /datum/preference/color/hair_color
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "hair_colour"
@@ -51,7 +56,7 @@ GLOBAL_LIST_INIT(species_with_hair_colour, list(SPECIES_HUMAN, SPECIES_UNATHI, S
 /datum/preference/color/secondary_hair_color
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "secondary_hair_colour"
-	category = PREFERENCE_CATEGORY_SUPPLEMENTAL_FEATURES
+	category = PREFERENCE_CATEGORY_SECONDARY_FEATURES
 	priority = PREFERENCE_PRIORITY_APPEARANCE
 
 /datum/preference/color/secondary_hair_color/has_relevant_feature(datum/preferences/preferences)
@@ -69,7 +74,7 @@ GLOBAL_LIST_INIT(species_with_hair_colour, list(SPECIES_HUMAN, SPECIES_UNATHI, S
 
 /datum/preference/choiced/accessory/hair_gradient
 	savefile_key = "hair_gradient"
-	category = PREFERENCE_CATEGORY_SECONDARY_FEATURES
+	category = PREFERENCE_CATEGORY_FEATURES
 	main_feature_name = "Градиент причёски"
 	accessory_category = ACCESSORY_CATEGORY_HAIR_GRADIENT
 
@@ -87,7 +92,7 @@ GLOBAL_LIST_INIT(species_with_hair_colour, list(SPECIES_HUMAN, SPECIES_UNATHI, S
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "hair_gradient_colour"
 	randomize_by_default = FALSE
-	category = PREFERENCE_CATEGORY_SECONDARY_FEATURES
+	category = PREFERENCE_CATEGORY_SUPPLEMENTAL_FEATURES
 	priority = PREFERENCE_PRIORITY_APPEARANCE
 
 /datum/preference/color/hair_gradient_color/apply_to_human(mob/living/carbon/human/target, value, datum/preferences/preferences)
@@ -98,7 +103,7 @@ GLOBAL_LIST_INIT(species_with_hair_colour, list(SPECIES_HUMAN, SPECIES_UNATHI, S
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "hair_gradient_alpha"
 	randomize_by_default = FALSE
-	category = PREFERENCE_CATEGORY_SECONDARY_FEATURES
+	category = PREFERENCE_CATEGORY_SUPPLEMENTAL_FEATURES
 	priority = PREFERENCE_PRIORITY_APPEARANCE
 	minimum = 0
 	maximum = 255
@@ -114,7 +119,7 @@ GLOBAL_LIST_INIT(species_with_hair_colour, list(SPECIES_HUMAN, SPECIES_UNATHI, S
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "hair_gradient_offset_x"
 	randomize_by_default = FALSE
-	category = PREFERENCE_CATEGORY_SECONDARY_FEATURES
+	category = PREFERENCE_CATEGORY_SUPPLEMENTAL_FEATURES
 	priority = PREFERENCE_PRIORITY_APPEARANCE
 	minimum = -16
 	maximum = 16
@@ -130,7 +135,7 @@ GLOBAL_LIST_INIT(species_with_hair_colour, list(SPECIES_HUMAN, SPECIES_UNATHI, S
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "hair_gradient_offset_y"
 	randomize_by_default = FALSE
-	category = PREFERENCE_CATEGORY_SECONDARY_FEATURES
+	category = PREFERENCE_CATEGORY_SUPPLEMENTAL_FEATURES
 	priority = PREFERENCE_PRIORITY_APPEARANCE
 	minimum = -16
 	maximum = 16
@@ -177,6 +182,11 @@ GLOBAL_LIST_INIT(species_with_hair_colour, list(SPECIES_HUMAN, SPECIES_UNATHI, S
 	var/obj/item/organ/external/head/head = preferences.get_head_organ(target)
 	head?.f_style = value
 
+/datum/preference/choiced/accessory/facial_hair/compile_constant_data()
+	var/list/data = ..()
+	data[SUPPLEMENTAL_FEATURE_KEY] = "facial_hair_colour"
+	return data
+
 /datum/preference/color/facial_hair_color
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "facial_hair_colour"
@@ -198,7 +208,7 @@ GLOBAL_LIST_INIT(species_with_hair_colour, list(SPECIES_HUMAN, SPECIES_UNATHI, S
 /datum/preference/color/secondary_facial_hair_color
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "secondary_facial_hair_colour"
-	category = PREFERENCE_CATEGORY_SUPPLEMENTAL_FEATURES
+	category = PREFERENCE_CATEGORY_SECONDARY_FEATURES
 	priority = PREFERENCE_PRIORITY_APPEARANCE
 
 /datum/preference/color/secondary_facial_hair_color/has_relevant_feature(datum/preferences/preferences)

@@ -1,154 +1,230 @@
+import { binaryInsertWith } from 'common/collections';
+import { useState } from 'react';
+import { useBackend } from 'tgui/backend';
 import {
   Box,
   Button,
+  Divider,
   Flex,
-  LabeledList,
   Section,
   Stack,
   Tooltip,
 } from 'tgui-core/components';
 import { classes } from 'tgui-core/react';
 
-import { useBackend } from '../../../backend';
-import { FeatureValueInput } from '../features';
+import { type Antagonist, Category } from '../antagonists/base';
 import type { PreferencesMenuData } from '../types';
-import { useServerPrefs } from '../useServerPrefs';
 
-const BANNED_REASON = 'Заблокировано';
+const requireAntag = require.context(
+  '../antagonists/antagonists',
+  false,
+  /.ts$/,
+);
 
-export function AntagsPage() {
+const antagsByCategory = new Map<Category, Antagonist[]>();
+
+function binaryInsertAntag(collection: Antagonist[], value: Antagonist) {
+  return binaryInsertWith(collection, value, (antag) => {
+    return `${antag.priority}_${antag.name}`;
+  });
+}
+
+for (const antagKey of requireAntag.keys()) {
+  const antag = requireAntag<{
+    default?: Antagonist;
+  }>(antagKey).default;
+
+  if (!antag) {
+    continue;
+  }
+
+  antagsByCategory.set(
+    antag.category,
+    binaryInsertAntag(antagsByCategory.get(antag.category) || [], antag),
+  );
+}
+
+type AntagSelectionProps = {
+  antagonists: Antagonist[];
+  name: string;
+};
+
+function AntagSelection(props: AntagSelectionProps) {
   const { act, data } = useBackend<PreferencesMenuData>();
-  const antagonists = useServerPrefs()?.antags?.antagonists || [];
-  const selected = data.selected_antags || [];
-  const locked = data.locked_antags || {};
-  const prefs = data.character_preferences.manually_rendered_features;
   const className = 'PreferencesMenu__Antags__antagSelection';
 
-  return (
-    <Stack vertical fill className="PreferencesMenu__Antags">
-      <Stack.Item>
-        <Section>
-          <Stack align="center">
-            <Stack.Item grow>
-              <LabeledList>
-                <LabeledList.Item label="Персонаж может быть антагонистом">
-                  <FeatureValueInput
-                    featureId="can_be_antagonist"
-                    value={prefs.can_be_antagonist}
-                  />
-                </LabeledList.Item>
-                <LabeledList.Item label="Местоположение аплинка">
-                  <FeatureValueInput
-                    featureId="uplink_pref"
-                    value={prefs.uplink_pref}
-                  />
-                </LabeledList.Item>
-              </LabeledList>
-            </Stack.Item>
-            <Stack.Item>
-              <Button.Checkbox
-                checked={!data.skip_antag}
-                tooltip="Отключите, чтобы не участвовать в отборе антагонистов в этом раунде"
-                onClick={() => act('toggle_skip_antag')}
-              >
-                Участвовать в отборе
-              </Button.Checkbox>
-            </Stack.Item>
-          </Stack>
-        </Section>
-      </Stack.Item>
-      <Stack.Item grow>
-        <Section
-          fill
-          scrollable
-          title="Специальные роли"
-          buttons={
-            <>
-              <Button
-                color="good"
-                onClick={() => act('set_antags', { enabled: true })}
-              >
-                Включить все
-              </Button>
-              <Button
-                color="bad"
-                onClick={() => act('set_antags', { enabled: false })}
-              >
-                Выключить все
-              </Button>
-            </>
-          }
-        >
-          <Flex className={className} align="flex-end" wrap>
-            {antagonists.map((antagonist) => {
-              const lockReason = locked[antagonist.key];
-              const isBanned = lockReason === BANNED_REASON;
+  const [predictedState, setPredictedState] = useState(
+    new Set(data.selected_antags),
+  );
 
-              return (
-                <Flex.Item
-                  className={classes([
-                    `${className}__antagonist`,
-                    `${className}__antagonist--${
-                      lockReason
-                        ? 'banned'
-                        : selected.includes(antagonist.key)
-                          ? 'on'
-                          : 'off'
-                    }`,
-                  ])}
-                  key={antagonist.key}
+  function enableAntags(antags: string[]) {
+    const newState = new Set(predictedState);
+
+    for (const antag of antags) {
+      newState.add(antag);
+    }
+
+    setPredictedState(newState);
+
+    act('set_antags', {
+      antags,
+      toggled: true,
+    });
+  }
+
+  function disableAntags(antags: string[]) {
+    const newState = new Set(predictedState);
+
+    for (const antag of antags) {
+      newState.delete(antag);
+    }
+
+    setPredictedState(newState);
+
+    act('set_antags', {
+      antags,
+      toggled: false,
+    });
+  }
+
+  const antagonistKeys = props.antagonists.map((antagonist) => antagonist.key);
+
+  return (
+    <Section
+      title={props.name}
+      buttons={
+        <>
+          <Button color="good" onClick={() => enableAntags(antagonistKeys)}>
+            Включить все
+          </Button>
+
+          <Button color="bad" onClick={() => disableAntags(antagonistKeys)}>
+            Выключить все
+          </Button>
+        </>
+      }
+    >
+      <Flex className={className} align="flex-end" wrap>
+        {props.antagonists.map((antagonist) => {
+          const isBanned =
+            data.antag_bans && data.antag_bans.indexOf(antagonist.key) !== -1;
+
+          const daysLeft = data.antag_days_left?.[antagonist.key] || 0;
+          const hoursLeft = Math.ceil(
+            (data.antag_playtime_left?.[antagonist.key] || 0) / 60,
+          );
+
+          return (
+            <Flex.Item
+              className={classes([
+                `${className}__antagonist`,
+                `${className}__antagonist--${
+                  isBanned || daysLeft > 0 || hoursLeft > 0
+                    ? 'banned'
+                    : predictedState.has(antagonist.key)
+                      ? 'on'
+                      : 'off'
+                }`,
+              ])}
+              key={antagonist.key}
+            >
+              <Stack align="center" vertical>
+                <Stack.Item
+                  style={{
+                    fontWeight: 'bold',
+                    marginTop: 'auto',
+                    maxWidth: '100px',
+                    textAlign: 'center',
+                  }}
                 >
-                  <Stack align="center" vertical>
-                    <Stack.Item
-                      style={{
-                        fontWeight: 'bold',
-                        marginTop: 'auto',
-                        maxWidth: '100px',
-                        textAlign: 'center',
+                  {antagonist.name}
+                </Stack.Item>
+
+                <Stack.Item align="center">
+                  <Tooltip
+                    content={
+                      isBanned
+                        ? `Вам запрещена роль «${antagonist.name}».`
+                        : antagonist.description.map((text, index) => {
+                            return (
+                              <div key={antagonist.key + index}>
+                                {text}
+                                {index !==
+                                  antagonist.description.length - 1 && (
+                                  <Divider />
+                                )}
+                              </div>
+                            );
+                          })
+                    }
+                    position="bottom"
+                  >
+                    <Box
+                      className={'antagonist-icon-parent'}
+                      onClick={() => {
+                        if (isBanned) {
+                          return;
+                        }
+
+                        if (predictedState.has(antagonist.key)) {
+                          disableAntags([antagonist.key]);
+                        } else {
+                          enableAntags([antagonist.key]);
+                        }
                       }}
                     >
-                      {antagonist.name}
-                    </Stack.Item>
-                    <Stack.Item align="center">
-                      <Tooltip
-                        content={lockReason || antagonist.name}
-                        position="bottom"
-                      >
-                        <Box
-                          className="antagonist-icon-parent"
-                          onClick={() => {
-                            if (!lockReason) {
-                              act('toggle_antag', { role: antagonist.key });
-                            }
-                          }}
-                        >
-                          {!!antagonist.icon && (
-                            <Box
-                              className={classes([
-                                'antagonists96x96',
-                                antagonist.icon,
-                                'antagonist-icon',
-                              ])}
-                            />
-                          )}
-                          {isBanned && (
-                            <Box className="antagonist-banned-slash" />
-                          )}
-                          {!!lockReason && !isBanned && (
-                            <Box className="antagonist-days-left">
-                              <b>{lockReason}</b>
-                            </Box>
-                          )}
+                      <Box
+                        className={classes([
+                          'antagonists96x96',
+                          antagonist.key,
+                          'antagonist-icon',
+                        ])}
+                      />
+
+                      {isBanned && <Box className="antagonist-banned-slash" />}
+
+                      {daysLeft > 0 && (
+                        <Box className="antagonist-days-left">
+                          Через <b>{daysLeft}</b> дн.
                         </Box>
-                      </Tooltip>
-                    </Stack.Item>
-                  </Stack>
-                </Flex.Item>
-              );
-            })}
-          </Flex>
-        </Section>
-      </Stack.Item>
-    </Stack>
+                      )}
+
+                      {!daysLeft && hoursLeft > 0 && (
+                        <Box className="antagonist-days-left">
+                          Ещё <b>{hoursLeft}</b> ч.
+                        </Box>
+                      )}
+                    </Box>
+                  </Tooltip>
+                </Stack.Item>
+              </Stack>
+            </Flex.Item>
+          );
+        })}
+      </Flex>
+    </Section>
+  );
+}
+
+const CATEGORY_NAMES: Record<Category, string> = {
+  [Category.Roundstart]: 'Начало раунда',
+  [Category.Midround]: 'В течение раунда',
+  [Category.Latejoin]: 'Поздний вход',
+};
+
+export function AntagsPage() {
+  return (
+    <Box className="PreferencesMenu__Antags">
+      {[Category.Roundstart, Category.Midround, Category.Latejoin].map(
+        (category) =>
+          antagsByCategory.has(category) && (
+            <AntagSelection
+              key={category}
+              name={CATEGORY_NAMES[category]}
+              antagonists={antagsByCategory.get(category)!}
+            />
+          ),
+      )}
+    </Box>
   );
 }

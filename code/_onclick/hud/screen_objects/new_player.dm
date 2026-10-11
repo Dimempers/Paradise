@@ -1,6 +1,9 @@
 #define SHUTTER_MOVEMENT_DURATION 0.4 SECONDS
 #define SHUTTER_WAIT_DURATION 0.2 SECONDS
 #define LOBBY_COLLAPSE_DISTANCE 146
+#define LOBBY_BOTTOM_BUTTON_SIZE 24
+#define LINK_HINT_MAX_WIDTH 192
+#define LINK_HINT_WIDTH_PADDING 2
 
 INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 
@@ -224,6 +227,22 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 
 /atom/movable/screen/lobby/button/bottom/link
 	abstract_type = /atom/movable/screen/lobby/button/bottom/link
+	var/hint_room = LINK_HINT_MAX_WIDTH
+	var/hint_fitted = FALSE
+
+/atom/movable/screen/lobby/button/bottom/link/update_hint()
+	if(highlighted && !hint_fitted)
+		fit_hint()
+	return ..()
+
+/atom/movable/screen/lobby/button/bottom/link/proc/fit_hint()
+	var/measurement = hud?.mymob?.client?.MeasureText(MAPTEXT(desc))
+	var/text_width = measurement ? text2num(copytext(measurement, 1, findtextEx(measurement, "x"))) : 0
+	if(QDELETED(src))
+		return
+	hint_fitted = TRUE
+	maptext_width = text_width > 0 ? min(text_width + LINK_HINT_WIDTH_PADDING, LINK_HINT_MAX_WIDTH) : LINK_HINT_MAX_WIDTH
+	maptext_x = min(round((LOBBY_BOTTOM_BUTTON_SIZE - maptext_width) / 2), hint_room - maptext_width)
 
 /atom/movable/screen/lobby/button/bottom/link/collapse_button()
 	animate(src, transform = transform, time = SHUTTER_MOVEMENT_DURATION + SHUTTER_WAIT_DURATION)
@@ -348,7 +367,7 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 	. = ..()
 	if(!.)
 		return
-	hud.mymob.client.prefs.SetChoices(hud.mymob)
+	hud.mymob.client.prefs.open_window(hud.mymob, PREFERENCE_TAB_CHARACTER_PREFERENCES, PREFERENCE_PAGE_JOBS)
 
 /atom/movable/screen/lobby/button/bottom/volume
 	name = "View Volume Mixer"
@@ -649,45 +668,58 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 	if(!hud || !show_static || !SSnew_player_info.initialized)
 		maptext = null
 		return
-	maptext = MAPTEXT("<span style='text-align: center; vertical-align: middle'>[SSnew_player_info.get_info_text()]</span>")
+	maptext = MAPTEXT("<span style='text-align: center; vertical-align: middle'>[SSnew_player_info.get_info_text(!!hud.mymob.client?.holder)]</span>")
 
 #undef OVERLAY_X_DIFF
 #undef OVERLAY_Y_DIFF
 
-/atom/movable/screen/lobby/notice
-	name = "Lobby Notice"
-	screen_loc = "SOUTH+2,CENTER-9"
-	maptext_width = 608
-	maptext_height = 64
+/atom/movable/screen/lobby/caption
+	abstract_type = /atom/movable/screen/lobby/caption
+	screen_loc = "SOUTH,WEST"
 	always_shown = TRUE
 	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
 
-/atom/movable/screen/lobby/notice/Initialize(mapload, datum/hud/hud_owner)
+/atom/movable/screen/lobby/caption/Initialize(mapload, datum/hud/hud_owner)
+	. = ..()
+	var/client/owner = hud.mymob.client
+	RegisterSignal(owner, COMSIG_VIEW_SET, PROC_REF(fit_to_view))
+	fit_to_view(owner, owner.view)
+
+/atom/movable/screen/lobby/caption/proc/fit_to_view(datum/source, new_size)
+	SIGNAL_HANDLER
+	maptext_width = view_to_pixels(new_size)[1] - 2 * maptext_x
+
+/atom/movable/screen/lobby/caption/notice
+	name = "Lobby Notice"
+	screen_loc = "SOUTH+2,WEST"
+	maptext_height = 64
+
+/atom/movable/screen/lobby/caption/notice/Initialize(mapload, datum/hud/hud_owner)
 	. = ..()
 	RegisterSignal(SStitle, COMSIG_TITLE_NOTICE_CHANGED, PROC_REF(update_text))
 	update_text()
 
-/atom/movable/screen/lobby/notice/proc/update_text()
+/atom/movable/screen/lobby/caption/notice/proc/update_text()
 	SIGNAL_HANDLER
 	maptext = SStitle.notice ? MAPTEXT_PIXELLARI("<span style='text-align: center; color: #ff4040'>[SStitle.notice]</span>") : null
 
-/atom/movable/screen/lobby/phrase
+/atom/movable/screen/lobby/caption/phrase
 	name = "Lobby Phrase"
-	screen_loc = "SOUTH,CENTER-9:8"
-	maptext_width = 592
+	maptext_x = 8
 	maptext_height = 24
-	always_shown = TRUE
-	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
 
-/atom/movable/screen/lobby/phrase/Initialize(mapload, datum/hud/hud_owner)
+/atom/movable/screen/lobby/caption/phrase/Initialize(mapload, datum/hud/hud_owner)
 	. = ..()
 	RegisterSignal(SStitle, COMSIG_SUBSYSTEM_POST_INITIALIZE, PROC_REF(update_text))
 	update_text()
 
-/atom/movable/screen/lobby/phrase/proc/update_text()
+/atom/movable/screen/lobby/caption/phrase/proc/update_text()
 	SIGNAL_HANDLER
 	maptext = SStitle.initialized ? MAPTEXT_PIXELLARI("<span style='text-align: center'>[SStitle.random_phrase]</span>") : null
 
 #undef SHUTTER_MOVEMENT_DURATION
 #undef SHUTTER_WAIT_DURATION
 #undef LOBBY_COLLAPSE_DISTANCE
+#undef LOBBY_BOTTOM_BUTTON_SIZE
+#undef LINK_HINT_MAX_WIDTH
+#undef LINK_HINT_WIDTH_PADDING

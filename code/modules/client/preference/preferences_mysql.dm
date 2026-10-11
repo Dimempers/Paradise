@@ -117,6 +117,10 @@ GLOBAL_LIST_INIT(marking_locations, list("head", "body", "tail"))
 		data["hair_gradient_offset_x"] = text2num(gradient_offset[1])
 		data["hair_gradient_offset_y"] = text2num(gradient_offset[2])
 	data -= "hair_gradient_offset"
+
+	if(isnull(data["random_name"]) && text2num(data["name_is_always_random"]))
+		data["random_name"] = RANDOM_ENABLED
+	data -= "name_is_always_random"
 	return data
 
 /proc/pack_character_columns(list/character_data)
@@ -132,6 +136,8 @@ GLOBAL_LIST_INIT(marking_locations, list("head", "body", "tail"))
 
 	data["hair_gradient_offset"] = "[data["hair_gradient_offset_x"] || 0],[data["hair_gradient_offset_y"] || 0]"
 	data -= list("hair_gradient_offset_x", "hair_gradient_offset_y")
+
+	data["name_is_always_random"] = data["random_name"] == RANDOM_ENABLED
 
 	var/list/columns = list()
 	for(var/column in GLOB.character_preference_columns)
@@ -261,8 +267,6 @@ GLOBAL_LIST_INIT(marking_locations, list("head", "body", "tail"))
 	if(C.launcher_state == LAUNCHER_PENDING)
 		return FALSE
 
-	saved = FALSE
-
 	if(!slot)
 		slot = default_slot
 	slot = sanitize_integer(slot, 1, max_save_slots, initial(default_slot))
@@ -301,10 +305,10 @@ GLOBAL_LIST_INIT(marking_locations, list("head", "body", "tail"))
 	var/list/row = list()
 	if(query.NextRow())
 		row = select_query_row(query, columns)
-		saved = TRUE
 	qdel(query)
 
 	character_data = unpack_character_columns(row)
+	randomise = islist(character_data["randomise"]) ? character_data["randomise"] : get_default_randomization()
 
 	for(var/column in GLOB.character_job_columns)
 		vars[column] = sanitize_integer(text2num(row[column]), 0, 65535, 0)
@@ -356,6 +360,7 @@ GLOBAL_LIST_INIT(marking_locations, list("head", "body", "tail"))
 			player_alt_titles -= title
 
 	sync_save_data(PREFERENCE_CHARACTER)
+	character_data["randomise"] = randomise
 
 	var/list/values = pack_character_columns(character_data)
 	for(var/column in GLOB.character_job_columns)
@@ -403,7 +408,6 @@ GLOBAL_LIST_INIT(marking_locations, list("head", "body", "tail"))
 
 	qdel(query)
 	recently_updated_keys.Cut()
-	saved = TRUE
 	slot_names["[default_slot]"] = character_data["real_name"]
 	tainted_character_profiles = TRUE
 	return 1
@@ -457,7 +461,6 @@ GLOBAL_LIST_INIT(marking_locations, list("head", "body", "tail"))
 
 	qdel(delete_query)
 
-	saved = FALSE
 	slot_names -= "[default_slot]"
 	tainted_character_profiles = TRUE
 	return TRUE

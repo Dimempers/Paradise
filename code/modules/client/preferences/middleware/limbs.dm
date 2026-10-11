@@ -42,6 +42,7 @@ GLOBAL_LIST_INIT(preference_organ_names, list(
 			"zone" = zone,
 			"name" = GLOB.preference_limb_names[zone],
 			"status" = describe_status(preferences.organ_data[zone], preferences.rlimb_data[zone]),
+			"state" = preferences.organ_data[zone] || PREF_ORGANSTATUS_ORGANIC,
 		))
 
 	var/list/organs = list()
@@ -51,6 +52,7 @@ GLOBAL_LIST_INIT(preference_organ_names, list(
 				"zone" = slot,
 				"name" = GLOB.preference_organ_names[slot],
 				"status" = describe_status(preferences.organ_data[slot]),
+				"state" = preferences.organ_data[slot] || PREF_ORGANSTATUS_ORGANIC,
 			))
 
 	return list(

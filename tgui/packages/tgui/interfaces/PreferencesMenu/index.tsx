@@ -1,10 +1,11 @@
 import { logger } from 'common/logging';
-import { useEffect, useState } from 'react';
-import { Box } from 'tgui-core/components';
+import { Suspense, useEffect, useState } from 'react';
+import { exhaustiveCheck } from 'tgui-core/exhaustive';
 import { fetchRetry } from 'tgui-core/http';
 import { resolveAsset } from '../../assets';
 import { useBackend } from '../../backend';
 import { Window } from '../../layouts';
+import { destroyCharacterPreview } from '../common/CharacterPreview';
 import { LoadingScreen } from '../common/LoadingScreen';
 import { CharacterPreferenceWindow } from './CharacterPreferences';
 import { GamePreferenceWindow } from './GamePreferences';
@@ -14,51 +15,70 @@ import {
   PrefsWindow,
   type ServerData,
 } from './types';
+import { RandomToggleState } from './useRandomToggleState';
 import { ServerPrefs } from './useServerPrefs';
 
-export function PreferencesMenu() {
+export function PreferencesMenu(props) {
   const { data } = useBackend<PreferencesMenuData>();
+
+  useEffect(
+    () => () => destroyCharacterPreview(data.character_preview_view),
+    [data.character_preview_view],
+  );
+
+  return (
+    <Window width={920} height={770}>
+      <Window.Content className="PreferencesMenu">
+        <Suspense fallback={<LoadingScreen />}>
+          <PrefsWindowInner />
+        </Suspense>
+      </Window.Content>
+    </Window>
+  );
+}
+
+function PrefsWindowInner(props) {
+  const { data } = useBackend<PreferencesMenuData>();
+  const { window } = data;
+
   const [serverData, setServerData] = useState<ServerData>();
+  const randomization = useState(false);
 
   useEffect(() => {
     fetchRetry(resolveAsset('preferences.json'))
       .then((response) => response.json())
-      .then((json) => setServerData(json))
-      .catch((error) => logger.log('Failed to fetch preferences.json', error));
+      .then((data) => {
+        setServerData(data);
+      })
+      .catch((error) => {
+        logger.log('Failed to fetch preferences.json', error);
+      });
   }, []);
 
-  const isCharacterWindow = data.window === PrefsWindow.Character;
-  let title = 'Настройка персонажа';
   let content;
-  if (data.window === PrefsWindow.Game) {
-    title = 'Настройки игры';
-    content = <GamePreferenceWindow />;
-  } else if (data.window === PrefsWindow.Keybindings) {
-    title = 'Привязка клавиш';
-    content = (
-      <GamePreferenceWindow
-        startingPage={GamePreferencesSelectedPage.Keybindings}
-      />
-    );
+  switch (window) {
+    case PrefsWindow.Character:
+      content = <CharacterPreferenceWindow />;
+      break;
+    case PrefsWindow.Game:
+      content = <GamePreferenceWindow />;
+      break;
+    case PrefsWindow.Keybindings:
+      content = (
+        <GamePreferenceWindow
+          startingPage={GamePreferencesSelectedPage.Keybindings}
+        />
+      );
+      break;
+    default:
+      exhaustiveCheck(window);
   }
 
   return (
-    <Window title={title} width={1100} height={770}>
-      <Window.Content>
-        {serverData ? (
-          <ServerPrefs.Provider value={serverData}>
-            <Box
-              height="100%"
-              style={{ display: isCharacterWindow ? undefined : 'none' }}
-            >
-              <CharacterPreferenceWindow visible={isCharacterWindow} />
-            </Box>
-            {content}
-          </ServerPrefs.Provider>
-        ) : (
-          <LoadingScreen />
-        )}
-      </Window.Content>
-    </Window>
+    <ServerPrefs.Provider value={serverData}>
+      <RandomToggleState.Provider value={randomization}>
+        {content}
+      </RandomToggleState.Provider>
+    </ServerPrefs.Provider>
   );
 }

@@ -2,6 +2,14 @@
 #define ACCESSORY_PREVIEW_CROP_Y1 17
 #define ACCESSORY_PREVIEW_CROP_X2 24
 #define ACCESSORY_PREVIEW_CROP_Y2 32
+#define ACCESSORY_PREVIEW_LEGS_X1 10
+#define ACCESSORY_PREVIEW_LEGS_Y1 1
+#define ACCESSORY_PREVIEW_LEGS_X2 22
+#define ACCESSORY_PREVIEW_LEGS_Y2 13
+#define ACCESSORY_PREVIEW_TORSO_X1 9
+#define ACCESSORY_PREVIEW_TORSO_Y1 9
+#define ACCESSORY_PREVIEW_TORSO_X2 23
+#define ACCESSORY_PREVIEW_TORSO_Y2 23
 #define ACCESSORY_PREVIEW_COLOR COLOR_DARK_BROWN
 #define ACCESSORY_PREVIEW_SKIN_COLOR "#b07d5c"
 #define ACCESSORY_PREVIEW_GRADIENT_HAIR "Long Hair"
@@ -12,39 +20,54 @@
 	var/list/preview_keys = list()
 
 /datum/asset/spritesheet_batched/sprite_accessories/create_spritesheets()
-	for(var/style in GLOB.hair_styles_full_list)
-		insert_preview(ACCESSORY_CATEGORY_HAIR, style, build_head_preview(GLOB.hair_styles_full_list[style]))
+	for(var/category in list(ACCESSORY_CATEGORY_HAIR, ACCESSORY_CATEGORY_FACIAL_HAIR, ACCESSORY_CATEGORY_HEAD_ACCESSORY, ACCESSORY_CATEGORY_HAIR_GRADIENT, ACCESSORY_CATEGORY_MARKING, ACCESSORY_CATEGORY_ALT_HEAD, ACCESSORY_CATEGORY_BODY_ACCESSORY, ACCESSORY_CATEGORY_UNDERWEAR, ACCESSORY_CATEGORY_UNDERSHIRT, ACCESSORY_CATEGORY_SOCKS))
+		for(var/style in get_style_list(category))
+			insert_preview(category, style, build_preview(category, style))
 
-	for(var/style in GLOB.facial_hair_styles_list)
-		insert_preview(ACCESSORY_CATEGORY_FACIAL_HAIR, style, build_head_preview(GLOB.facial_hair_styles_list[style]))
+/datum/asset/spritesheet_batched/sprite_accessories/proc/get_style_list(category)
+	switch(category)
+		if(ACCESSORY_CATEGORY_HAIR)
+			return GLOB.hair_styles_full_list
+		if(ACCESSORY_CATEGORY_FACIAL_HAIR)
+			return GLOB.facial_hair_styles_list
+		if(ACCESSORY_CATEGORY_HEAD_ACCESSORY)
+			return GLOB.head_accessory_styles_list
+		if(ACCESSORY_CATEGORY_HAIR_GRADIENT)
+			return GLOB.hair_gradients_list
+		if(ACCESSORY_CATEGORY_MARKING)
+			return GLOB.marking_styles_list
+		if(ACCESSORY_CATEGORY_ALT_HEAD)
+			return GLOB.alt_heads_list
+		if(ACCESSORY_CATEGORY_BODY_ACCESSORY)
+			return GLOB.body_accessory_by_name
+		if(ACCESSORY_CATEGORY_UNDERWEAR)
+			return GLOB.underwear_list
+		if(ACCESSORY_CATEGORY_UNDERSHIRT)
+			return GLOB.undershirt_list
+		if(ACCESSORY_CATEGORY_SOCKS)
+			return GLOB.socks_list
+	return list()
 
-	for(var/style in GLOB.head_accessory_styles_list)
-		insert_preview(ACCESSORY_CATEGORY_HEAD_ACCESSORY, style, build_head_preview(GLOB.head_accessory_styles_list[style]))
-
-	for(var/style in GLOB.hair_gradients_list)
-		insert_preview(ACCESSORY_CATEGORY_HAIR_GRADIENT, style, build_gradient_preview(GLOB.hair_gradients_list[style]))
-
-	for(var/style in GLOB.marking_styles_list)
-		var/datum/sprite_accessory/body_markings/marking = GLOB.marking_styles_list[style]
-		if(marking.marking_location == "head")
-			insert_preview(ACCESSORY_CATEGORY_MARKING, style, build_head_preview(marking))
-		else
-			insert_preview(ACCESSORY_CATEGORY_MARKING, style, build_body_preview(marking))
-
-	for(var/style in GLOB.alt_heads_list)
-		insert_preview(ACCESSORY_CATEGORY_ALT_HEAD, style, build_alt_head_preview(GLOB.alt_heads_list[style]))
-
-	for(var/style in GLOB.body_accessory_by_name)
-		insert_preview(ACCESSORY_CATEGORY_BODY_ACCESSORY, style, build_body_accessory_preview(GLOB.body_accessory_by_name[style]))
-
-	for(var/style in GLOB.underwear_list)
-		insert_preview(ACCESSORY_CATEGORY_UNDERWEAR, style, build_undergarment_preview(GLOB.underwear_list[style], "uw"))
-
-	for(var/style in GLOB.undershirt_list)
-		insert_preview(ACCESSORY_CATEGORY_UNDERSHIRT, style, build_undergarment_preview(GLOB.undershirt_list[style], "us"))
-
-	for(var/style in GLOB.socks_list)
-		insert_preview(ACCESSORY_CATEGORY_SOCKS, style, build_undergarment_preview(GLOB.socks_list[style], "sk"))
+/datum/asset/spritesheet_batched/sprite_accessories/proc/build_preview(category, style_name)
+	var/accessory = get_style_list(category)[style_name]
+	switch(category)
+		if(ACCESSORY_CATEGORY_HAIR, ACCESSORY_CATEGORY_FACIAL_HAIR, ACCESSORY_CATEGORY_HEAD_ACCESSORY)
+			return build_head_preview(accessory)
+		if(ACCESSORY_CATEGORY_HAIR_GRADIENT)
+			return build_gradient_preview(accessory)
+		if(ACCESSORY_CATEGORY_MARKING)
+			var/datum/sprite_accessory/body_markings/marking = accessory
+			return marking?.marking_location == "head" ? build_head_preview(marking) : build_body_preview(marking)
+		if(ACCESSORY_CATEGORY_ALT_HEAD)
+			return build_alt_head_preview(accessory)
+		if(ACCESSORY_CATEGORY_BODY_ACCESSORY)
+			return build_body_accessory_preview(accessory)
+		if(ACCESSORY_CATEGORY_UNDERWEAR)
+			return crop_to_legs(build_undergarment_preview(accessory, "uw"))
+		if(ACCESSORY_CATEGORY_UNDERSHIRT)
+			return crop_to_torso(build_undergarment_preview(accessory, "us"))
+		if(ACCESSORY_CATEGORY_SOCKS)
+			return crop_to_legs(build_undergarment_preview(accessory, "sk"))
 
 /datum/asset/spritesheet_batched/sprite_accessories/proc/get_preview_key(category, style_name)
 	var/list/category_keys = preview_keys[category]
@@ -62,7 +85,7 @@
 	insert_icon(key, preview)
 
 /datum/asset/spritesheet_batched/sprite_accessories/proc/build_head_preview(datum/sprite_accessory/accessory)
-	var/datum/universal_icon/preview = build_species_head(accessory.species_allowed)
+	var/datum/universal_icon/preview = build_species_head(accessory?.species_allowed)
 	var/datum/universal_icon/layer = build_accessory_layer(accessory)
 	if(layer)
 		preview.blend_icon(layer, ICON_OVERLAY)
@@ -76,7 +99,7 @@
 		return crop_to_head(preview)
 
 	preview.blend_icon(hair, ICON_OVERLAY)
-	if(icon_exists(gradient.icon, gradient.icon_state))
+	if(gradient && icon_exists(gradient.icon, gradient.icon_state))
 		var/datum/universal_icon/tint = uni_icon(gradient.icon, "full")
 		tint.blend_icon(uni_icon(gradient.icon, gradient.icon_state), ICON_AND)
 		tint.blend_icon(uni_icon(reference.icon, "[reference.icon_state]_s"), ICON_AND)
@@ -91,29 +114,29 @@
 	return preview
 
 /datum/asset/spritesheet_batched/sprite_accessories/proc/build_alt_head_preview(datum/sprite_accessory/alt_heads/alt_head)
-	var/datum/universal_icon/preview = build_species_head(alt_head.species_allowed, alt_head.icon_state)
+	var/datum/universal_icon/preview = build_species_head(alt_head?.species_allowed, alt_head?.icon_state || "head")
 	return crop_to_head(preview)
 
 /datum/asset/spritesheet_batched/sprite_accessories/proc/build_body_accessory_preview(datum/body_accessory/accessory)
+	var/datum/universal_icon/preview = build_naked_body(WEST)
 	if(!accessory || !icon_exists(accessory.icon, accessory.icon_state))
-		return
+		return preview
 	var/datum/universal_icon/layer = uni_icon(accessory.icon, accessory.icon_state, WEST)
 	if(!isnull(accessory.blend_mode))
 		layer.blend_color(ACCESSORY_PREVIEW_SKIN_COLOR, accessory.blend_mode)
-	var/datum/universal_icon/preview = build_naked_body(WEST)
 	preview.blend_icon(layer, ICON_OVERLAY)
 	return preview
 
 /datum/asset/spritesheet_batched/sprite_accessories/proc/build_undergarment_preview(datum/sprite_accessory/accessory, prefix)
 	var/datum/universal_icon/preview = build_naked_body()
-	var/state = "[prefix]_[accessory.icon_state]_s"
-	if(icon_exists(accessory.icon, state))
+	var/state = "[prefix]_[accessory?.icon_state]_s"
+	if(accessory && icon_exists(accessory.icon, state))
 		preview.blend_icon(uni_icon(accessory.icon, state), ICON_OVERLAY)
 	return preview
 
 /datum/asset/spritesheet_batched/sprite_accessories/proc/build_accessory_layer(datum/sprite_accessory/accessory)
-	var/state = "[accessory.icon_state]_s"
-	if(!icon_exists(accessory.icon, state))
+	var/state = "[accessory?.icon_state]_s"
+	if(!accessory || !icon_exists(accessory.icon, state))
 		return
 	var/datum/universal_icon/layer = uni_icon(accessory.icon, state)
 	if(accessory.do_colouration)
@@ -144,10 +167,28 @@
 	preview.scale(ICON_SIZE_X, ICON_SIZE_Y)
 	return preview
 
+/datum/asset/spritesheet_batched/sprite_accessories/proc/crop_to_legs(datum/universal_icon/preview)
+	preview.crop(ACCESSORY_PREVIEW_LEGS_X1, ACCESSORY_PREVIEW_LEGS_Y1, ACCESSORY_PREVIEW_LEGS_X2, ACCESSORY_PREVIEW_LEGS_Y2)
+	preview.scale(ICON_SIZE_X, ICON_SIZE_Y)
+	return preview
+
+/datum/asset/spritesheet_batched/sprite_accessories/proc/crop_to_torso(datum/universal_icon/preview)
+	preview.crop(ACCESSORY_PREVIEW_TORSO_X1, ACCESSORY_PREVIEW_TORSO_Y1, ACCESSORY_PREVIEW_TORSO_X2, ACCESSORY_PREVIEW_TORSO_Y2)
+	preview.scale(ICON_SIZE_X, ICON_SIZE_Y)
+	return preview
+
 #undef ACCESSORY_PREVIEW_CROP_X1
 #undef ACCESSORY_PREVIEW_CROP_Y1
 #undef ACCESSORY_PREVIEW_CROP_X2
 #undef ACCESSORY_PREVIEW_CROP_Y2
+#undef ACCESSORY_PREVIEW_LEGS_X1
+#undef ACCESSORY_PREVIEW_LEGS_Y1
+#undef ACCESSORY_PREVIEW_LEGS_X2
+#undef ACCESSORY_PREVIEW_LEGS_Y2
+#undef ACCESSORY_PREVIEW_TORSO_X1
+#undef ACCESSORY_PREVIEW_TORSO_Y1
+#undef ACCESSORY_PREVIEW_TORSO_X2
+#undef ACCESSORY_PREVIEW_TORSO_Y2
 #undef ACCESSORY_PREVIEW_COLOR
 #undef ACCESSORY_PREVIEW_SKIN_COLOR
 #undef ACCESSORY_PREVIEW_GRADIENT_HAIR

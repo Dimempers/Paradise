@@ -1,117 +1,186 @@
-import { type ReactNode, useState } from 'react';
-import { Box, Dropdown, Stack } from 'tgui-core/components';
+import { useEffect, useRef, useState } from 'react';
+import { useBackend } from 'tgui/backend';
+import { Floating, Icon, Stack } from 'tgui-core/components';
+import { exhaustiveCheck } from 'tgui-core/exhaustive';
+import { classes } from 'tgui-core/react';
 
-import { useBackend } from '../../../backend';
-import { ModuleBackendContext } from '../../common/ModuleBackend';
-import { JobPreferencesContent } from '../../JobPreferences';
-import { LoadoutContent } from '../../Loadout';
 import { PageButton } from '../components/PageButton';
 import type { PreferencesMenuData } from '../types';
 import { AntagsPage } from './AntagsPage';
-import { BodyPage } from './BodyPage';
+import { JobsPage } from './JobsPage';
+import { LoadoutPage } from './loadout';
 import { MainPage } from './MainPage';
+import { QuirkPersonalityPage } from './QuirksPage';
 import { SpeciesPage } from './SpeciesPage';
 
-const PROFILES_VISIBLE_UNLOCKED = 3;
-const PROFILES_VISIBLE_LOCKED = 4;
+const CHARACTER_PREVIEW_WIDTH = 220;
+const PROFILES_MENU_OFFSET = 2;
+const PROFILES_MENU_BOTTOM_MARGIN = 8;
+const PROFILES_MENU_ANIMATION_MS = 250;
 
 enum Page {
-  Main,
-  Species,
-  Loadout,
-  Jobs,
   Antags,
-  Body,
+  Main,
+  Jobs,
+  Species,
+  Quirks,
+  Loadout,
 }
 
-function CharacterProfiles() {
+const STARTING_PAGES: Record<string, Page> = {
+  jobs: Page.Jobs,
+};
+
+type ProfileProps = {
+  activeSlot: number;
+  onClick: (index: number) => void;
+  profiles: (string | null)[];
+};
+
+function CharacterProfiles(props: ProfileProps) {
+  const { activeSlot, onClick, profiles } = props;
+  const [open, setOpen] = useState(false);
+  const [menuHeight, setMenuHeight] = useState(0);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const profileName = (slot: number) =>
+    `${slot + 1}. ${profiles[slot] ?? 'Новый персонаж'}`;
+
+  const handleOpenChange = (isOpen: boolean) => {
+    if (isOpen && rootRef.current) {
+      const controlBottom = rootRef.current.getBoundingClientRect().bottom;
+      setMenuHeight(
+        window.innerHeight -
+          controlBottom -
+          PROFILES_MENU_OFFSET -
+          PROFILES_MENU_BOTTOM_MARGIN,
+      );
+    }
+    setOpen(isOpen);
+  };
+
+  return (
+    <Stack>
+      <Stack.Item width={`${CHARACTER_PREVIEW_WIDTH}px`} />
+      <Stack.Item grow>
+        <div className="Dropdown" ref={rootRef}>
+          <Floating
+            closeAfterInteract
+            contentAutoWidth
+            animationDuration={PROFILES_MENU_ANIMATION_MS}
+            contentClasses="Dropdown__menu--wrapper PreferencesMenu__profiles"
+            contentStyles={{
+              transitionDuration: `${PROFILES_MENU_ANIMATION_MS}ms`,
+            }}
+            contentOffset={PROFILES_MENU_OFFSET}
+            onOpenChange={handleOpenChange}
+            onMounted={() =>
+              menuRef.current
+                ?.querySelector('.selected')
+                ?.scrollIntoView({ block: 'nearest' })
+            }
+            content={
+              <div
+                className="Dropdown__menu"
+                ref={menuRef}
+                style={{ maxHeight: `${menuHeight}px` }}
+              >
+                {profiles.map((_, slot) => (
+                  <div
+                    key={slot}
+                    className={classes([
+                      'Dropdown__menu--entry',
+                      slot === activeSlot && 'selected',
+                    ])}
+                    onClick={() => onClick(slot)}
+                  >
+                    {profileName(slot)}
+                  </div>
+                ))}
+              </div>
+            }
+          >
+            <div className="Dropdown__control Button--color--default">
+              <span className="Dropdown__selected-text">
+                {profileName(activeSlot)}
+              </span>
+              <Icon
+                className={classes([
+                  'Dropdown__icon',
+                  'Dropdown__icon--arrow',
+                  open && 'open',
+                ])}
+                name="chevron-down"
+              />
+            </div>
+          </Floating>
+        </div>
+      </Stack.Item>
+    </Stack>
+  );
+}
+
+export function CharacterPreferenceWindow(props) {
   const { act, data } = useBackend<PreferencesMenuData>();
-  const options = (data.character_profiles || []).map((profile, index) => ({
-    displayText: `${index + 1}. ${profile ?? 'Новый персонаж'}`,
-    value: String(index + 1),
-  }));
 
-  return (
-    <Dropdown
-      width="100%"
-      maxItems={
-        data.content_unlocked
-          ? PROFILES_VISIBLE_UNLOCKED
-          : PROFILES_VISIBLE_LOCKED
-      }
-      selected={options[data.active_slot - 1]?.displayText}
-      options={options}
-      onSelected={(slot) => act('change_slot', { slot: Number(slot) })}
-    />
+  const [currentPage, setCurrentPage] = useState(
+    STARTING_PAGES[data.starting_page ?? ''] ?? Page.Main,
   );
-}
 
-function EmbeddedModule(props: {
-  action: string;
-  data: unknown;
-  children: ReactNode;
-}) {
-  const { act } = useBackend<PreferencesMenuData>();
-
-  return (
-    <ModuleBackendContext.Provider
-      value={{
-        data: props.data,
-        act: (action, params) =>
-          act(props.action, { action, params: params || {} }),
-      }}
-    >
-      {props.children}
-    </ModuleBackendContext.Provider>
-  );
-}
-
-export function CharacterPreferenceWindow(props: { visible: boolean }) {
-  const { data } = useBackend<PreferencesMenuData>();
-  const [currentPage, setCurrentPage] = useState(Page.Main);
+  useEffect(() => {
+    const startingPage = STARTING_PAGES[data.starting_page ?? ''];
+    if (startingPage !== undefined) {
+      setCurrentPage(startingPage);
+    }
+  }, [data.page_request]);
 
   let pageContents;
+
   switch (currentPage) {
+    case Page.Antags:
+      pageContents = <AntagsPage />;
+      break;
+    case Page.Jobs:
+      pageContents = <JobsPage />;
+      break;
+    case Page.Main:
+      pageContents = (
+        <MainPage openSpecies={() => setCurrentPage(Page.Species)} />
+      );
+
+      break;
     case Page.Species:
       pageContents = (
         <SpeciesPage closeSpecies={() => setCurrentPage(Page.Main)} />
       );
+
       break;
+    case Page.Quirks:
+      pageContents = <QuirkPersonalityPage />;
+      break;
+
     case Page.Loadout:
-      pageContents = (
-        <EmbeddedModule
-          action="loadout_act"
-          data={{ ...data.loadout_static, ...data.loadout_page }}
-        >
-          <LoadoutContent />
-        </EmbeddedModule>
-      );
+      pageContents = <LoadoutPage />;
       break;
-    case Page.Jobs:
-      pageContents = (
-        <EmbeddedModule action="jobs_act" data={data.jobs_page}>
-          <JobPreferencesContent />
-        </EmbeddedModule>
-      );
-      break;
-    case Page.Antags:
-      pageContents = <AntagsPage />;
-      break;
-    case Page.Body:
-      pageContents = <BodyPage />;
-      break;
+
+    default:
+      exhaustiveCheck(currentPage);
   }
 
   return (
     <Stack vertical fill>
       <Stack.Item>
-        <CharacterProfiles />
+        <CharacterProfiles
+          activeSlot={data.active_slot - 1}
+          onClick={(slot) => {
+            act('change_slot', {
+              slot: slot + 1,
+            });
+          }}
+          profiles={data.character_profiles}
+        />
       </Stack.Item>
-      {!data.content_unlocked && (
-        <Stack.Item align="center">
-          Купите BYOND premium, чтобы получить больше слотов!
-        </Stack.Item>
-      )}
       <Stack.Divider />
       <Stack.Item>
         <Stack fill>
@@ -125,6 +194,7 @@ export function CharacterPreferenceWindow(props: { visible: boolean }) {
               Персонаж
             </PageButton>
           </Stack.Item>
+
           <Stack.Item grow>
             <PageButton
               currentPage={currentPage}
@@ -134,6 +204,7 @@ export function CharacterPreferenceWindow(props: { visible: boolean }) {
               Снаряжение
             </PageButton>
           </Stack.Item>
+
           <Stack.Item grow>
             <PageButton
               currentPage={currentPage}
@@ -143,6 +214,7 @@ export function CharacterPreferenceWindow(props: { visible: boolean }) {
               Профессии
             </PageButton>
           </Stack.Item>
+
           <Stack.Item grow>
             <PageButton
               currentPage={currentPage}
@@ -152,29 +224,21 @@ export function CharacterPreferenceWindow(props: { visible: boolean }) {
               Антагонисты
             </PageButton>
           </Stack.Item>
+
           <Stack.Item grow>
             <PageButton
               currentPage={currentPage}
-              page={Page.Body}
+              page={Page.Quirks}
               setPage={setCurrentPage}
             >
-              Особенности и записи
+              Особенности
             </PageButton>
           </Stack.Item>
         </Stack>
       </Stack.Item>
       <Stack.Divider />
       <Stack.Item grow position="relative" overflowX="hidden" overflowY="auto">
-        <Box
-          height="100%"
-          style={{ display: currentPage === Page.Main ? undefined : 'none' }}
-        >
-          <MainPage
-            visible={props.visible && currentPage === Page.Main}
-            openSpecies={() => setCurrentPage(Page.Species)}
-          />
-        </Box>
-        {props.visible && pageContents}
+        {pageContents}
       </Stack.Item>
     </Stack>
   );

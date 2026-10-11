@@ -1,5 +1,8 @@
 #define SKIN_TONE_MINIMUM -185
 #define SKIN_TONE_MAXIMUM 34
+#define SKIN_TONE_PREVIEW_RED 244
+#define SKIN_TONE_PREVIEW_GREEN 199
+#define SKIN_TONE_PREVIEW_BLUE 174
 
 /datum/preference/numeric/skin_tone
 	savefile_identifier = PREFERENCE_CHARACTER
@@ -8,6 +11,19 @@
 	priority = PREFERENCE_PRIORITY_APPEARANCE
 	minimum = SKIN_TONE_MINIMUM
 	maximum = SKIN_TONE_MAXIMUM
+	var/static/alist/tone_presets = alist(
+		34 = "Альбинос",
+		0 = "Бледный",
+		-10 = "Светлый",
+		-30 = "Персиковый",
+		-55 = "Латиноамериканский",
+		-75 = "Оливковый",
+		-95 = "Смуглый",
+		-115 = "Афроамериканский",
+		-140 = "Тёмный",
+		-165 = "Африканский",
+		-185 = "Очень тёмный",
+	)
 
 /datum/preference/numeric/skin_tone/has_relevant_feature(datum/preferences/preferences)
 	var/datum/species/species = preferences.get_species_prototype()
@@ -33,7 +49,24 @@
 /datum/preference/numeric/skin_tone/create_random_value(datum/preferences/preferences)
 	if(!has_relevant_feature(preferences))
 		return 0
-	return random_skin_tone(preferences.read_preference(/datum/preference/choiced/species))
+	return deserialize(random_skin_tone(preferences.read_preference(/datum/preference/choiced/species)), preferences)
+
+/datum/preference/numeric/skin_tone/deserialize(input, datum/preferences/preferences)
+	. = ..()
+	if(!preferences || (preferences.get_species_prototype().bodyflags & HAS_ICON_SKIN_TONE))
+		return
+	var/nearest_tone = 0
+	for(var/tone in tone_presets)
+		if(abs(tone - .) < abs(nearest_tone - .))
+			nearest_tone = tone
+	return nearest_tone
+
+/datum/preference/numeric/skin_tone/is_valid(value, datum/preferences/preferences)
+	if(!..())
+		return FALSE
+	if(!preferences || (preferences.get_species_prototype().bodyflags & HAS_ICON_SKIN_TONE))
+		return TRUE
+	return (value in tone_presets)
 
 /datum/preference/numeric/skin_tone/apply_to_human(mob/living/carbon/human/target, value, datum/preferences/preferences)
 	target.s_tone = value
@@ -49,6 +82,15 @@
 				names += species.icon_skin_tones[tone]
 			tone_names[species_name] = names
 	data["icon_tone_names"] = tone_names
+
+	var/list/presets = list()
+	for(var/tone in tone_presets)
+		presets += list(list(
+			"value" = tone,
+			"name" = tone_presets[tone],
+			"color" = rgb(clamp(SKIN_TONE_PREVIEW_RED + tone, 0, 255), clamp(SKIN_TONE_PREVIEW_GREEN + tone, 0, 255), clamp(SKIN_TONE_PREVIEW_BLUE + tone, 0, 255)),
+		))
+	data["presets"] = presets
 	return data
 
 /datum/preference/color/skin_color
@@ -127,3 +169,6 @@
 
 #undef SKIN_TONE_MINIMUM
 #undef SKIN_TONE_MAXIMUM
+#undef SKIN_TONE_PREVIEW_RED
+#undef SKIN_TONE_PREVIEW_GREEN
+#undef SKIN_TONE_PREVIEW_BLUE

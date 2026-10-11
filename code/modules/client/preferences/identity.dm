@@ -2,6 +2,7 @@
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "language"
 	category = PREFERENCE_CATEGORY_NON_CONTEXTUAL
+	should_update_preview = FALSE
 	can_randomize = FALSE
 
 /datum/preference/choiced/language/init_possible_values()
@@ -37,6 +38,7 @@
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "autohiss"
 	category = PREFERENCE_CATEGORY_NON_CONTEXTUAL
+	should_update_preview = FALSE
 	can_randomize = FALSE
 
 /datum/preference/choiced/autohiss/init_possible_values()
@@ -70,6 +72,7 @@
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "b_type"
 	category = PREFERENCE_CATEGORY_NON_CONTEXTUAL
+	should_update_preview = FALSE
 
 /datum/preference/choiced/blood_type/init_possible_values()
 	return list("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-")
@@ -84,6 +87,7 @@
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "nanotrasen_relation"
 	category = PREFERENCE_CATEGORY_NON_CONTEXTUAL
+	should_update_preview = FALSE
 	can_randomize = FALSE
 
 /datum/preference/choiced/nanotrasen_relation/init_possible_values()
@@ -98,7 +102,8 @@
 /datum/preference/choiced/uplink_location
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "uplink_pref"
-	category = PREFERENCE_CATEGORY_MANUALLY_RENDERED
+	category = PREFERENCE_CATEGORY_NON_CONTEXTUAL
+	should_update_preview = FALSE
 	can_randomize = FALSE
 
 /datum/preference/choiced/uplink_location/init_possible_values()
@@ -114,6 +119,7 @@
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "exoframe_type"
 	category = PREFERENCE_CATEGORY_NON_CONTEXTUAL
+	should_update_preview = FALSE
 	can_randomize = FALSE
 
 /datum/preference/choiced/exoframe/init_possible_values()
@@ -140,6 +146,7 @@
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "speciesprefs"
 	category = PREFERENCE_CATEGORY_NON_CONTEXTUAL
+	should_update_preview = FALSE
 	default_value = FALSE
 	can_randomize = FALSE
 
@@ -159,7 +166,8 @@
 /datum/preference/toggle/can_be_antagonist
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "can_be_antagonist"
-	category = PREFERENCE_CATEGORY_MANUALLY_RENDERED
+	category = PREFERENCE_CATEGORY_NON_CONTEXTUAL
+	should_update_preview = FALSE
 	can_randomize = FALSE
 
 /datum/preference/toggle/can_be_antagonist/apply_to_human(mob/living/carbon/human/target, value, datum/preferences/preferences)
@@ -168,7 +176,7 @@
 /datum/preference/choiced/alternate_option
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "alternate_option"
-	category = PREFERENCE_CATEGORY_MANUALLY_RENDERED
+	should_update_preview = FALSE
 	can_randomize = FALSE
 
 /datum/preference/choiced/alternate_option/init_possible_values()
@@ -188,8 +196,12 @@
 /datum/preference/tts_seed
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "tts_seed"
-	category = PREFERENCE_CATEGORY_MANUALLY_RENDERED
+	category = PREFERENCE_CATEGORY_NON_CONTEXTUAL
+	should_update_preview = FALSE
 	can_randomize = FALSE
+
+/datum/preference/tts_seed/is_accessible(datum/preferences/preferences)
+	return ..() && CONFIG_GET(flag/tts_enabled)
 
 /datum/preference/tts_seed/deserialize(input, datum/preferences/preferences)
 	return (input in SStts.tts_seeds) ? input : ""

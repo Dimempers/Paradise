@@ -1,3 +1,23 @@
+/datum/asset/spritesheet_batched/preferences
+	name = "preferences"
+
+/datum/asset/spritesheet_batched/preferences/create_spritesheets()
+	for(var/preference_key in GLOB.preference_entries_by_key)
+		var/datum/preference/choiced/preference = GLOB.preference_entries_by_key[preference_key]
+		if(!istype(preference) || !preference.should_generate_icons)
+			continue
+
+		for(var/preference_value in preference.get_choices())
+			var/create_icon_of = preference.icon_for(preference_value)
+			var/datum/universal_icon/icon
+			if(ispath(create_icon_of, /atom))
+				icon = get_display_icon_for(create_icon_of)
+			else if(istype(create_icon_of, /datum/universal_icon))
+				icon = create_icon_of
+			else
+				CRASH("[create_icon_of] is an invalid preference value (from [preference_key]:[preference_value]).")
+			insert_icon(preference.get_spritesheet_key(preference.serialize(preference_value)), icon)
+
 /datum/preference/proc/get_spritesheet_key(value)
 	return "[savefile_key]___[sanitize_css_class_name(value)]"
 

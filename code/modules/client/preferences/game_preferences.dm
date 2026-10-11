@@ -2,12 +2,20 @@
 	savefile_identifier = PREFERENCE_PLAYER
 	savefile_key = "UI_style"
 	category = PREFERENCE_CATEGORY_GAME_PREFERENCES
+	should_generate_icons = TRUE
 
 /datum/preference/choiced/ui_style/init_possible_values()
 	return list(UI_THEME_MIDNIGHT, UI_THEME_PLASMAFIRE, UI_THEME_RETRO, UI_THEME_SLIMECORE, UI_THEME_OPERATIVE, UI_THEME_WHITE, UI_THEME_GLASS, UI_THEME_CLOCKWORK)
 
 /datum/preference/choiced/ui_style/create_default_value()
 	return UI_THEME_MIDNIGHT
+
+/datum/preference/choiced/ui_style/icon_for(value)
+	var/ui_icons = ui_style2icon(value)
+	var/datum/universal_icon/icon = uni_icon(ui_icons, "hand_l")
+	icon.crop(1 - ICON_SIZE_X, 1, ICON_SIZE_Y, ICON_SIZE_X)
+	icon.blend_icon(uni_icon(ui_icons, "hand_r"), ICON_OVERLAY)
+	return icon
 
 /datum/preference/choiced/ui_style/apply_to_client_updated(client/client, value)
 	client.mob?.remake_hud()

@@ -208,6 +208,7 @@
 #define PREF_ORGANSTATUS_CYBORG_ENG "cyborg"
 #define PREF_ORGANSTATUS_AMPUTATED_ENG "amputated"
 #define PREF_ORGANSTATUS_CYBERNETIC_ENG "cybernetic"
+#define PREF_ORGANSTATUS_ORGANIC "organic"
 
 // Organ statuses (Russian)
 #define PREF_ORGANSTATUS_ORGANIC_RUS "Органика"
@@ -258,6 +259,8 @@
 #define PREFERENCE_TAB_GAME_PREFERENCES 1
 #define PREFERENCE_TAB_KEYBINDINGS 2
 
+#define PREFERENCE_PAGE_JOBS "jobs"
+
 #define PREFERENCE_CATEGORY_FEATURES "features"
 #define PREFERENCE_CATEGORY_CLOTHING "clothing"
 #define PREFERENCE_CATEGORY_NON_CONTEXTUAL "non_contextual"
@@ -269,3 +272,11 @@
 #define RANDOM_ANTAG_ONLY 1
 #define RANDOM_DISABLED 2
 #define RANDOM_ENABLED 3
+
+#define JP_LOW 1
+#define JP_MEDIUM 2
+#define JP_HIGH 3
+
+#define DEFAULT_CYBORG_NAME "Стандартное имя"
+#define DEFAULT_RELIGION_NAME "Christianity"
+#define DEFAULT_DEITY_NAME "Space Jesus"

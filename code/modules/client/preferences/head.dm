@@ -28,6 +28,11 @@
 	var/obj/item/organ/external/head/head = preferences.get_head_organ(target)
 	head?.ha_style = value
 
+/datum/preference/choiced/accessory/head_accessory/compile_constant_data()
+	var/list/data = ..()
+	data[SUPPLEMENTAL_FEATURE_KEY] = "head_accessory_colour"
+	return data
+
 /datum/preference/color/head_accessory_color
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "head_accessory_colour"
@@ -98,11 +103,22 @@
 /datum/preference/choiced/accessory/marking/apply_to_human(mob/living/carbon/human/target, value, datum/preferences/preferences)
 	target.m_styles[marking_location] = (target.dna.species.bodyflags & relevant_bodyflag) ? value : none_value
 
+/datum/preference/choiced/accessory/marking/compile_constant_data()
+	var/list/data = ..()
+	data[SUPPLEMENTAL_FEATURE_KEY] = "[marking_location]_marking_colour"
+	return data
+
 /datum/preference/choiced/accessory/marking/head
 	savefile_key = "head_marking_style"
 	main_feature_name = "Отметки на голове"
 	relevant_bodyflag = HAS_HEAD_MARKINGS
 	marking_location = "head"
+
+/datum/preference/choiced/accessory/marking/head/icon_for(value)
+	if(value != none_value)
+		return ..()
+	var/datum/asset/spritesheet_batched/sprite_accessories/sheet = get_asset_datum(/datum/asset/spritesheet_batched/sprite_accessories)
+	return sheet.build_head_preview()
 
 /datum/preference/choiced/accessory/marking/head/is_marking_valid(datum/sprite_accessory/body_markings/marking, datum/preferences/preferences)
 	var/alt_head = preferences.read_preference(/datum/preference/choiced/accessory/alt_head)

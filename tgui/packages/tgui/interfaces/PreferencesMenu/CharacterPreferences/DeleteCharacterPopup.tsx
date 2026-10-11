@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
+import { useBackend } from 'tgui/backend';
 import { Box, Button, Modal, Stack } from 'tgui-core/components';
 
-import { useBackend } from '../../../backend';
 import type { PreferencesMenuData } from '../types';
 
 type Props = {
@@ -30,7 +30,7 @@ export function DeleteCharacterPopup(props: Props) {
         </Stack.Item>
 
         <Stack.Item maxWidth="300px">
-          <Box>{`Вы собираетесь навсегда удалить персонажа ${data.character_preferences.names.real_name}. Вы уверены?`}</Box>
+          <Box>{`Вы собираетесь навсегда удалить персонажа ${data.character_preferences.names[data.name_to_use]}. Вы уверены?`}</Box>
         </Stack.Item>
 
         <Stack.Item>

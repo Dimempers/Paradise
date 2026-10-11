@@ -5,6 +5,8 @@
 /datum/species/shadow/ling
 	//Normal shadowpeople but with enhanced effects
 	name = SPECIES_SHADOWLING
+	blurb = "Шедоулинги — древние существа тьмы, прячущиеся в телах гуманоидов и порабощающие чужие разумы. Они не дышат, \
+	не голодают, не чувствуют боли и черпают силу во мраке, но свет для них губителен."
 	unarmed_type = /datum/unarmed_attack/claws/shadowlings
 
 	icobase = 'icons/mob/human_races/r_shadowling.dmi'

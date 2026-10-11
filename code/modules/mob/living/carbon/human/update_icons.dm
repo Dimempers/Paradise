@@ -369,43 +369,10 @@ GLOBAL_LIST_EMPTY(damage_icon_parts)
 	if((head && (head.flags_inv & (HIDEHAIR|HIDEHEADHAIR))) || (wear_mask && (wear_mask.flags_inv & (HIDEHAIR|HIDEHEADHAIR))))
 		return
 
-	var/datum/sprite_accessory/hair/hair = GLOB.hair_styles_full_list[head_organ.h_style]
-	if(!hair || !((hair.species_allowed && (head_organ.dna.species.name in hair.species_allowed)) || (head_organ.dna.species.bodyflags & ALL_RPARTS)))
+	var/mutable_appearance/MA = head_organ.build_hair_appearance()
+	if(!MA)
 		return
-
-	//base icons
-	var/mutable_appearance/MA = new()
-	MA.appearance_flags = KEEP_TOGETHER
 	MA.layer = -HAIR_LAYER
-
-	// Base hair
-	var/mutable_appearance/img_hair = mutable_appearance(hair.icon, "[hair.icon_state]_s")
-	if(head_organ.dna.species.name == SPECIES_SLIMEPERSON)
-		img_hair.color = COLOR_MATRIX_OVERLAY("[skin_colour]A0")
-	else if(hair.do_colouration)
-		img_hair.color = COLOR_MATRIX_ADD(head_organ.hair_colour)
-	MA.overlays += img_hair
-
-	// Gradient
-	var/datum/sprite_accessory/hair_gradient/gradient = GLOB.hair_gradients_list[head_organ.h_grad_style]
-	if(gradient)
-		var/icon/icn_alpha_mask = icon(gradient.icon, gradient.icon_state)
-		var/icon/icn_gradient = icon(gradient.icon, "full")
-		var/list/icn_color = rgb2num(head_organ.h_grad_colour)
-		icn_gradient.MapColors(rgb(icn_color[1], 0, 0), rgb(0, icn_color[2], 0), rgb(0, 0, icn_color[3]))
-		icn_gradient.ChangeOpacity(head_organ.h_grad_alpha / 200)
-		icn_gradient.AddAlphaMask(icn_alpha_mask)
-		icn_gradient.Shift(EAST, head_organ.h_grad_offset_x)
-		icn_gradient.Shift(NORTH, head_organ.h_grad_offset_y)
-		icn_gradient.AddAlphaMask(icon(hair.icon, "[hair.icon_state]_s"))
-		MA.overlays += icn_gradient
-
-	// Secondary style
-	if(hair.secondary_theme)
-		var/mutable_appearance/img_secondary = mutable_appearance(hair.icon, "[hair.icon_state]_[hair.secondary_theme]_s")
-		if(!hair.no_sec_colour)
-			img_secondary.color = COLOR_MATRIX_ADD(head_organ.sec_hair_colour)
-		MA.overlays += img_secondary
 
 	update_mutant_ears()
 	overlays_standing[HAIR_LAYER] = MA

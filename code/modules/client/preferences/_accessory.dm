@@ -2,6 +2,7 @@
 	abstract_type = /datum/preference/choiced/accessory
 	savefile_identifier = PREFERENCE_CHARACTER
 	priority = PREFERENCE_PRIORITY_APPEARANCE
+	should_generate_icons = TRUE
 	var/accessory_category
 	var/none_value = "None"
 
@@ -17,15 +18,9 @@
 /datum/preference/choiced/accessory/create_default_value()
 	return none_value
 
-/datum/preference/choiced/accessory/compile_constant_data()
-	var/list/data = ..()
+/datum/preference/choiced/accessory/icon_for(value)
 	var/datum/asset/spritesheet_batched/sprite_accessories/sheet = get_asset_datum(/datum/asset/spritesheet_batched/sprite_accessories)
-	var/list/icons = list()
-	for(var/choice in get_choices())
-		icons[choice] = sheet.get_preview_key(accessory_category, choice)
-	data["icons"] = icons
-	data["icon_sheet"] = "[sheet.name][ICON_SIZE_X]x[ICON_SIZE_Y]"
-	return data
+	return sheet.build_preview(accessory_category, value)
 
 /datum/preferences/proc/get_robohead()
 	RETURN_TYPE(/datum/robolimb)

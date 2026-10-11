@@ -1,132 +1,150 @@
+import { binaryInsertWith } from 'common/collections';
+import { sortBy } from 'es-toolkit';
 import { type ReactNode, useState } from 'react';
-import { Box, Button, Flex, Tooltip } from 'tgui-core/components';
+import { useBackend } from 'tgui/backend';
+import { Box, Flex, Tooltip } from 'tgui-core/components';
 
-import { useBackend } from '../../../backend';
-import { FeatureValueInput, features } from '../features';
-import type { LegacyToggle, PreferencesMenuData } from '../types';
+import { features } from '../preferences/features';
+import {
+  CheckboxInput,
+  type Feature,
+  FeatureValueInput,
+} from '../preferences/features/base';
+import type { PreferencesMenuData, ServerData } from '../types';
 import { useServerPrefs } from '../useServerPrefs';
 import { TabbedMenu } from './TabbedMenu';
 
-type Entry = {
+type PreferenceChild = {
   name: string;
-  node: ReactNode;
+  children: ReactNode;
 };
 
-function Row(props: {
-  name: string;
-  description?: string;
-  children: ReactNode;
-}) {
-  let label: ReactNode = (
-    <Flex.Item grow={1} pr={2} basis={0} ml={2}>
-      {props.description ? (
+function binaryInsertPreference(
+  collection: PreferenceChild[],
+  value: PreferenceChild,
+) {
+  return binaryInsertWith(collection, value, (child) => child.name);
+}
+
+function sortByName(array: [string, PreferenceChild[]][]) {
+  return sortBy(array, [([name]) => name]);
+}
+
+function getFeature(
+  featureId: string,
+  serverData: ServerData | undefined,
+): Feature<unknown> | undefined {
+  const legacyToggle = serverData?.legacy_toggles[featureId];
+  if (!legacyToggle) {
+    return features[featureId];
+  }
+
+  return {
+    name: legacyToggle.name,
+    category: legacyToggle.category,
+    description: legacyToggle.description,
+    component: CheckboxInput,
+  };
+}
+
+export function GamePreferencesPage(props) {
+  const { data } = useBackend<PreferencesMenuData>();
+  const serverData = useServerPrefs();
+
+  const gamePreferences: Record<string, PreferenceChild[]> = {};
+
+  for (const [featureId, value] of Object.entries(
+    data.character_preferences.game_preferences,
+  )) {
+    const feature = getFeature(featureId, serverData);
+
+    let nameInner: ReactNode = feature?.name || featureId;
+
+    if (feature?.description) {
+      nameInner = (
         <Box
           as="span"
-          style={{ borderBottom: '2px dotted rgba(255, 255, 255, 0.8)' }}
+          style={{
+            borderBottom: '2px dotted rgba(255, 255, 255, 0.8)',
+          }}
         >
-          {props.name}
+          {nameInner}
         </Box>
-      ) : (
-        props.name
-      )}
-    </Flex.Item>
-  );
+      );
+    }
 
-  if (props.description) {
-    label = (
-      <Tooltip content={props.description} position="bottom-start">
-        {label}
-      </Tooltip>
+    let name: ReactNode = (
+      <Flex.Item grow={1} pr={2} basis={0} ml={2}>
+        {nameInner}
+      </Flex.Item>
+    );
+
+    if (feature?.description) {
+      name = (
+        <Tooltip content={feature.description} position="bottom-start">
+          {name}
+        </Tooltip>
+      );
+    }
+
+    const child = (
+      <Flex align="center" key={featureId} pb={2}>
+        {name}
+
+        <Flex.Item grow={1} basis={0}>
+          {feature ? (
+            <FeatureValueInput
+              feature={feature}
+              featureId={featureId}
+              value={value}
+            />
+          ) : (
+            <Box as="b" color="red">
+              ...is not filled out properly!!!
+            </Box>
+          )}
+        </Flex.Item>
+      </Flex>
+    );
+
+    const entry = {
+      name: feature?.name || featureId,
+      children: child,
+    };
+
+    const category = feature?.category || 'ERROR';
+
+    gamePreferences[category] = binaryInsertPreference(
+      gamePreferences[category] || [],
+      entry,
     );
   }
 
-  return (
-    <Flex align="center" pb={2}>
-      {label}
-      <Flex.Item grow={1} basis={0}>
-        {props.children}
-      </Flex.Item>
-    </Flex>
-  );
-}
-
-function ToggleRow(props: { toggle: LegacyToggle }) {
-  const { act } = useBackend<PreferencesMenuData>();
-  const { toggle } = props;
-
-  return (
-    <Row name={toggle.name} description={toggle.description}>
-      {toggle.special ? (
-        <Button onClick={() => act('toggle_legacy', { key: toggle.key })}>
-          Изменить
-        </Button>
-      ) : (
-        <Button.Checkbox
-          checked={!!toggle.enabled}
-          onClick={() => act('toggle_legacy', { key: toggle.key })}
-        >
-          {toggle.enabled ? 'Включено' : 'Выключено'}
-        </Button.Checkbox>
-      )}
-    </Row>
-  );
-}
-
-export function GamePreferencesPage() {
-  const { data } = useBackend<PreferencesMenuData>();
-  const categories = useServerPrefs()?.legacy_toggles?.categories || [];
   const [searchText, setSearchText] = useState('');
 
-  const grouped: Record<string, Entry[]> = {};
-  const push = (category: string, entry: Entry) => {
-    grouped[category] = grouped[category] || [];
-    grouped[category].push(entry);
-  };
-
-  for (const [featureId, value] of Object.entries(
-    data.character_preferences.game_preferences || {},
-  )) {
-    const feature = features[featureId];
-    const name = feature?.name || featureId;
-    push(feature?.category || 'Прочее', {
-      name,
-      node: (
-        <Row key={featureId} name={name} description={feature?.description}>
-          <FeatureValueInput featureId={featureId} value={value} />
-        </Row>
-      ),
-    });
-  }
-
-  for (const toggle of data.legacy_toggles || []) {
-    const category =
-      categories.find((entry) => entry.id === toggle.category)?.name ||
-      'Прочее';
-    push(category, {
-      name: toggle.name,
-      node: <ToggleRow key={toggle.key} toggle={toggle} />,
-    });
-  }
-
-  const matches = (name: string) =>
-    !searchText ||
-    searchText.length < 2 ||
-    name.toLowerCase().includes(searchText.toLowerCase());
-
-  const entries: [string, ReactNode[]][] = Object.entries(grouped)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([category, list]) => [
+  const gamePreferenceEntries: [string, ReactNode[]][] = sortByName(
+    Object.entries(gamePreferences),
+  ).map(([category, preferences]) => {
+    return [
       category,
-      list
-        .filter((entry) => matches(entry.name))
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .map((entry) => entry.node),
-    ]);
+      preferences
+        .filter((entry) => {
+          return (
+            !searchText ||
+            searchText.length < 2 ||
+            entry.name.toLowerCase().includes(searchText.toLowerCase())
+          );
+        })
+        .map((entry) => entry.children),
+    ];
+  });
 
   return (
     <TabbedMenu
-      categoryEntries={entries}
-      contentProps={{ fontSize: 1.2 }}
+      categoryEntries={gamePreferenceEntries}
+      contentProps={{
+        fontSize: 1.5,
+      }}
       searchText={searchText}
       setSearchText={setSearchText}
     />

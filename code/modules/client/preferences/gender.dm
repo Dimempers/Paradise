@@ -1,7 +1,6 @@
 /datum/preference/choiced/gender
 	savefile_identifier = PREFERENCE_CHARACTER
 	savefile_key = "gender"
-	category = PREFERENCE_CATEGORY_MANUALLY_RENDERED
 	priority = PREFERENCE_PRIORITY_GENDER
 
 /datum/preference/choiced/gender/init_possible_values()
