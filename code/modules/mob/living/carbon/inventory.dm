@@ -280,6 +280,7 @@
 			var/static/list/bulky_exceptions = typecacheof(list(
 				/obj/item/storage/backpack,
 				/obj/item/storage/belt,
+				/obj/item/twohanded/shockpaddles,
 			))
 			if(!is_type_in_typecache(item, bulky_exceptions))
 				return FALSE
