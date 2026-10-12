@@ -1064,7 +1064,6 @@
 #include "code\datums\elements\radiation_healing.dm"
 #include "code\datums\elements\radiation_protected_clothing.dm"
 #include "code\datums\elements\radioactive.dm"
-#include "code\datums\elements\ranged_attacks.dm"
 #include "code\datums\elements\ranged_mob_switcher.dm"
 #include "code\datums\elements\reagent_attack.dm"
 #include "code\datums\elements\reagent_scoopable_atom.dm"

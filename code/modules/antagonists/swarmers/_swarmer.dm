@@ -34,7 +34,7 @@ GLOBAL_LIST_EMPTY(swarmers)
 	light_color = LIGHT_COLOR_CYAN
 	light_range = 3
 	light_on = FALSE
-	lighting_alpha = LIGHTING_PLANE_ALPHA_MOSTLY_VISIBLE
+	lighting_cutoff = LIGHTING_CUTOFF_MEDIUM
 	hud_type = /datum/hud/swarmer
 	atmos_requirements = list("min_oxy" = 0, "max_oxy" = 0, "min_tox" = 0, "max_tox" = 0, "min_co2" = 0, "max_co2" = 0, "min_n2" = 0, "max_n2" = 0)
 	unsuitable_atmos_damage = 0
