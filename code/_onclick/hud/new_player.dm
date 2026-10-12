@@ -31,6 +31,8 @@
 			lobbyscreen.RegisterSignal(src, COMSIG_HUD_LOBBY_EXPANDED, TYPE_PROC_REF(/atom/movable/screen/lobby, expand_button))
 
 	place_link_buttons(link_buttons)
+	var/atom/movable/screen/lobby/button/bottom/link/discord_link/discord_link = locate() in static_inventory
+	discord_link?.start_spotlight()
 	addtimer(CALLBACK(owner.client, TYPE_PROC_REF(/client, attempt_auto_fit_viewport)), LOBBY_VIEWPORT_FIT_DELAY)
 
 	if(!owner.client.is_connecting_from_localhost())

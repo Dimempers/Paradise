@@ -4,6 +4,11 @@
 #define LOBBY_BOTTOM_BUTTON_SIZE 24
 #define LINK_HINT_MAX_WIDTH 192
 #define LINK_HINT_WIDTH_PADDING 2
+#define LOBBY_DIMMED_COLOR "#4a4a4a"
+#define DISCORD_SPOTLIGHT_OUTLINE "discord_spotlight_outline"
+#define DISCORD_SPOTLIGHT_GLOW "discord_spotlight_glow"
+#define DISCORD_SPOTLIGHT_GLOW_COLOR "#ffc83ccc"
+#define DISCORD_SPOTLIGHT_PULSE_DURATION (0.8 SECONDS)
 
 INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 
@@ -42,6 +47,7 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 	mouse_over_pointer = MOUSE_HAND_POINTER
 	VAR_PROTECTED/enabled = TRUE
 	var/highlighted = FALSE
+	var/dimmed = FALSE
 	var/select_sound_play = TRUE
 
 /atom/movable/screen/lobby/button/Click(location, control, params)
@@ -63,6 +69,7 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 		return
 	. = ..()
 	highlighted = TRUE
+	color = null
 	update_appearance(UPDATE_ICON)
 
 /atom/movable/screen/lobby/button/MouseExited()
@@ -70,6 +77,7 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 		return
 	. = ..()
 	highlighted = FALSE
+	color = dimmed ? LOBBY_DIMMED_COLOR : null
 	update_appearance(UPDATE_ICON)
 
 /atom/movable/screen/lobby/button/update_icon_state()
@@ -89,6 +97,10 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 	update_appearance(UPDATE_ICON)
 	mouse_over_pointer = enabled ? MOUSE_HAND_POINTER : MOUSE_INACTIVE_POINTER
 	return TRUE
+
+/atom/movable/screen/lobby/button/proc/set_dimmed(dimmed)
+	src.dimmed = dimmed
+	color = (dimmed && !highlighted) ? LOBBY_DIMMED_COLOR : null
 
 /atom/movable/screen/lobby/button/character_setup
 	name = "View Character Setup"
@@ -446,6 +458,7 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 	desc = "Привязка Discord"
 	icon_state = "discord_link"
 	base_icon_state = "discord_link"
+	var/spotlit = FALSE
 
 /atom/movable/screen/lobby/button/bottom/link/discord_link/is_available(client/viewer)
 	var/discord_id = viewer.prefs?.discord_id
@@ -455,7 +468,25 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 	. = ..()
 	if(!.)
 		return
+	if(spotlit)
+		stop_spotlight()
 	hud.mymob.client?.link_discord_account()
+
+/atom/movable/screen/lobby/button/bottom/link/discord_link/proc/start_spotlight()
+	spotlit = TRUE
+	add_filter(DISCORD_SPOTLIGHT_GLOW, 1, drop_shadow_filter(size = 2, offset = 0, color = DISCORD_SPOTLIGHT_GLOW_COLOR))
+	add_filter(DISCORD_SPOTLIGHT_OUTLINE, 2, outline_filter(size = 1, color = COLOR_GOLD))
+	animate(get_filter(DISCORD_SPOTLIGHT_GLOW), size = 5, time = DISCORD_SPOTLIGHT_PULSE_DURATION, easing = SINE_EASING, loop = -1)
+	animate(size = 2, time = DISCORD_SPOTLIGHT_PULSE_DURATION, easing = SINE_EASING)
+	for(var/atom/movable/screen/lobby/button/button in hud.static_inventory)
+		if(button != src)
+			button.set_dimmed(TRUE)
+
+/atom/movable/screen/lobby/button/bottom/link/discord_link/proc/stop_spotlight()
+	spotlit = FALSE
+	remove_filter(list(DISCORD_SPOTLIGHT_GLOW, DISCORD_SPOTLIGHT_OUTLINE))
+	for(var/atom/movable/screen/lobby/button/button in hud.static_inventory)
+		button.set_dimmed(FALSE)
 
 /atom/movable/screen/lobby/button/bottom/link/referrals
 	name = "View Referral System"
@@ -723,3 +754,8 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 #undef LOBBY_BOTTOM_BUTTON_SIZE
 #undef LINK_HINT_MAX_WIDTH
 #undef LINK_HINT_WIDTH_PADDING
+#undef LOBBY_DIMMED_COLOR
+#undef DISCORD_SPOTLIGHT_OUTLINE
+#undef DISCORD_SPOTLIGHT_GLOW
+#undef DISCORD_SPOTLIGHT_GLOW_COLOR
+#undef DISCORD_SPOTLIGHT_PULSE_DURATION
