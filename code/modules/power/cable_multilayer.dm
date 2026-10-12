@@ -50,6 +50,22 @@
 /obj/structure/cable/multilayer/get_connections(powernetless_only = 0)
 	return power_list(loc, src, 0, powernetless_only)
 
+/obj/structure/cable/multilayer/cut_cable_from_powernet(remove = TRUE)
+	var/turf/hub_turf = loc
+	if(!hub_turf)
+		return
+	var/list/neighbours = power_list(hub_turf, src, 0, cable_only = TRUE)
+	var/datum/powernet/old_powernet = powernet
+	if(remove)
+		loc = null
+	powernet.remove_cable(src)
+	SSmachines.deferred_powernet_rebuilds |= neighbours
+	for(var/obj/machinery/power/machine in hub_turf)
+		if(machine.powernet != old_powernet)
+			continue
+		if(!machine.connect_to_network())
+			machine.disconnect_from_network()
+
 /obj/structure/cable/multilayer/attack_robot(mob/user, list/modifiers)
 	return attack_hand(user)
 

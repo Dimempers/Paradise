@@ -411,7 +411,7 @@
 			if(!N.terminal)
 				continue // APC are connected through their terminal
 
-			if(N.terminal.powernet == powernet)
+			if(N.terminal.powernet)
 				continue
 
 			to_connect += N.terminal //we'll connect the machines after all cables are merged
@@ -419,7 +419,7 @@
 		else if(istype(AM, /obj/machinery/power)) //other power machines
 			var/obj/machinery/power/M = AM
 
-			if(M.powernet == powernet)
+			if(M.powernet)
 				continue
 
 			to_connect += M //we'll connect the machines after all cables are merged

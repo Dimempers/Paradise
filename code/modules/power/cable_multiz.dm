@@ -125,11 +125,10 @@
 	if(length(P_list) == 0 && !above && !below)//If we so happened to be alone cable, not connected to anything, including above and below.
 		powernet.remove_cable(src) // So we gonna just delete ourself
 		return
-	var/obj/O = P_list[1]
 	// remove the cut cable from its turf and powernet, so that it doesn't get count in propagate_network worklist
 	if(remove)
 		loc = null
 	powernet.remove_cable(src) //remove the cut cable from its powernet
 
 	// queue it to rebuild
-	SSmachines.deferred_powernet_rebuilds += O
+	SSmachines.deferred_powernet_rebuilds |= P_list

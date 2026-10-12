@@ -477,7 +477,7 @@
 		to_chat(user, span_warning("You can't lay cable at a place that far away!"))
 		return
 
-	if(U == T || ispath(target_type, /obj/structure/cable/multilayer) || !(C.cable_layer & target_layer)) //if clicked on the turf we're standing on, try to put a cable in the direction we're facing
+	if(U == T || ispath(target_type, /obj/structure/cable/multilayer) || istype(C, /obj/structure/cable/multilayer) || !(C.cable_layer & target_layer)) //if clicked on the turf we're standing on, try to put a cable in the direction we're facing
 		place_turf(T,user)
 		return
 
