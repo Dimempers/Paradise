@@ -33,6 +33,17 @@
 	var/d2 = 1
 	layer = WIRE_LAYER //Just below unary stuff, which is at 2.45 and above pipes, which are at 2.4
 	color = CABLE_HEX_COLOR_RED
+	var/cable_layer = CABLE_LAYER_2
+
+/obj/structure/cable/layer1
+	color = CABLE_HEX_COLOR_YELLOW
+	cable_layer = CABLE_LAYER_1
+	layer = WIRE_LAYER - 0.01
+
+/obj/structure/cable/layer3
+	color = CABLE_HEX_COLOR_BLUE
+	cable_layer = CABLE_LAYER_3
+	layer = WIRE_LAYER + 0.01
 
 /obj/structure/cable/yellow
 	color = CABLE_HEX_COLOR_YELLOW
@@ -63,8 +74,25 @@
 	d1 = text2num(copytext( icon_state, 1, dash ))
 	d2 = text2num(copytext( icon_state, dash+1 ))
 
+	adjust_cable_layer()
 	LAZYADD(GLOB.cable_list, src) //add it to the global cable list
 	AddElement(/datum/element/undertile)
+
+/proc/cable_layer_name(cable_layer)
+	var/list/names = list()
+	if(cable_layer & CABLE_LAYER_1)
+		names += CABLE_LAYER_1_NAME
+	if(cable_layer & CABLE_LAYER_2)
+		names += CABLE_LAYER_2_NAME
+	if(cable_layer & CABLE_LAYER_3)
+		names += CABLE_LAYER_3_NAME
+	return length(names) ? names.Join(", ") : "не подключён"
+
+/obj/structure/cable/proc/adjust_cable_layer()
+	if(cable_layer == CABLE_LAYER_1)
+		transform = TRANSLATE_MATRIX(CABLE_LAYER_OFFSET, CABLE_LAYER_OFFSET)
+	else if(cable_layer == CABLE_LAYER_3)
+		transform = TRANSLATE_MATRIX(-CABLE_LAYER_OFFSET, -CABLE_LAYER_OFFSET)
 
 /obj/structure/cable/Destroy()					// called when a cable is deleted
 	if(powernet)
@@ -195,6 +223,7 @@
 
 /obj/structure/cable/examine(mob/user)
 	. = ..()
+	. += span_notice("Слой: [cable_layer_name(cable_layer)].")
 	if(isobserver(user))
 		. += generate_power_message()
 
@@ -221,6 +250,7 @@
 		turf_cables += turf_cable
 		var/image/cable_image = image(icon = turf_cable.icon, icon_state = turf_cable.icon_state)
 		cable_image.color = turf_cable.color
+		cable_image.transform = turf_cable.transform
 		choices["[length(turf_cables)]"] = cable_image
 	var/choice = show_radial_menu(user, src, choices, require_near = TRUE, tooltips = FALSE)
 	if(!choice)
@@ -280,6 +310,9 @@
 		if(src == C)
 			continue
 
+		if(!(C.cable_layer & cable_layer))
+			continue
+
 		if(C.d1 == (direction^3) || C.d2 == (direction^3)) //we've got a diagonally matching cable
 			if(!C.powernet) //if the matching cable somehow got no powernet, make him one (should not happen for cables)
 				var/datum/powernet/newPN = new()
@@ -299,6 +332,8 @@
 			continue
 
 		if(src == C)
+			continue
+		if(!(C.cable_layer & cable_layer))
 			continue
 		if(C.d1 == (direction^12) || C.d2 == (direction^12)) //we've got a diagonally matching cable
 			if(!C.powernet) //if the matching cable somehow got no powernet, make him one (should not happen for cables)
@@ -328,6 +363,9 @@
 		if(src == C)
 			continue
 
+		if(!(C.cable_layer & cable_layer))
+			continue
+
 		if(C.d1 == fdir || C.d2 == fdir) //we've got a matching cable in the neighbor turf
 			if(!C.powernet) //if the matching cable somehow got no powernet, make him one (should not happen for cables)
 				var/datum/powernet/newPN = new()
@@ -351,6 +389,8 @@
 	for(var/AM in loc)
 		if(istype(AM, /obj/structure/cable))
 			var/obj/structure/cable/C = AM
+			if(!(C.cable_layer & cable_layer))
+				continue
 			if(C.d1 == d1 || C.d2 == d1 || C.d1 == d2 || C.d2 == d2) //only connected if they have a common direction
 				if(C.powernet == powernet)
 					continue

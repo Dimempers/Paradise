@@ -7,6 +7,7 @@
 	icon_state = "cable_bridge"
 	layer = WIRE_LAYER + 0.02 //Above all cables
 	color = "white"
+	cable_layer = CABLE_LAYER_ALL
 
 /obj/structure/cable/multiz/update_icon_state()
 	return
