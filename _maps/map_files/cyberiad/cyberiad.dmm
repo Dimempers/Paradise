@@ -14394,7 +14394,7 @@
 "bjQ" = (
 /obj/structure/table/reinforced,
 /obj/item/book/manual/security_space_law,
-/obj/item/pen/multi/gold,
+/obj/item/pen/fountain,
 /turf/simulated/floor/carpet,
 /area/station/legal/office/magistrate)
 "bjR" = (
@@ -18511,7 +18511,7 @@
 "bEN" = (
 /obj/structure/table/wood,
 /obj/item/paper_bin,
-/obj/item/pen/multi/fountain,
+/obj/item/pen/fountain,
 /obj/item/pen,
 /turf/simulated/floor/carpet,
 /area/station/command/meeting_room)
@@ -41152,7 +41152,6 @@
 /area/station/command/office/captain)
 "dQn" = (
 /obj/effect/spawner/random_spawners/fungus_30,
-/obj/machinery/firealarm/directional/west,
 /turf/simulated/wall,
 /area/station/maintenance/engineering)
 "dQq" = (
@@ -45783,7 +45782,7 @@
 	name = "Desk Door";
 	req_access = list(73)
 	},
-/obj/item/pen/multi/fountain,
+/obj/item/pen/fountain,
 /obj/item/stamp/rep,
 /turf/simulated/floor/carpet,
 /area/station/command/office/ntrep)
@@ -47252,7 +47251,7 @@
 /obj/machinery/atmospherics/unary/vent_pump/on{
 	dir = 1
 	},
-/obj/item/pen/multi/fountain,
+/obj/item/pen/fountain,
 /obj/item/toy/figure/hop,
 /obj/item/radio/intercom/directional/south,
 /turf/simulated/floor/carpet,
@@ -50943,7 +50942,7 @@
 	dir = 1
 	},
 /obj/item/paper_bin/nanotrasen,
-/obj/item/pen/multi/fountain,
+/obj/item/pen/fountain,
 /obj/machinery/door_control{
 	id = "captainofficedoor";
 	name = "Office Door";
@@ -86834,7 +86833,7 @@
 /area/space)
 "wkv" = (
 /obj/structure/table,
-/obj/item/pen/fancy,
+/obj/item/pen/fountain,
 /turf/simulated/floor/plating,
 /area/station/maintenance/asmaint)
 "wkz" = (
@@ -90768,7 +90767,6 @@
 /turf/simulated/floor/plating,
 /area/station/maintenance/fsmaint2)
 "xNF" = (
-/obj/machinery/firealarm/directional/west,
 /turf/simulated/wall,
 /area/station/maintenance/engineering)
 "xNU" = (
