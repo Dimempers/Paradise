@@ -212,6 +212,25 @@
 	investigate_log("was cut by [key_name_log(usr)] at [COORD(T)]", INVESTIGATE_WIRES)
 	deconstruct()
 
+/obj/structure/cable/wirecutter_act_secondary(mob/living/user, obj/item/tool)
+	if(HAS_TRAIT(src, TRAIT_UNDERFLOOR))
+		return NONE
+	var/list/turf_cables = list()
+	var/list/choices = list()
+	for(var/obj/structure/cable/turf_cable in loc)
+		turf_cables += turf_cable
+		var/image/cable_image = image(icon = turf_cable.icon, icon_state = turf_cable.icon_state)
+		cable_image.color = turf_cable.color
+		choices["[length(turf_cables)]"] = cable_image
+	var/choice = show_radial_menu(user, src, choices, require_near = TRUE, tooltips = FALSE)
+	if(!choice)
+		return ITEM_INTERACT_BLOCKING
+	var/obj/structure/cable/chosen_cable = turf_cables[text2num(choice)]
+	if(QDELETED(chosen_cable) || chosen_cable.loc != loc)
+		return ITEM_INTERACT_BLOCKING
+	chosen_cable.wirecutter_act(user, tool)
+	return ITEM_INTERACT_SUCCESS
+
 // shock the user with probability prb
 /obj/structure/cable/proc/shock(mob/user, prb, siemens_coeff = 1)
 	if(!prob(prb))

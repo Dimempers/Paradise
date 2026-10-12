@@ -323,6 +323,72 @@
 	SEND_GLOBAL_SIGNAL(COMSIG_GLOB_CABLE_UPDATED, T)
 	return C
 
+/obj/item/stack/cable_coil/interact_with_atom_secondary(atom/interacting_with, mob/living/user, list/modifiers)
+	if(!isturf(interacting_with) && !istype(interacting_with, /obj/structure/cable))
+		return NONE
+	if(istype(interacting_with, /obj/structure/cable/multiz))
+		return NONE
+	place_straight(get_turf(interacting_with), user)
+	return ITEM_INTERACT_SUCCESS
+
+/obj/item/stack/cable_coil/proc/place_straight(turf/target_turf, mob/user)
+	if(!isturf(user.loc))
+		return
+	if(!target_turf.can_lay_cable())
+		balloon_alert(user, "нужно снять плитку!")
+		return
+	if(get_dist(target_turf, user) > 1)
+		balloon_alert(user, "слишком далеко!")
+		return
+
+	var/axis = target_turf == user.loc ? user.dir : get_dir(user, target_turf)
+	var/end_one = min(axis, REVERSE_DIR(axis))
+	var/end_two = max(axis, REVERSE_DIR(axis))
+
+	var/obj/structure/cable/stub
+	for(var/obj/structure/cable/turf_cable in target_turf)
+		if(turf_cable.d1 == end_one && turf_cable.d2 == end_two)
+			balloon_alert(user, "тут уже есть кабель!")
+			return
+		if(!stub && !turf_cable.d1 && (turf_cable.d2 == end_one || turf_cable.d2 == end_two) && !istype(turf_cable, /obj/structure/cable/multiz))
+			stub = turf_cable
+
+	var/cost = stub ? 1 : 2
+	if(get_amount() < cost)
+		balloon_alert(user, "недостаточно кабеля!")
+		return
+
+	var/obj/structure/cable/new_cable = stub
+	if(stub)
+		stub.cable_color(color)
+	else
+		new_cable = get_new_cable(target_turf)
+		var/datum/powernet/new_powernet = new()
+		new_powernet.add_cable(new_cable)
+
+	new_cable.d1 = end_one
+	new_cable.d2 = end_two
+	new_cable.add_fingerprint(user)
+	new_cable.update_icon(UPDATE_ICON_STATE)
+
+	new_cable.mergeConnectedNetworks(end_one)
+	new_cable.mergeConnectedNetworks(end_two)
+	new_cable.mergeConnectedNetworksOnTurf()
+	if(end_one & (end_one - 1))
+		new_cable.mergeDiagonalsNetworks(end_one)
+	if(end_two & (end_two - 1))
+		new_cable.mergeDiagonalsNetworks(end_two)
+
+	use(cost)
+
+	if(new_cable.shock(user, 50) && prob(50))
+		new_cable.deconstruct()
+		return
+
+	if(stub)
+		new_cable.denode()
+	SEND_GLOBAL_SIGNAL(COMSIG_GLOB_CABLE_UPDATED, target_turf)
+
 // called when cable_coil is click on an installed obj/cable
 // or click on a turf that already contains a "node" cable
 /obj/item/stack/cable_coil/proc/cable_join(obj/structure/cable/C, mob/user)
