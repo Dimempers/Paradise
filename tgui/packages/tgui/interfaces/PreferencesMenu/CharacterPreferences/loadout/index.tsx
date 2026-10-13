@@ -1,10 +1,6 @@
 import { Fragment, useState } from 'react';
 import { useBackend } from 'tgui/backend';
 import {
-  CHARACTER_PREVIEW_HEIGHT,
-  CharacterPreview,
-} from 'tgui/interfaces/common/CharacterPreview';
-import {
   Box,
   Button,
   Divider,
@@ -15,6 +11,10 @@ import {
   Stack,
   Tabs,
 } from 'tgui-core/components';
+import {
+  CHARACTER_PREVIEW_HEIGHT,
+  CharacterPreview,
+} from '../../components/CharacterPreview';
 
 import { useServerPrefs } from '../../useServerPrefs';
 import type {

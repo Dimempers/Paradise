@@ -1,6 +1,7 @@
 /datum/species/skeleton
 	name = SPECIES_SKELETON
 	name_plural = "Skeletons"
+	ru_genitive = "скелета"
 
 	blurb = "Оживлённые скелеты — нежить, поднятая магией. Им не нужны воздух, еда и кровь, их не берут радиация, болезни и \
 	жар, а шприцы и осколки в них не застревают."

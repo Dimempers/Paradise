@@ -17,7 +17,7 @@ import { createSearch } from 'tgui-core/string';
 import {
   CHARACTER_PREVIEW_HEIGHT,
   CharacterPreview,
-} from '../../common/CharacterPreview';
+} from '../components/CharacterPreview';
 import { RandomizationButton } from '../components/RandomizationButton';
 import { features } from '../preferences/features';
 import {

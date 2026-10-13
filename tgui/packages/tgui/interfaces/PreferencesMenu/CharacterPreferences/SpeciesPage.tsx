@@ -10,9 +10,8 @@ import {
   Tooltip,
 } from 'tgui-core/components';
 import { classes } from 'tgui-core/react';
-
-import { CharacterPreview } from '../../common/CharacterPreview';
 import { LoadingScreen } from '../../common/LoadingScreen';
+import { CharacterPreview } from '../components/CharacterPreview';
 import {
   createSetPreference,
   Food,

@@ -280,3 +280,6 @@
 #define DEFAULT_CYBORG_NAME "Стандартное имя"
 #define DEFAULT_RELIGION_NAME "Christianity"
 #define DEFAULT_DEITY_NAME "Space Jesus"
+
+/// The key used for sprite accessories that should never actually be applied to the player.
+#define SPRITE_ACCESSORY_NONE "None"

@@ -31,7 +31,7 @@
 		return previews
 
 	var/icon/head_icon = icon(head.get_icon(), dir = SOUTH)
-	for(var/style in GLOB.hair_gradients_list)
+	for(var/style in SSaccessories.hair_gradients_list)
 		var/icon/preview = icon(head_icon)
 		var/mutable_appearance/hair = head.build_hair_appearance(style)
 		if(hair)

@@ -4,6 +4,7 @@
 /datum/species/kidan
 	name = SPECIES_KIDAN
 	name_plural = "Kidan"
+	ru_genitive = "кидана"
 	blurb = "Киданы — муравьиноподобные гуманоиды с крепким экзоскелетом и когтями. Они умеют светиться, оставлять \
 	сородичам метки-феромоны и, клацая мандибулами, нащупывать залежи руды поблизости.<br/><br/>Родина киданов — \
 	Аурум, некогда богатый жизнью мир, который промышленность и хищническая добыча ископаемых превратили в \
@@ -237,7 +238,7 @@
 		if("Создать")
 			// Can we create more pheromones?
 			if(length(active_pheromones_current) >= active_pheromones_maximum)
-				to_chat(H, span_warning("У вас уже [length(active_pheromones_current)] [declension_ru(length(active_pheromones_current),"активный феромон","активных феромона","активных феромонов")], нельзя создать больше."))
+				to_chat(H, span_warning("У вас уже есть [length(active_pheromones_current)] активн[DECL_YJ_YH_YH(length(active_pheromones_current))] феромон[DECL_0_A_OV(length(active_pheromones_current))], нельзя создать больше."))
 				return
 
 			// Encode the message

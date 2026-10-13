@@ -27,25 +27,25 @@
 /datum/asset/spritesheet_batched/sprite_accessories/proc/get_style_list(category)
 	switch(category)
 		if(ACCESSORY_CATEGORY_HAIR)
-			return GLOB.hair_styles_full_list
+			return SSaccessories.hairstyles_list
 		if(ACCESSORY_CATEGORY_FACIAL_HAIR)
-			return GLOB.facial_hair_styles_list
+			return SSaccessories.facial_hairstyles_list
 		if(ACCESSORY_CATEGORY_HEAD_ACCESSORY)
-			return GLOB.head_accessory_styles_list
+			return SSaccessories.head_accessory_list
 		if(ACCESSORY_CATEGORY_HAIR_GRADIENT)
-			return GLOB.hair_gradients_list
+			return SSaccessories.hair_gradients_list
 		if(ACCESSORY_CATEGORY_MARKING)
-			return GLOB.marking_styles_list
+			return SSaccessories.body_markings_list
 		if(ACCESSORY_CATEGORY_ALT_HEAD)
-			return GLOB.alt_heads_list
+			return SSaccessories.alt_heads_list
 		if(ACCESSORY_CATEGORY_BODY_ACCESSORY)
 			return GLOB.body_accessory_by_name
 		if(ACCESSORY_CATEGORY_UNDERWEAR)
-			return GLOB.underwear_list
+			return SSaccessories.underwear_list
 		if(ACCESSORY_CATEGORY_UNDERSHIRT)
-			return GLOB.undershirt_list
+			return SSaccessories.undershirt_list
 		if(ACCESSORY_CATEGORY_SOCKS)
-			return GLOB.socks_list
+			return SSaccessories.socks_list
 	return list()
 
 /datum/asset/spritesheet_batched/sprite_accessories/proc/build_preview(category, style_name)
@@ -91,8 +91,8 @@
 		preview.blend_icon(layer, ICON_OVERLAY)
 	return crop_to_head(preview)
 
-/datum/asset/spritesheet_batched/sprite_accessories/proc/build_gradient_preview(datum/sprite_accessory/hair_gradient/gradient)
-	var/datum/sprite_accessory/hair/reference = GLOB.hair_styles_public_list[ACCESSORY_PREVIEW_GRADIENT_HAIR]
+/datum/asset/spritesheet_batched/sprite_accessories/proc/build_gradient_preview(datum/sprite_accessory/gradient/gradient)
+	var/datum/sprite_accessory/hair/reference = SSaccessories.hairstyles_list[ACCESSORY_PREVIEW_GRADIENT_HAIR]
 	var/datum/universal_icon/preview = build_species_head(list(SPECIES_HUMAN))
 	var/datum/universal_icon/hair = build_accessory_layer(reference)
 	if(!hair)

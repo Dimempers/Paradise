@@ -6,6 +6,7 @@
 /datum/species/shadow
 	name = SPECIES_SHADOW_BASIC
 	name_plural = "Shadows"
+	ru_genitive = "тени"
 	blurb = "Тени — существа из тьмы. Во мраке их раны затягиваются сами собой, а яркий свет обжигает. Они не дышат, не \
 	болеют и не боятся радиации."
 

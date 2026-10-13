@@ -1,6 +1,7 @@
 /datum/species/nucleation
 	name = SPECIES_NUCLEATION
 	name_plural = "Nucleations"
+	ru_genitive = "нуклеации"
 	icobase = 'icons/mob/human_races/r_nucleation.dmi'
 	blacklisted = TRUE
 	blurb = "Нуклеаты — люди, на телах которых после сильного облучения выросли кристаллы суперматерии. Они не дышат, не \

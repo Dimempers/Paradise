@@ -111,5 +111,5 @@
 	var/datum/preference_middleware/hair_gradient/middleware = locate() in preferences.middleware
 	middleware.preview_open = TRUE
 	var/list/previews = middleware.get_ui_data()["hair_gradient_previews"]
-	TEST_ASSERT_EQUAL(length(previews), length(GLOB.hair_gradients_list), "not every gradient got a preview")
+	TEST_ASSERT_EQUAL(length(previews), length(SSaccessories.hair_gradients_list), "not every gradient got a preview")
 	TEST_ASSERT_NOTEQUAL(previews["Fade Up"], previews["None"], "the gradient didn't change the preview")

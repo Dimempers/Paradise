@@ -5,9 +5,9 @@ import { fetchRetry } from 'tgui-core/http';
 import { resolveAsset } from '../../assets';
 import { useBackend } from '../../backend';
 import { Window } from '../../layouts';
-import { destroyCharacterPreview } from '../common/CharacterPreview';
 import { LoadingScreen } from '../common/LoadingScreen';
 import { CharacterPreferenceWindow } from './CharacterPreferences';
+import { destroyCharacterPreview } from './components/CharacterPreview';
 import { GamePreferenceWindow } from './GamePreferences';
 import {
   GamePreferencesSelectedPage,

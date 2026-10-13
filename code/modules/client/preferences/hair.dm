@@ -9,14 +9,14 @@ GLOBAL_LIST_INIT(species_with_facial_hair_colour, list(SPECIES_HUMAN, SPECIES_UN
 	none_value = "Bald"
 
 /datum/preference/choiced/accessory/hair/get_accessory_list()
-	return GLOB.hair_styles_public_list
+	return SSaccessories.hairstyles_list
 
 /datum/preference/choiced/accessory/hair/get_valid_choices(datum/preferences/preferences)
 	var/species_name = preferences.read_preference(/datum/preference/choiced/species)
 	var/datum/robolimb/robohead = preferences.get_robohead()
 	var/list/valid_hairstyles = list(none_value)
-	for(var/hairstyle in GLOB.hair_styles_public_list)
-		var/datum/sprite_accessory/accessory = GLOB.hair_styles_public_list[hairstyle]
+	for(var/hairstyle in SSaccessories.hairstyles_list)
+		var/datum/sprite_accessory/accessory = SSaccessories.hairstyles_list[hairstyle]
 		if(robohead)
 			if((species_name in accessory.species_allowed) && robohead.is_monitor && (!accessory.models_allowed || (robohead.company in accessory.models_allowed)))
 				valid_hairstyles |= hairstyle
@@ -63,7 +63,7 @@ GLOBAL_LIST_INIT(species_with_facial_hair_colour, list(SPECIES_HUMAN, SPECIES_UN
 /datum/preference/color/secondary_hair_color/has_relevant_feature(datum/preferences/preferences)
 	if(!(preferences.read_preference(/datum/preference/choiced/species) in GLOB.species_with_hair_colour))
 		return FALSE
-	var/datum/sprite_accessory/hair_style = GLOB.hair_styles_public_list[preferences.read_preference(/datum/preference/choiced/accessory/hair)]
+	var/datum/sprite_accessory/hair_style = SSaccessories.hairstyles_list[preferences.read_preference(/datum/preference/choiced/accessory/hair)]
 	return hair_style?.secondary_theme && !hair_style.no_sec_colour
 
 /datum/preference/color/secondary_hair_color/create_random_value(datum/preferences/preferences)
@@ -80,7 +80,7 @@ GLOBAL_LIST_INIT(species_with_facial_hair_colour, list(SPECIES_HUMAN, SPECIES_UN
 	accessory_category = ACCESSORY_CATEGORY_HAIR_GRADIENT
 
 /datum/preference/choiced/accessory/hair_gradient/get_accessory_list()
-	return GLOB.hair_gradients_list
+	return SSaccessories.hair_gradients_list
 
 /datum/preference/choiced/accessory/hair_gradient/create_random_value(datum/preferences/preferences)
 	return none_value
@@ -156,16 +156,16 @@ GLOBAL_LIST_INIT(species_with_facial_hair_colour, list(SPECIES_HUMAN, SPECIES_UN
 	none_value = "Shaved"
 
 /datum/preference/choiced/accessory/facial_hair/get_accessory_list()
-	return GLOB.facial_hair_styles_list
+	return SSaccessories.facial_hairstyles_list
 
 /datum/preference/choiced/accessory/facial_hair/get_valid_choices(datum/preferences/preferences)
 	var/species_name = preferences.read_preference(/datum/preference/choiced/species)
 	var/gender = preferences.read_preference(/datum/preference/choiced/gender)
 	var/datum/robolimb/robohead = preferences.get_robohead()
 	var/list/valid_styles = list(none_value)
-	for(var/style in GLOB.facial_hair_styles_list)
-		var/datum/sprite_accessory/accessory = GLOB.facial_hair_styles_list[style]
-		if(accessory.wizard_only || gender == accessory.unsuitable_gender)
+	for(var/style in SSaccessories.facial_hairstyles_list)
+		var/datum/sprite_accessory/accessory = SSaccessories.facial_hairstyles_list[style]
+		if(accessory.wizard_only || (accessory.gender && accessory.gender != gender))
 			continue
 		if(robohead)
 			if((species_name in accessory.species_allowed) && robohead.is_monitor && (!accessory.models_allowed || (robohead.company in accessory.models_allowed)))
@@ -215,7 +215,7 @@ GLOBAL_LIST_INIT(species_with_facial_hair_colour, list(SPECIES_HUMAN, SPECIES_UN
 /datum/preference/color/secondary_facial_hair_color/has_relevant_feature(datum/preferences/preferences)
 	if(!(preferences.read_preference(/datum/preference/choiced/species) in GLOB.species_with_facial_hair_colour))
 		return FALSE
-	var/datum/sprite_accessory/facial_style = GLOB.facial_hair_styles_list[preferences.read_preference(/datum/preference/choiced/accessory/facial_hair)]
+	var/datum/sprite_accessory/facial_style = SSaccessories.facial_hairstyles_list[preferences.read_preference(/datum/preference/choiced/accessory/facial_hair)]
 	return facial_style?.secondary_theme && !facial_style.no_sec_colour
 
 /datum/preference/color/secondary_facial_hair_color/create_random_value(datum/preferences/preferences)

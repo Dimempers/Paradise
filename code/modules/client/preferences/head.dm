@@ -6,13 +6,13 @@
 	relevant_bodyflag = HAS_HEAD_ACCESSORY
 
 /datum/preference/choiced/accessory/head_accessory/get_accessory_list()
-	return GLOB.head_accessory_styles_list
+	return SSaccessories.head_accessory_list
 
 /datum/preference/choiced/accessory/head_accessory/get_valid_choices(datum/preferences/preferences)
 	var/species_name = preferences.read_preference(/datum/preference/choiced/species)
 	var/list/valid_styles = list(none_value)
-	for(var/style in GLOB.head_accessory_styles_list)
-		var/datum/sprite_accessory/accessory = GLOB.head_accessory_styles_list[style]
+	for(var/style in SSaccessories.head_accessory_list)
+		var/datum/sprite_accessory/accessory = SSaccessories.head_accessory_list[style]
 		if(species_name in accessory.species_allowed)
 			valid_styles |= style
 	return valid_styles
@@ -57,15 +57,15 @@
 	relevant_bodyflag = HAS_ALT_HEADS
 
 /datum/preference/choiced/accessory/alt_head/get_accessory_list()
-	return GLOB.alt_heads_list
+	return SSaccessories.alt_heads_list
 
 /datum/preference/choiced/accessory/alt_head/get_valid_choices(datum/preferences/preferences)
 	if(preferences.organ_data[BODY_ZONE_HEAD] == PREF_ORGANSTATUS_CYBORG_ENG)
 		return list(none_value)
 	var/species_name = preferences.read_preference(/datum/preference/choiced/species)
 	var/list/valid_heads = list(none_value)
-	for(var/style in GLOB.alt_heads_list)
-		var/datum/sprite_accessory/accessory = GLOB.alt_heads_list[style]
+	for(var/style in SSaccessories.alt_heads_list)
+		var/datum/sprite_accessory/accessory = SSaccessories.alt_heads_list[style]
 		if(species_name in accessory?.species_allowed)
 			valid_heads |= style
 	return valid_heads
@@ -84,13 +84,13 @@
 	var/marking_location
 
 /datum/preference/choiced/accessory/marking/get_accessory_list()
-	return GLOB.marking_styles_list
+	return SSaccessories.body_markings_list
 
 /datum/preference/choiced/accessory/marking/get_valid_choices(datum/preferences/preferences)
 	var/species_name = preferences.read_preference(/datum/preference/choiced/species)
 	var/list/valid_markings = list(none_value)
-	for(var/style in GLOB.marking_styles_list)
-		var/datum/sprite_accessory/body_markings/marking = GLOB.marking_styles_list[style]
+	for(var/style in SSaccessories.body_markings_list)
+		var/datum/sprite_accessory/body_markings/marking = SSaccessories.body_markings_list[style]
 		if(marking.marking_location != marking_location || !(species_name in marking.species_allowed))
 			continue
 		if(is_marking_valid(marking, preferences))
@@ -149,7 +149,7 @@
 /datum/preference/choiced/accessory/marking/body/is_marking_valid(datum/sprite_accessory/body_markings/marking, datum/preferences/preferences)
 	if(!marking.pickable || marking.wizard_only)
 		return FALSE
-	return marking.unsuitable_gender != preferences.read_preference(/datum/preference/choiced/gender)
+	return !marking.gender || marking.gender == preferences.read_preference(/datum/preference/choiced/gender)
 
 /datum/preference/choiced/accessory/marking/body/create_random_value(datum/preferences/preferences)
 	if(!has_relevant_feature(preferences))

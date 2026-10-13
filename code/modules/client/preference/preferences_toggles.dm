@@ -768,7 +768,7 @@ GAME_VERB_DESC(/client, silence_current_midi, "Заглушить MIDI", "Заг
 	blackbox_message = "Toggle AFK watch"
 
 /datum/preference_toggle/toggle_afk_watch/set_toggles(client/user)
-	enable_message = "Ваш персонаж будет автоматически перемещён в криосон после [CONFIG_GET(number/auto_cryo_afk)] минут[declension_ru(CONFIG_GET(number/auto_cryo_afk), "ы", "", "")] неактивности. 		После чего через [CONFIG_GET(number/auto_despawn_afk)] минут[DECL_SEC_MIN(CONFIG_GET(number/auto_despawn_afk))] ваш персонаж будет удалён. Перед перемещением в криосон вы получите уведомление."
+	enable_message = "Ваш персонаж будет автоматически перемещён в криосон после [CONFIG_GET(number/auto_cryo_afk)] минут[declension_ru(CONFIG_GET(number/auto_cryo_afk), "ы", "", "")] неактивности. 		После чего через [CONFIG_GET(number/auto_despawn_afk)] минут[DECL_U_Y_0(CONFIG_GET(number/auto_despawn_afk))] ваш персонаж будет удалён. Перед перемещением в криосон вы получите уведомление."
 	return ..()
 
 /datum/preference_toggle/toggle_ambient_occlusion

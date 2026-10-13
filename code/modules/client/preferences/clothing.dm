@@ -6,15 +6,15 @@
 	none_value = "Nude"
 
 /datum/preference/choiced/accessory/underwear/get_accessory_list()
-	return GLOB.underwear_list
+	return SSaccessories.underwear_list
 
 /datum/preference/choiced/accessory/underwear/get_valid_choices(datum/preferences/preferences)
 	var/species_name = preferences.read_preference(/datum/preference/choiced/species)
 	var/gender = preferences.read_preference(/datum/preference/choiced/gender)
 	var/list/valid_styles = list(none_value)
-	for(var/style in GLOB.underwear_list)
-		var/datum/sprite_accessory/accessory = GLOB.underwear_list[style]
-		if(gender != accessory.unsuitable_gender && (species_name in accessory.species_allowed))
+	for(var/style in SSaccessories.underwear_list)
+		var/datum/sprite_accessory/accessory = SSaccessories.underwear_list[style]
+		if((!accessory.gender || accessory.gender == gender) && (species_name in accessory.species_allowed))
 			valid_styles |= style
 	return valid_styles
 
@@ -50,15 +50,15 @@
 	none_value = "Nude"
 
 /datum/preference/choiced/accessory/undershirt/get_accessory_list()
-	return GLOB.undershirt_list
+	return SSaccessories.undershirt_list
 
 /datum/preference/choiced/accessory/undershirt/get_valid_choices(datum/preferences/preferences)
 	var/species_name = preferences.read_preference(/datum/preference/choiced/species)
 	var/gender = preferences.read_preference(/datum/preference/choiced/gender)
 	var/list/valid_styles = list(none_value)
-	for(var/style in GLOB.undershirt_list)
-		var/datum/sprite_accessory/accessory = GLOB.undershirt_list[style]
-		if(gender == MALE && accessory.unsuitable_gender)
+	for(var/style in SSaccessories.undershirt_list)
+		var/datum/sprite_accessory/accessory = SSaccessories.undershirt_list[style]
+		if(accessory.gender && accessory.gender != gender)
 			continue
 		if(species_name in accessory.species_allowed)
 			valid_styles |= style
@@ -96,15 +96,15 @@
 	none_value = "Nude"
 
 /datum/preference/choiced/accessory/socks/get_accessory_list()
-	return GLOB.socks_list
+	return SSaccessories.socks_list
 
 /datum/preference/choiced/accessory/socks/get_valid_choices(datum/preferences/preferences)
 	var/species_name = preferences.read_preference(/datum/preference/choiced/species)
 	var/gender = preferences.read_preference(/datum/preference/choiced/gender)
 	var/list/valid_styles = list(none_value)
-	for(var/style in GLOB.socks_list)
-		var/datum/sprite_accessory/accessory = GLOB.socks_list[style]
-		if(gender != accessory.unsuitable_gender && (species_name in accessory.species_allowed))
+	for(var/style in SSaccessories.socks_list)
+		var/datum/sprite_accessory/accessory = SSaccessories.socks_list[style]
+		if((!accessory.gender || accessory.gender == gender) && (species_name in accessory.species_allowed))
 			valid_styles |= style
 	return valid_styles
 
