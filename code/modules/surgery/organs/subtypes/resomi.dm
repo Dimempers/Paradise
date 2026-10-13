@@ -15,7 +15,7 @@
 
 /obj/item/organ/internal/eyes/resomi
 	species_type = /datum/species/resomi
-	see_in_dark = 5
+	see_in_dark = 6 //6 in the game look like 5, how it wrote in wiki
 	name = "resomi eyes"
 	desc = "Пара глаз резоми, приспособленных улавливать мельчайшие движения на высокой скорости."
 
