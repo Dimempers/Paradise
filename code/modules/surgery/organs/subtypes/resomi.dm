@@ -162,4 +162,4 @@
 /datum/action/item_action/organ_action/resomi_listen
 	name = "Прислушаться"
 	desc = "Замедлиться и вслушаться в окружение: шаги, упавшие предметы и прочие звуки за стенами отмечаются на экране."
-	button_icon_state = "predator_sense"
+	button_icon_state = "resomi_listen"

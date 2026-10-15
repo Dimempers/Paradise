@@ -14,15 +14,20 @@
 /mob/living/proc/can_feel_around()
 	return FALSE
 
+#define FEELING_AROUND_RANGE 1
+
 /mob/living/proc/set_feeling_around(feeling_around)
 	if(feeling_around == HAS_TRAIT(src, TRAIT_FEELING_AROUND))
 		return
 	if(feeling_around)
 		ADD_TRAIT(src, TRAIT_FEELING_AROUND, EYE_DAMAGE)
+		AddComponent(/datum/component/echolocation, echo_range = FEELING_AROUND_RANGE, focus_selectable = FALSE)
 	else
 		REMOVE_TRAIT(src, TRAIT_FEELING_AROUND, EYE_DAMAGE)
-	update_client_colour()
+		qdel(GetComponent(/datum/component/echolocation))
 	update_sight()
+
+#undef FEELING_AROUND_RANGE
 
 /mob/living/update_blurry_effects()
 	var/atom/movable/plane_master_controller/game_plane_master_controller = hud_used?.plane_master_controllers[PLANE_MASTERS_GAME]

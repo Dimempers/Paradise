@@ -472,7 +472,7 @@
 
 	dna.species.update_sight(src)
 	if(HAS_TRAIT(src, TRAIT_FEELING_AROUND))
-		lighting_cutoff = max(lighting_cutoff, LIGHTING_CUTOFF_HIGH)
+		lighting_cutoff = LIGHTING_CUTOFF_FULLBRIGHT
 	SEND_SIGNAL(src, COMSIG_MOB_UPDATE_SIGHT)
 	sync_lighting_plane_cutoff()
 
