@@ -6,6 +6,11 @@
 		return
 	client.colour_transition(get_screen_colour(), time = time) //Get the colour matrix we're going to transition to depending on relevance (magic glasses first, eyes second).
 
+/mob/living/get_screen_colour()
+	if(HAS_TRAIT(src, TRAIT_FEELING_AROUND))
+		return MATRIX_GREYSCALE
+	return ..()
+
 /mob/living/carbon/human/get_screen_colour() //Fetch the colour matrix from wherever (e.g. eyes) so it can be compared to client.color.
 	. = ..()
 	if(.)
