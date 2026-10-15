@@ -293,11 +293,20 @@
 	for(var/I in 1 to 7)
 		new /obj/item/reagent_containers/cup/glass/sillycup(src)
 
+#define DONK_POCKET_TYPES list( \
+	/obj/item/reagent_containers/food/snacks/donkpocket, \
+	/obj/item/reagent_containers/food/snacks/warmdonkpocket, \
+	/obj/item/reagent_containers/food/snacks/warmdonkpocket_weak, \
+	/obj/item/reagent_containers/food/snacks/syndidonkpocket, \
+	/obj/item/reagent_containers/food/snacks/customizable/cook/donkpocket \
+)
+
 /obj/item/storage/box/donkpockets
 	name = "box of donk-pockets"
 	desc = "<b>Инструкция:</b> <i>Разогрейте в микроволновой печи. Если продукт не употреблять в течение семи минут, он остынет.</i>"
 	icon_state = "donkpocket_box"
 	item_state = "donks"
+	can_hold = DONK_POCKET_TYPES
 
 /obj/item/storage/box/donkpockets/get_ru_names()
 	return alist(
@@ -318,6 +327,7 @@
 	desc = "Коробка с уже разогретыми Донк-покетами. Ням-ням!"
 	icon_state = "donkpocket_box"
 	item_state = "donks"
+	can_hold = DONK_POCKET_TYPES
 
 /obj/item/storage/box/warmdonkpockets/get_ru_names()
 	return alist(
@@ -339,6 +349,7 @@
 	desc = "Эта коробка кажется немного тёплой на ощупь."
 	icon_state = "donkpocket_box"
 	item_state = "donks"
+	can_hold = DONK_POCKET_TYPES
 
 /obj/item/storage/box/syndidonkpockets/get_ru_names()
 	return alist(
@@ -353,6 +364,8 @@
 /obj/item/storage/box/syndidonkpockets/populate_contents()
 	for(var/I in 1 to 6)
 		new /obj/item/reagent_containers/food/snacks/syndidonkpocket(src)
+
+#undef DONK_POCKET_TYPES
 
 /obj/item/storage/box/coffeepack
 	name = "arabica beans"
