@@ -1,6 +1,8 @@
 #define SHUTTER_MOVEMENT_DURATION 0.4 SECONDS
 #define SHUTTER_WAIT_DURATION 0.2 SECONDS
 #define LOBBY_COLLAPSE_DISTANCE 146
+#define LOBBY_HANDLE_COLLAPSE_DISTANCE 134
+#define LOBBY_SHUTTER_DROP_DISTANCE 143
 #define LOBBY_BOTTOM_BUTTON_SIZE 24
 #define LINK_HINT_MAX_WIDTH 192
 #define LINK_HINT_WIDTH_PADDING 2
@@ -9,6 +11,12 @@
 #define DISCORD_SPOTLIGHT_GLOW "discord_spotlight_glow"
 #define DISCORD_SPOTLIGHT_GLOW_COLOR "#ffc83ccc"
 #define DISCORD_SPOTLIGHT_PULSE_DURATION (0.8 SECONDS)
+#define LOBBY_CAPTION_MARGIN 8
+#define LAYOUT_LABEL_PADDING 2
+#define LAYOUT_FRAME_COLOR "#4aa3ff"
+#define LAYOUT_FRAME_ALPHA 60
+#define LAYOUT_FRAME_DRAGGED_ALPHA 120
+#define LAYOUT_CONTROL_ALPHA 210
 
 INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 
@@ -20,17 +28,28 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 	var/always_shown = FALSE
 	var/always_available = TRUE
 	var/collapse_distance = LOBBY_COLLAPSE_DISTANCE
+	var/lobby_group = LOBBY_GROUP_MENU
+	var/base_screen_loc
+
+/atom/movable/screen/lobby/Initialize(mapload, datum/hud/hud_owner)
+	. = ..()
+	base_screen_loc = screen_loc
 
 /atom/movable/screen/lobby/proc/is_available(client/viewer)
 	return TRUE
+
+/atom/movable/screen/lobby/proc/apply_layout_shift(shift_x, shift_y, anchor)
+	screen_loc = shift_screen_loc(base_screen_loc, shift_x, shift_y)
 
 /atom/movable/screen/lobby/proc/SlowInit()
 	return
 
 /atom/movable/screen/lobby/proc/collapse_button()
 	SIGNAL_HANDLER
+	var/datum/hud/new_player/lobby_hud = hud
+	var/list/shift = lobby_hud.get_collapse_shift(src)
 	animate(src, transform = transform, time = SHUTTER_MOVEMENT_DURATION + SHUTTER_WAIT_DURATION)
-	animate(transform = transform.Translate(x = 0, y = collapse_distance), time = SHUTTER_MOVEMENT_DURATION, easing = CUBIC_EASING|EASE_IN)
+	animate(transform = transform.Translate(x = shift[1], y = shift[2]), time = SHUTTER_MOVEMENT_DURATION, easing = CUBIC_EASING|EASE_IN)
 
 /atom/movable/screen/lobby/proc/expand_button()
 	SIGNAL_HANDLER
@@ -239,8 +258,17 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 
 /atom/movable/screen/lobby/button/bottom/link
 	abstract_type = /atom/movable/screen/lobby/button/bottom/link
+	lobby_group = LOBBY_GROUP_LINKS
+	var/edge_distance = LINK_HINT_MAX_WIDTH
 	var/hint_room = LINK_HINT_MAX_WIDTH
+	var/hint_left_room = LINK_HINT_MAX_WIDTH
 	var/hint_fitted = FALSE
+
+/atom/movable/screen/lobby/button/bottom/link/apply_layout_shift(shift_x, shift_y, anchor)
+	. = ..()
+	hint_room = edge_distance - shift_x
+	hint_left_room = view_to_pixels(hud.mymob.client.view)[1] - hint_room
+	hint_fitted = FALSE
 
 /atom/movable/screen/lobby/button/bottom/link/update_hint()
 	if(highlighted && !hint_fitted)
@@ -254,11 +282,7 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 		return
 	hint_fitted = TRUE
 	maptext_width = text_width > 0 ? min(text_width + LINK_HINT_WIDTH_PADDING, LINK_HINT_MAX_WIDTH) : LINK_HINT_MAX_WIDTH
-	maptext_x = min(round((LOBBY_BOTTOM_BUTTON_SIZE - maptext_width) / 2), hint_room - maptext_width)
-
-/atom/movable/screen/lobby/button/bottom/link/collapse_button()
-	animate(src, transform = transform, time = SHUTTER_MOVEMENT_DURATION + SHUTTER_WAIT_DURATION)
-	animate(transform = transform.Translate(x = collapse_distance, y = 0), time = SHUTTER_MOVEMENT_DURATION, easing = CUBIC_EASING|EASE_IN)
+	maptext_x = clamp(round((LOBBY_BOTTOM_BUTTON_SIZE - maptext_width) / 2), -hint_left_room, hint_room - maptext_width)
 
 /atom/movable/screen/lobby/button/bottom/character
 	abstract_type = /atom/movable/screen/lobby/button/bottom/character
@@ -554,6 +578,7 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 	layer = LOBBY_BELOW_MENU_LAYER
 	screen_loc = "TOP:-82,CENTER:-54"
 	always_shown = TRUE
+	collapse_distance = LOBBY_HANDLE_COLLAPSE_DISTANCE
 	var/blip_enabled = TRUE
 
 /atom/movable/screen/lobby/button/collapse/Initialize(mapload, datum/hud/hud_owner)
@@ -577,6 +602,9 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 	. = ..()
 	if(!.)
 		return
+	toggle_menu()
+
+/atom/movable/screen/lobby/button/collapse/proc/toggle_menu()
 	var/datum/hud/new_player/our_hud = hud
 	base_icon_state = our_hud.menu_hud_status ? "expand" : "collapse"
 	name = "[our_hud.menu_hud_status ? "Expand" : "Collapse"] Lobby Menu"
@@ -604,8 +632,10 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 
 /atom/movable/screen/lobby/button/collapse/proc/collapse_menu()
 	SEND_SIGNAL(hud, COMSIG_HUD_LOBBY_COLLAPSED)
+	var/datum/hud/new_player/lobby_hud = hud
+	var/list/shift = lobby_hud.get_collapse_shift(src)
 	animate(src, transform = transform, time = SHUTTER_MOVEMENT_DURATION + SHUTTER_WAIT_DURATION)
-	animate(transform = transform.Translate(x = 0, y = 134), time = SHUTTER_MOVEMENT_DURATION, easing = CUBIC_EASING|EASE_IN)
+	animate(transform = transform.Translate(x = shift[1], y = shift[2]), time = SHUTTER_MOVEMENT_DURATION, easing = CUBIC_EASING|EASE_IN)
 	SEND_SOUND(hud.mymob, sound('sound/misc/menu/menu_rollup1.ogg'))
 
 /atom/movable/screen/lobby/button/collapse/proc/expand_menu()
@@ -620,9 +650,15 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 	screen_loc = "TOP:+143,CENTER:-73"
 	layer = LOBBY_SHUTTER_LAYER
 	always_shown = TRUE
+	collapse_distance = LOBBY_SHUTTER_DROP_DISTANCE
+
+/atom/movable/screen/lobby/shutter/apply_layout_shift(shift_x, shift_y, anchor)
+	screen_loc = shift_screen_loc(base_screen_loc, shift_x, 0)
 
 /atom/movable/screen/lobby/shutter/proc/setup_shutter_animation()
-	animate(src, transform = transform.Translate(x = 0, y = -143), time = SHUTTER_MOVEMENT_DURATION, easing = CUBIC_EASING|EASE_OUT)
+	var/datum/hud/new_player/lobby_hud = hud
+	var/list/shift = lobby_hud.get_collapse_shift(src)
+	animate(src, transform = transform.Translate(x = 0, y = -shift[2]), time = SHUTTER_MOVEMENT_DURATION, easing = CUBIC_EASING|EASE_OUT)
 	animate(transform = transform, time = SHUTTER_WAIT_DURATION)
 	animate(transform = matrix(), time = SHUTTER_MOVEMENT_DURATION, easing = CUBIC_EASING|EASE_IN)
 
@@ -655,6 +691,7 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 	maptext_width = 80
 	maptext_x = OVERLAY_X_DIFF
 	maptext_y = OVERLAY_Y_DIFF
+	lobby_group = LOBBY_GROUP_INFO
 	var/show_static = TRUE
 
 /atom/movable/screen/lobby/new_player_info/Initialize(mapload, datum/hud/hud_owner)
@@ -686,8 +723,7 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 	show_static = FALSE
 	update_text()
 	update_appearance(UPDATE_ICON)
-	animate(src, transform = transform, time = SHUTTER_MOVEMENT_DURATION + SHUTTER_WAIT_DURATION)
-	animate(transform = transform.Translate(x = collapse_distance, y = 0), time = SHUTTER_MOVEMENT_DURATION, easing = CUBIC_EASING|EASE_IN)
+	return ..()
 
 /atom/movable/screen/lobby/new_player_info/expand_button()
 	. = ..()
@@ -709,6 +745,9 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 	screen_loc = "SOUTH,WEST"
 	always_shown = TRUE
 	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
+	maptext_x = LOBBY_CAPTION_MARGIN
+	var/bottom_row = 0
+	var/text_align = "center"
 
 /atom/movable/screen/lobby/caption/Initialize(mapload, datum/hud/hud_owner)
 	. = ..()
@@ -720,37 +759,145 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 	SIGNAL_HANDLER
 	maptext_width = view_to_pixels(new_size)[1] - 2 * maptext_x
 
+/atom/movable/screen/lobby/caption/apply_layout_shift(shift_x, shift_y, anchor)
+	. = ..()
+	text_align = (anchor & WEST) ? "left" : ((anchor & EAST) ? "right" : "center")
+	update_text()
+
+/atom/movable/screen/lobby/caption/proc/update_text()
+	SIGNAL_HANDLER
+	return
+
 /atom/movable/screen/lobby/caption/notice
 	name = "Lobby Notice"
 	screen_loc = "SOUTH+2,WEST"
 	maptext_height = 64
+	lobby_group = LOBBY_GROUP_NOTICE
+	bottom_row = 2
 
 /atom/movable/screen/lobby/caption/notice/Initialize(mapload, datum/hud/hud_owner)
 	. = ..()
 	RegisterSignal(SStitle, COMSIG_TITLE_NOTICE_CHANGED, PROC_REF(update_text))
 	update_text()
 
-/atom/movable/screen/lobby/caption/notice/proc/update_text()
-	SIGNAL_HANDLER
-	maptext = SStitle.notice ? MAPTEXT_PIXELLARI("<span style='text-align: center; color: #ff4040'>[SStitle.notice]</span>") : null
+/atom/movable/screen/lobby/caption/notice/update_text()
+	maptext = SStitle.notice ? MAPTEXT_PIXELLARI("<span style='text-align: [text_align]; color: #ff4040'>[SStitle.notice]</span>") : null
 
 /atom/movable/screen/lobby/caption/phrase
 	name = "Lobby Phrase"
-	maptext_x = 8
 	maptext_height = 24
+	lobby_group = LOBBY_GROUP_PHRASE
 
 /atom/movable/screen/lobby/caption/phrase/Initialize(mapload, datum/hud/hud_owner)
 	. = ..()
 	RegisterSignal(SStitle, COMSIG_SUBSYSTEM_POST_INITIALIZE, PROC_REF(update_text))
 	update_text()
 
-/atom/movable/screen/lobby/caption/phrase/proc/update_text()
-	SIGNAL_HANDLER
-	maptext = SStitle.initialized ? MAPTEXT_PIXELLARI("<span style='text-align: center'>[SStitle.random_phrase]</span>") : null
+/atom/movable/screen/lobby/caption/phrase/update_text()
+	maptext = SStitle.initialized ? MAPTEXT_PIXELLARI("<span style='text-align: [text_align]'>[SStitle.random_phrase]</span>") : null
+
+/atom/movable/screen/lobby/layout_label
+	screen_loc = "1,1"
+	layer = LOBBY_LAYOUT_FRAME_LAYER
+	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
+	always_available = FALSE
+	lobby_group = null
+	var/text_style = "text-align: right"
+
+/atom/movable/screen/lobby/layout_label/proc/set_text(text)
+	maptext = MAPTEXT("<span style='[text_style]'>[text]</span>")
+
+/atom/movable/screen/lobby/layout_rect
+	abstract_type = /atom/movable/screen/lobby/layout_rect
+	icon = 'icons/effects/alphacolors.dmi'
+	icon_state = "white"
+	screen_loc = "1,1"
+	layer = LOBBY_LAYOUT_FRAME_LAYER
+	mouse_over_pointer = MOUSE_HAND_POINTER
+	always_available = FALSE
+	lobby_group = null
+	var/label_text
+	var/label_style = "text-align: right"
+	var/datum/lobby_layout_editor/editor
+	var/atom/movable/screen/lobby/layout_label/label
+
+/atom/movable/screen/lobby/layout_rect/Initialize(mapload, datum/hud/hud_owner, datum/lobby_layout_editor/editor)
+	. = ..()
+	src.editor = editor
+	label = new(null, hud_owner)
+	label.layer = layer
+	label.text_style = label_style
+	if(label_text)
+		label.set_text(label_text)
+
+/atom/movable/screen/lobby/layout_rect/Destroy()
+	editor = null
+	label = null
+	return ..()
+
+/atom/movable/screen/lobby/layout_rect/proc/set_box(list/box)
+	screen_loc = shift_screen_loc(base_screen_loc, box[1], box[2])
+	transform = matrix(box[3] / ICON_SIZE_X, 0, (box[3] - ICON_SIZE_X) / 2, 0, box[4] / ICON_SIZE_Y, (box[4] - ICON_SIZE_Y) / 2)
+	label.screen_loc = shift_screen_loc(label.base_screen_loc, box[1] + LAYOUT_LABEL_PADDING, box[2])
+	label.maptext_width = box[3] - 2 * LAYOUT_LABEL_PADDING
+	label.maptext_height = box[4] - LAYOUT_LABEL_PADDING
+
+/atom/movable/screen/lobby/layout_rect/frame
+	name = "Lobby Block"
+	color = LAYOUT_FRAME_COLOR
+	alpha = LAYOUT_FRAME_ALPHA
+	mouse_over_pointer = MOUSE_DRAG_POINTER
+	var/group
+
+/atom/movable/screen/lobby/layout_rect/frame/proc/set_dragged(dragged)
+	alpha = dragged ? LAYOUT_FRAME_DRAGGED_ALPHA : LAYOUT_FRAME_ALPHA
+
+/atom/movable/screen/lobby/layout_rect/control
+	abstract_type = /atom/movable/screen/lobby/layout_rect/control
+	layer = LOBBY_LAYOUT_CONTROL_LAYER
+	alpha = LAYOUT_CONTROL_ALPHA
+	label_style = "text-align: center; vertical-align: middle"
+
+/atom/movable/screen/lobby/layout_rect/control/Click(location, control, params)
+	if(usr != hud?.mymob)
+		return
+	SEND_SOUND(usr, sound('sound/misc/menu/ui_select1.ogg'))
+	activate()
+
+/atom/movable/screen/lobby/layout_rect/control/proc/activate()
+	return
+
+/atom/movable/screen/lobby/layout_rect/control/done
+	name = "Save Lobby Layout"
+	label_text = "Готово"
+	color = "#3f9e4d"
+
+/atom/movable/screen/lobby/layout_rect/control/done/activate()
+	var/datum/hud/new_player/lobby_hud = hud
+	lobby_hud.stop_layout_editing(save = TRUE)
+
+/atom/movable/screen/lobby/layout_rect/control/reset
+	name = "Reset Lobby Layout"
+	label_text = "Сбросить"
+	color = "#b07a26"
+
+/atom/movable/screen/lobby/layout_rect/control/reset/activate()
+	editor.reset()
+
+/atom/movable/screen/lobby/layout_rect/control/cancel
+	name = "Cancel Lobby Layout"
+	label_text = "Отмена"
+	color = "#a83b3b"
+
+/atom/movable/screen/lobby/layout_rect/control/cancel/activate()
+	var/datum/hud/new_player/lobby_hud = hud
+	lobby_hud.stop_layout_editing(save = FALSE)
 
 #undef SHUTTER_MOVEMENT_DURATION
 #undef SHUTTER_WAIT_DURATION
 #undef LOBBY_COLLAPSE_DISTANCE
+#undef LOBBY_HANDLE_COLLAPSE_DISTANCE
+#undef LOBBY_SHUTTER_DROP_DISTANCE
 #undef LOBBY_BOTTOM_BUTTON_SIZE
 #undef LINK_HINT_MAX_WIDTH
 #undef LINK_HINT_WIDTH_PADDING
@@ -759,3 +906,9 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 #undef DISCORD_SPOTLIGHT_GLOW
 #undef DISCORD_SPOTLIGHT_GLOW_COLOR
 #undef DISCORD_SPOTLIGHT_PULSE_DURATION
+#undef LOBBY_CAPTION_MARGIN
+#undef LAYOUT_LABEL_PADDING
+#undef LAYOUT_FRAME_COLOR
+#undef LAYOUT_FRAME_ALPHA
+#undef LAYOUT_FRAME_DRAGGED_ALPHA
+#undef LAYOUT_CONTROL_ALPHA

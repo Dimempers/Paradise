@@ -58,6 +58,60 @@
 /datum/preference/numeric/ui_style_alpha/apply_to_client_updated(client/client, value)
 	client.mob?.remake_hud()
 
+/datum/preference/choiced/lobby_layout
+	savefile_identifier = PREFERENCE_PLAYER
+	savefile_key = "lobby_layout"
+	category = PREFERENCE_CATEGORY_GAME_PREFERENCES
+
+/datum/preference/choiced/lobby_layout/init_possible_values()
+	return assoc_to_keys(GLOB.lobby_layout_presets) + LOBBY_LAYOUT_CUSTOM
+
+/datum/preference/choiced/lobby_layout/create_default_value()
+	return LOBBY_LAYOUT_DEFAULT
+
+/datum/preference/choiced/lobby_layout/apply_to_client_updated(client/client, value)
+	var/datum/hud/new_player/lobby_hud = client.mob?.hud_used
+	if(istype(lobby_hud))
+		lobby_hud.apply_layout(lobby_hud.get_saved_layout())
+
+/datum/preference/choiced/lobby_layout/compile_constant_data()
+	var/list/data = ..()
+	data[CHOICED_PREFERENCE_DISPLAY_NAMES] = list(
+		LOBBY_LAYOUT_DEFAULT = "Стандартная",
+		LOBBY_LAYOUT_CORNERS = "По углам",
+		LOBBY_LAYOUT_MENU_LEFT = "Меню слева",
+		LOBBY_LAYOUT_MENU_RIGHT = "Меню справа",
+		LOBBY_LAYOUT_CUSTOM = "Своя",
+	)
+	return data
+
+/datum/preference/lobby_layout_custom
+	savefile_identifier = PREFERENCE_PLAYER
+	savefile_key = "lobby_layout_custom"
+	category = PREFERENCE_CATEGORY_GAME_PREFERENCES
+
+/datum/preference/lobby_layout_custom/should_show_on_page(preference_tab)
+	return FALSE
+
+/datum/preference/lobby_layout_custom/deserialize(input, datum/preferences/preferences)
+	var/list/layout = list()
+	if(!islist(input))
+		return layout
+	for(var/group in input)
+		var/list/entry = input[group]
+		if(!istext(group) || !islist(entry) || length(entry) != 3)
+			continue
+		if(!isnum(entry[1]) || !isnum(entry[2]) || !isnum(entry[3]))
+			continue
+		layout[group] = list(entry[1] & (NORTH|SOUTH|EAST|WEST), round(entry[2]), round(entry[3]))
+	return layout
+
+/datum/preference/lobby_layout_custom/create_default_value()
+	return list()
+
+/datum/preference/lobby_layout_custom/is_valid(value, datum/preferences/preferences)
+	return islist(value)
+
 /datum/preference/color/ooc_color
 	savefile_identifier = PREFERENCE_PLAYER
 	savefile_key = "ooccolor"

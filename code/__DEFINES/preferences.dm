@@ -261,6 +261,18 @@
 
 #define PREFERENCE_PAGE_JOBS "jobs"
 
+#define LOBBY_LAYOUT_DEFAULT "default"
+#define LOBBY_LAYOUT_CORNERS "corners"
+#define LOBBY_LAYOUT_MENU_LEFT "menu_left"
+#define LOBBY_LAYOUT_MENU_RIGHT "menu_right"
+#define LOBBY_LAYOUT_CUSTOM "custom"
+
+#define LOBBY_GROUP_MENU "menu"
+#define LOBBY_GROUP_INFO "info"
+#define LOBBY_GROUP_LINKS "links"
+#define LOBBY_GROUP_PHRASE "phrase"
+#define LOBBY_GROUP_NOTICE "notice"
+
 #define PREFERENCE_CATEGORY_FEATURES "features"
 #define PREFERENCE_CATEGORY_CLOTHING "clothing"
 #define PREFERENCE_CATEGORY_NON_CONTEXTUAL "non_contextual"
