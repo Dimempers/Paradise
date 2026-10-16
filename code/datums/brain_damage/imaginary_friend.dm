@@ -169,7 +169,7 @@ GAME_VERB_HIDDEN(/mob/camera/imaginary_friend, suicide, "suicide")
 	for(var/direction in GLOB.cardinal)
 		directional_icons += getFlatIcon(model, defdir = direction)
 
-	friend_icon = new /icon()
+	friend_icon = icon(directional_icons[1])
 	for(var/index in 1 to length(GLOB.cardinal))
 		friend_icon.Insert(directional_icons[index], "", GLOB.cardinal[index])
 
