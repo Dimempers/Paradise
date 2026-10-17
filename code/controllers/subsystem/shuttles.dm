@@ -51,6 +51,7 @@ SUBSYSTEM_DEF(shuttle)
 	var/list/shoppinglist = list()
 	var/list/requestlist = list()
 	var/list/supply_packs = list()
+	var/pack_price_modifier = 1
 	var/datum/round_event/shuttle_loan/shuttle_loan
 	var/sold_atoms = ""
 	var/list/hidden_shuttle_turfs = list() //all turfs hidden from navigation computers associated with a list containing the image hiding them and the type of the turf they are pretending to be

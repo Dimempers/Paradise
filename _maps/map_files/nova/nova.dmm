@@ -15983,6 +15983,7 @@
 	dir = 8
 	},
 /obj/item/radio/intercom/directional/north,
+/obj/machinery/ai_node/network_node,
 /turf/simulated/floor/plasteel{
 	dir = 1;
 	icon_state = "darkpurple"
@@ -43871,6 +43872,7 @@
 	pixel_x = 2;
 	pixel_y = 2
 	},
+/obj/item/ai_upgrade/ai_program_reset,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},
@@ -45411,6 +45413,7 @@
 "haO" = (
 /obj/effect/turf_decal/delivery/hollow,
 /obj/structure/extinguisher_cabinet/directional/south,
+/obj/machinery/ai_node/processing_node,
 /turf/simulated/floor/plasteel,
 /area/station/science/storage)
 "haP" = (
@@ -125263,12 +125266,14 @@
 /turf/simulated/wall/r_wall,
 /area/station/medical/surgery/south)
 "teo" = (
-/obj/item/twohanded/required/kirbyplants,
 /obj/machinery/light{
 	dir = 4
 	},
 /obj/machinery/door_control/gateway{
 	pixel_x = 36
+	},
+/obj/machinery/computer/ai_resource{
+	dir = 1
 	},
 /turf/simulated/floor/plasteel{
 	dir = 6;

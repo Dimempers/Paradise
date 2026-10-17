@@ -71,6 +71,24 @@ GLOBAL_LIST_INIT(ai_verbs_default, list(
 
 	var/obj/item/radio/headset/heads/ai_integrated/aiRadio = null
 
+	var/datum/program_picker/program_picker
+	var/datum/action/innate/ai/choose_program/program_action
+	var/nanite_regen = 1
+	var/universal_adapter = FALSE
+	var/adapter_efficiency = 0.5
+	var/bluespace_miner = FALSE
+	var/bluespace_miner_rate = 100
+	var/next_payout = 10 MINUTES
+	var/research_subsystem = FALSE
+	var/research_level = 0
+	var/research_time = 10 MINUTES
+	var/last_research_time
+	var/enhanced_tracking = FALSE
+	var/mob/tracked_mob
+	var/enhanced_tracking_delay = 10 SECONDS
+	var/tracking_alert_interval = 30 SECONDS
+	var/tracker_alert_cooldown = FALSE
+
 	//AI SHELL CONTROL
 	var/mob/living/silicon/robot/deployed_shell = null
 
@@ -256,6 +274,8 @@ GLOBAL_LIST_INIT(ai_verbs_default, list(
 	GLOB.ai_list += src
 	GLOB.shuttle_caller_list += src
 
+	add_program_picker()
+
 	AddElement(/datum/element/high_value_item)
 	update_appearance()
 
@@ -275,6 +295,13 @@ GLOBAL_LIST_INIT(ai_verbs_default, list(
 	QDEL_NULL(aiRadio)
 	QDEL_NULL(builtInCamera)
 	QDEL_NULL(core_display_picker)
+	set_tracked_mob(null)
+	for(var/obj/machinery/ai_node/node as anything in GLOB.ai_nodes)
+		if(node.assigned_ai == src)
+			node.refresh_ai()
+	program_picker?.reset_programs()
+	QDEL_NULL(program_action)
+	QDEL_NULL(program_picker)
 	return ..()
 
 /mob/living/silicon/ai/get_radio()
@@ -308,6 +335,8 @@ GLOBAL_LIST_INIT(ai_verbs_default, list(
 /mob/living/silicon/ai/get_status_tab_items()
 	var/list/status_tab_data = ..()
 	. = status_tab_data
+	status_tab_data[++status_tab_data.len] = list("Nanites:", "[program_picker.nanites] / [program_picker.max_nanites]")
+	status_tab_data[++status_tab_data.len] = list("Nanite Manufacture Rate:", "[(nanite_regen + 0.5 * program_picker.bandwidth)]")
 	if(stat)
 		status_tab_data[++status_tab_data.len] = list("System status:", "Nonfunctional")
 		return
@@ -422,6 +451,7 @@ GLOBAL_LIST_INIT(ai_verbs_default, list(
 	use_power = ACTIVE_POWER_USE
 	var/mob/living/silicon/ai/powered_ai = null
 	invisibility = INVISIBILITY_ABSTRACT
+	var/bluespace_miner_power = 0
 
 /obj/machinery/ai_powersupply/Initialize(mapload, mob/living/silicon/ai/ai)
 	. = ..()
@@ -433,14 +463,67 @@ GLOBAL_LIST_INIT(ai_verbs_default, list(
 	use_power(1) // Just incase we need to wake up the power system.
 
 /obj/machinery/ai_powersupply/process()
-	if(!powered_ai || powered_ai.stat & DEAD)
+	if(QDELETED(powered_ai) || powered_ai.stat & DEAD)
 		qdel(src)
 		return
+	powered_ai.program_picker.nanites = min(powered_ai.program_picker.max_nanites, powered_ai.program_picker.nanites + (powered_ai.nanite_regen + 0.5 * powered_ai.program_picker.bandwidth))
 	if(!powered_ai.anchored)
 		loc = powered_ai.loc
 		use_power = NO_POWER_USE
 	if(powered_ai.anchored)
 		use_power = ACTIVE_POWER_USE
+	if(powered_ai.research_subsystem && powered_ai.last_research_time + powered_ai.research_time <= world.time)
+		powered_ai.do_research()
+	if(powered_ai.bluespace_miner && powered_ai.next_payout <= world.time)
+		powered_ai.next_payout = 10 MINUTES + world.time
+		var/datum/money_account/science_account = GLOB.department_accounts[STATION_DEPARTMENT_SCIENCE]
+		science_account?.credit(powered_ai.bluespace_miner_rate, "Bluespace Miner Production", "AI Bluespace Miner Subsystem", science_account.owner_name)
+	var/miner_power = powered_ai.bluespace_miner ? powered_ai.bluespace_miner_rate * 2.5 : 0
+	if(bluespace_miner_power != miner_power)
+		bluespace_miner_power = miner_power
+		active_power_usage = initial(active_power_usage) + bluespace_miner_power
+
+/mob/living/silicon/ai/proc/do_research()
+	last_research_time = world.time
+	var/obj/machinery/r_n_d/server/core/station_server
+	for(var/obj/machinery/r_n_d/server/core/server in SSmachines.get_by_type(/obj/machinery/r_n_d/server/core))
+		if(server.disabled || server.syndicate || !is_station_level(server.z))
+			continue
+		station_server = server
+		break
+	if(!station_server)
+		to_chat(src, span_warning("No research server found!"))
+		return
+
+	var/upgraded = FALSE
+	var/datum/research/files = station_server.files
+	if(!files)
+		to_chat(src, span_warning("No research server found!"))
+		return
+	var/list/possible_tech = list()
+	for(var/datum/tech/T in files.possible_tech)
+		possible_tech += T
+	while(!upgraded)
+		var/datum/tech/tech_to_upgrade = pick_n_take(possible_tech)
+		if(!tech_to_upgrade)
+			to_chat(src, span_notice("Current research cannot be discovered any further."))
+			research_subsystem = FALSE
+			return
+		if(research_level < 10 && istype(tech_to_upgrade, /datum/tech/syndicate))
+			continue
+		if(istype(tech_to_upgrade, /datum/tech/abductor))
+			continue
+		var/datum/tech/current = files.find_possible_tech_with_id(tech_to_upgrade.id)
+		if(!current)
+			continue
+		if(current.level >= 7 && research_level < 5)
+			continue
+		if(current.level >= 8)
+			continue
+		files.UpdateTech(tech_to_upgrade.id, current.level + 1)
+		files.RefreshResearch()
+		radio_announce("Discovered innovations have led to an increase in the field of [current]!", name, SCI_FREQ, src)
+		upgraded = TRUE
 
 GAME_VERB_PROC_DESC(/mob/living/silicon/ai, pick_icon, "Поменять дисплей", "Choose what appears on your AI core display", VERB_CATEGORY_AICOMMANDS)
 
@@ -1134,6 +1217,7 @@ GAME_VERB_PROC_DESC(/mob/living/silicon/ai, control_integrated_radio, "Наст�
 		aiRadio.disabledAi = TRUE	//No talking on the built-in radio for you either!
 		if(deployed_shell)
 			disconnect_shell()
+		program_picker?.reset_programs()
 		forceMove(card) //Throw AI into the card.
 		to_chat(src, "You have been downloaded to a mobile storage device. Remote device connection severed.")
 		to_chat(user, "[span_boldnotice("Transfer successful")]: [name] ([rand(1000,9999)].exe) removed from host terminal and stored within local memory.")
@@ -1209,6 +1293,23 @@ GAME_VERB_PROC_DESC(/mob/living/silicon/ai, control_integrated_radio, "Наст�
 	malf_picker = new /datum/module_picker
 	modules_action = new(malf_picker)
 	modules_action.Grant(src)
+
+/mob/living/silicon/ai/proc/reset_programs()
+	if(!program_picker)
+		return
+	program_picker.reset_programs()
+	to_chat(src, span_notice("Your programs have been reset to factory settings!"))
+	throw_alert("programsreset", /atom/movable/screen/alert/programs_reset)
+
+/mob/living/silicon/ai/proc/add_program_picker()
+	view_core()
+	program_picker = new /datum/program_picker(src)
+	program_action = new(program_picker)
+	program_action.Grant(src)
+
+/mob/living/silicon/ai/proc/play_sound_remote(target, sound, volume)
+	playsound_local(src, sound, volume, FALSE, use_reverb = FALSE)
+	playsound(target, sound, volume, FALSE, use_reverb = FALSE)
 
 ///Removes all malfunction-related /datum/action's from the target AI.
 /mob/living/silicon/ai/proc/remove_malf_abilities()

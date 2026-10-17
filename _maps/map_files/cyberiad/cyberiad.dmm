@@ -25683,9 +25683,11 @@
 	},
 /area/station/commons/dorms)
 "chS" = (
-/obj/item/twohanded/required/kirbyplants,
 /obj/machinery/light{
 	dir = 4
+	},
+/obj/machinery/computer/ai_resource{
+	dir = 1
 	},
 /turf/simulated/floor/plasteel{
 	dir = 6;
@@ -52315,6 +52317,7 @@
 "itu" = (
 /obj/structure/table/reinforced,
 /obj/item/folder,
+/obj/item/ai_upgrade/ai_program_reset,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},
@@ -53928,6 +53931,7 @@
 /obj/effect/decal/cleanable/dust,
 /obj/effect/turf_decal/delivery,
 /obj/item/reagent_containers/cup/bucket,
+/obj/machinery/ai_node/network_node,
 /turf/simulated/floor/engine,
 /area/station/maintenance/server)
 "iXv" = (
@@ -70103,6 +70107,7 @@
 /obj/machinery/atmospherics/unary/vent_pump/on{
 	dir = 1
 	},
+/obj/machinery/ai_node/processing_node,
 /turf/simulated/floor/plasteel/dark,
 /area/station/science/server)
 "pFN" = (
@@ -71788,6 +71793,7 @@
 /obj/machinery/atmospherics/unary/vent_scrubber/on{
 	dir = 8
 	},
+/obj/machinery/ai_node/network_node,
 /turf/simulated/floor/plasteel/dark,
 /area/station/science/server)
 "qlN" = (
@@ -78741,10 +78747,6 @@
 	},
 /turf/simulated/floor/plating,
 /area/station/hallway/primary/port)
-"tcn" = (
-/obj/effect/spawner/random_spawners/fungus_30,
-/turf/simulated/wall,
-/area/station/maintenance/engineering)
 "tcv" = (
 /obj/structure/cable{
 	icon_state = "4-8"
@@ -84652,6 +84654,14 @@
 	icon_state = "cmo"
 	},
 /area/station/commons/locker)
+"vtN" = (
+/obj/effect/turf_decal/stripes{
+	dir = 1
+	},
+/obj/effect/decal/cleanable/dust,
+/obj/machinery/ai_node/network_node,
+/turf/simulated/floor/glass,
+/area/station/maintenance/server)
 "vud" = (
 /obj/machinery/vending/autodrobe,
 /obj/machinery/light/small{
@@ -90766,9 +90776,6 @@
 	},
 /turf/simulated/floor/plating,
 /area/station/maintenance/fsmaint2)
-"xNF" = (
-/turf/simulated/wall,
-/area/station/maintenance/engineering)
 "xNU" = (
 /obj/structure/curtain/open/shower/anchored,
 /obj/effect/turf_decal/siding/wideplating/end{
@@ -114907,7 +114914,7 @@ aaX
 gWI
 pIn
 fHl
-tcn
+dQn
 ruX
 olv
 cBm
@@ -115161,7 +115168,7 @@ uTI
 cLi
 ttt
 dQn
-xNF
+cLi
 jJp
 cOc
 cLi
@@ -117203,7 +117210,7 @@ iGL
 hqq
 cPL
 cLi
-tcn
+dQn
 cLz
 dar
 kRi
@@ -133644,7 +133651,7 @@ cpF
 bQX
 cAa
 cfZ
-vyb
+vtN
 cAa
 cAa
 uUP

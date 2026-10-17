@@ -984,6 +984,33 @@ to destroy them and players will be able to make replacements.
 		/obj/item/stock_parts/scanning_module = 1,
 	)
 
+/obj/item/circuitboard/processing_node
+	board_name = "Processing Node"
+	build_path = /obj/machinery/ai_node/processing_node
+	board_type = "machine"
+	greyscale_colors = CIRCUIT_COLOR_SCIENCE
+	origin_tech = "programming=4"
+	req_components = list(
+		/obj/item/stock_parts/capacitor = 2,
+		/obj/item/stack/sheet/mineral/gold = 1,
+		/obj/item/stack/sheet/mineral/silver = 1,
+		/obj/item/stack/sheet/mineral/diamond = 1,
+		/obj/item/stack/cable_coil = 5,
+	)
+
+/obj/item/circuitboard/network_node
+	board_name = "Network Node"
+	build_path = /obj/machinery/ai_node/network_node
+	board_type = "machine"
+	greyscale_colors = CIRCUIT_COLOR_SCIENCE
+	origin_tech = "programming=4"
+	req_components = list(
+		/obj/item/stock_parts/capacitor = 2,
+		/obj/item/stack/sheet/mineral/gold = 1,
+		/obj/item/stack/sheet/mineral/silver = 1,
+		/obj/item/stack/cable_coil = 5,
+	)
+
 /obj/item/circuitboard/mechfab
 	board_name = "Exosuit Fabricator"
 	build_path = /obj/machinery/mecha_part_fabricator

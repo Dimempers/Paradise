@@ -75,8 +75,11 @@ GLOBAL_LIST_INIT(all_supply_groups, list(SUPPLY_EMERGENCY,SUPPLY_SECURITY,SUPPLY
 		ui_manifest += "[content_name]"
 	manifest += "</ul>"
 
+/datum/supply_packs/proc/get_cost()
+	return cost * SSshuttle.pack_price_modifier
+
 /datum/supply_packs/proc/can_approve(mob/user)
-	if(SSshuttle.points < cost)
+	if(SSshuttle.points < get_cost())
 		to_chat(user, span_warning("Недостаточно очков снабжения для заказа."))
 		return FALSE
 	if(credits_cost && SSshuttle.cargo_money_account.money < credits_cost)
