@@ -76,7 +76,7 @@ GLOBAL_LIST_INIT(all_supply_groups, list(SUPPLY_EMERGENCY,SUPPLY_SECURITY,SUPPLY
 	manifest += "</ul>"
 
 /datum/supply_packs/proc/get_cost()
-	return cost * SSshuttle.pack_price_modifier
+	return round(cost * SSshuttle.get_pack_price_modifier(), 1)
 
 /datum/supply_packs/proc/can_approve(mob/user)
 	if(SSshuttle.points < get_cost())

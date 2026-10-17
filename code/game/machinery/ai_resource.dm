@@ -31,7 +31,7 @@ GLOBAL_LIST_EMPTY(ai_nodes)
 
 /obj/machinery/ai_node/examine(mob/user)
 	. = ..()
-	. += span_notice("This machine is temperature sensitive. Any temperature colder than 273K will freeze it, whle any temperature higher than [overheat_temp]K will cause it to overheat.")
+	. += span_notice("This machine is temperature sensitive. Any temperature colder than 273K will freeze it, while any temperature higher than [overheat_temp]K will cause it to overheat.")
 
 /obj/machinery/ai_node/process()
 	..()
@@ -158,6 +158,7 @@ GLOBAL_LIST_EMPTY(ai_nodes)
 
 /obj/machinery/ai_node/proc/overheat()
 	turn_off()
+	overheating = TRUE
 	atom_say("ERROR: Heat critical!")
 	take_damage(max_integrity / 3, BRUTE, sound_effect = FALSE)
 	update_use_power(IDLE_POWER_USE)

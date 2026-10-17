@@ -156,7 +156,7 @@
 				A.playsound_local(A, program.unlock_sound, 50, FALSE, use_reverb = FALSE)
 				return TRUE
 
-			if(program.upgrade_level > program.max_level)
+			if(program.upgrade_level >= program.max_level)
 				to_chat(A, span_notice("This program cannot be upgraded any further."))
 				return FALSE
 			if(!program.upgrade_level)
@@ -267,6 +267,8 @@
 
 /datum/action/cooldown/ai_program/Activate(atom/target)
 	StartCooldown()
+	if(owner.ckey)
+		add_attack_logs(owner, target, "cast the spell [name]", ATKLOG_ALL)
 	cast(target, owner)
 	return TRUE
 
@@ -436,8 +438,12 @@
 		to_chat(user, span_warning("This software lacks the required upgrade to recharge IPCs!"))
 		revert_cast()
 		return
-	var/area/A = get_area(user)
-	if(isnull(A))
+	var/obj/machinery/power/smes/power_source
+	for(var/obj/machinery/power/smes/smes in get_area(user))
+		if(smes.charge >= power_sent)
+			power_source = smes
+			break
+	if(!power_source)
 		to_chat(user, span_warning("No SMES detected to power from!"))
 		revert_cast()
 		return
@@ -458,11 +464,7 @@
 		var/mob/living/carbon/human/T = target
 		T.adjust_nutrition(clamp(user.adapter_efficiency * (power_sent / 10), 0, (NUTRITION_LEVEL_FULL - T.nutrition)))
 
-	for(var/obj/machinery/power/smes/power_source in A)
-		if(power_source.charge < power_sent)
-			continue
-		power_source.charge -= power_sent
-		break
+	power_source.charge -= power_sent
 	user.play_sound_remote(target, 'sound/goonstation/misc/fuse.ogg', 50)
 	camera_beam(target, "rped_upgrade", 'icons/effects/effects.dmi', 5)
 
@@ -699,26 +701,28 @@
 	unlock_text = "Online marketplace detected... connected!"
 	max_level = 6
 	upgrade = TRUE
-	var/original_price_mod
-
-/datum/ai_program/multimarket_analyser/New()
-	..()
-	original_price_mod = SSshuttle.pack_price_modifier
 
 /datum/ai_program/multimarket_analyser/upgrade(mob/living/silicon/ai/user, first_install = FALSE)
 	..()
-	SSshuttle.pack_price_modifier = original_price_mod * (0.95 - (0.05 * upgrade_level))
+	if(!istype(user))
+		return
+	user.market_price_modifier = 0.95 - (0.05 * upgrade_level)
 	installed = TRUE
+	SSshuttle.refresh_supply_prices()
 
 /datum/ai_program/multimarket_analyser/downgrade(mob/living/silicon/ai/user)
 	..()
-	if(!installed)
+	if(!installed || !istype(user))
 		return
-	SSshuttle.pack_price_modifier = original_price_mod * (0.95 - (0.05 * upgrade_level))
+	user.market_price_modifier = 0.95 - (0.05 * upgrade_level)
+	SSshuttle.refresh_supply_prices()
 
 /datum/ai_program/multimarket_analyser/uninstall(mob/living/silicon/ai/user)
 	..()
-	SSshuttle.pack_price_modifier = original_price_mod
+	if(!istype(user))
+		return
+	user.market_price_modifier = 1
+	SSshuttle.refresh_supply_prices()
 
 /datum/ai_program/light_repair
 	program_name = "Light Synthesizer"

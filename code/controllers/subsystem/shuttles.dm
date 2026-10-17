@@ -51,7 +51,6 @@ SUBSYSTEM_DEF(shuttle)
 	var/list/shoppinglist = list()
 	var/list/requestlist = list()
 	var/list/supply_packs = list()
-	var/pack_price_modifier = 1
 	var/datum/round_event/shuttle_loan/shuttle_loan
 	var/sold_atoms = ""
 	var/list/hidden_shuttle_turfs = list() //all turfs hidden from navigation computers associated with a list containing the image hiding them and the type of the turf they are pretending to be
@@ -148,6 +147,16 @@ SUBSYSTEM_DEF(shuttle)
 		if(S.id == id)
 			return S
 	WARNING("couldn't find dock with id: [id]")
+
+/datum/controller/subsystem/shuttle/proc/get_pack_price_modifier()
+	. = 1
+	for(var/mob/living/silicon/ai/ai as anything in GLOB.ai_list)
+		if(ai.stat != DEAD)
+			. = min(., ai.market_price_modifier)
+
+/datum/controller/subsystem/shuttle/proc/refresh_supply_prices()
+	for(var/obj/machinery/computer/supplycomp/console as anything in SSmachines.get_by_type(/obj/machinery/computer/supplycomp))
+		console.update_static_data_for_all_viewers()
 
 /datum/controller/subsystem/shuttle/proc/secondsToRefuel()
 	var/elapsed = world.time - SSticker.round_start_time

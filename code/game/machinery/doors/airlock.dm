@@ -80,6 +80,7 @@ GLOBAL_LIST_EMPTY(airlock_emissive_blockers)
 	var/obj/machinery/door/airlock/closeOther
 	var/closeOtherId
 	var/lockdownbyai = FALSE
+	var/ai_bolt_timer
 	var/justzap = FALSE
 	var/obj/item/airlock_electronics/airlock_electronics
 	var/obj/item/access_control/access_electronics
@@ -189,6 +190,9 @@ GLOBAL_LIST_EMPTY(airlock_emissive_blockers)
 	QDEL_NULL(access_electronics)
 	QDEL_NULL(wires)
 	QDEL_NULL(note)
+	if(ai_bolt_timer)
+		deltimer(ai_bolt_timer)
+		ai_bolt_timer = null
 	if(main_power_timer)
 		deltimer(main_power_timer)
 		main_power_timer = null
@@ -979,6 +983,24 @@ GLOBAL_LIST_EMPTY(airlock_emissive_blockers)
 		to_chat(user, span_warning("The door bolt control wire has been cut - Door bolts permanently dropped."))
 		return
 
+	if(isAI(user))
+		var/mob/living/silicon/ai/ai = user
+		if(ai_bolt_timer)
+			return
+		balloon_alert(ai, "команда отправлена")
+		ai_bolt_timer = addtimer(CALLBACK(src, PROC_REF(finish_ai_bolt_toggle), ai), ai.door_bolt_delay, TIMER_STOPPABLE)
+		return
+
+	apply_bolt_toggle(user)
+
+/obj/machinery/door/airlock/proc/finish_ai_bolt_toggle(mob/living/silicon/ai/ai)
+	ai_bolt_timer = null
+	if(wires.is_cut(WIRE_DOOR_BOLTS))
+		to_chat(ai, span_warning("The door bolt control wire has been cut - Door bolts permanently dropped."))
+		return
+	apply_bolt_toggle(ai)
+
+/obj/machinery/door/airlock/proc/apply_bolt_toggle(mob/user)
 	if(unlock()) // Trying to unbolt
 		to_chat(user, span_notice("The door bolts have been raised."))
 		return
