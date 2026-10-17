@@ -159,7 +159,7 @@
 		var/list/msg = list("--- ")
 
 		if(alarm_types_show["Tracking"])
-			msg += "TRACKING: [alarm_types_show["Tracking"]] alarms detected. - "
+			msg += "СЛЕЖЕНИЕ: обнаружено тревог — [alarm_types_show["Tracking"]]. - "
 
 		if(alarm_types_show["Burglar"])
 			msg += "BURGLAR: [alarm_types_show["Burglar"]] alarms detected. - "

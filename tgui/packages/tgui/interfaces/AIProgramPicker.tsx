@@ -28,12 +28,12 @@ export const AIProgramPicker = (props: unknown) => {
       <Window.Content scrollable>
         <Stack fill vertical>
           <Stack.Item>
-            <Section title="Select Program">
+            <Section title="Выбор программы">
               <LabeledList>
-                <LabeledList.Item label="Memory Available">
+                <LabeledList.Item label="Доступно памяти">
                   {ai_info.memory}
                 </LabeledList.Item>
-                <LabeledList.Item label="Bandwidth Available">
+                <LabeledList.Item label="Доступно пропускной способности">
                   {ai_info.bandwidth}
                 </LabeledList.Item>
               </LabeledList>
@@ -51,14 +51,14 @@ export const AIProgramPicker = (props: unknown) => {
                       icon="file"
                       onClick={() => act('select', { uid: program.UID })}
                     >
-                      {program.installed === 1 ? 'Update' : 'Install'}
+                      {program.installed === 1 ? 'Улучшить' : 'Установить'}
                     </Button>
                   }
                 >
                   <Stack vertical>
                     <LabeledList>
                       <Stack.Item mb={2}>
-                        <LabeledList.Item label="Description">
+                        <LabeledList.Item label="Описание">
                           {program.description}
                         </LabeledList.Item>
                       </Stack.Item>
@@ -67,22 +67,22 @@ export const AIProgramPicker = (props: unknown) => {
                           <LabeledList.Item
                             label={
                               program.installed === 1
-                                ? 'Bandwidth Cost'
-                                : 'Memory Cost'
+                                ? 'Цена в пропускной способности'
+                                : 'Цена в памяти'
                             }
                           >
                             {program.memory_cost}
                           </LabeledList.Item>
-                          <LabeledList.Item label="Upgrade Level">
+                          <LabeledList.Item label="Уровень улучшения">
                             {program.upgrade_level}
                           </LabeledList.Item>
                         </Stack.Item>
                         <Stack.Item>
-                          <LabeledList.Item label="Installed">
-                            {program.installed === 1 ? 'True' : 'False'}
+                          <LabeledList.Item label="Установлена">
+                            {program.installed === 1 ? 'Да' : 'Нет'}
                           </LabeledList.Item>
-                          <LabeledList.Item label="Passive">
-                            {program.is_passive === 1 ? 'True' : 'False'}
+                          <LabeledList.Item label="Пассивная">
+                            {program.is_passive === 1 ? 'Да' : 'Нет'}
                           </LabeledList.Item>
                         </Stack.Item>
                       </Stack>

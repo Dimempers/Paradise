@@ -336,8 +336,8 @@ GLOBAL_LIST_INIT(ai_verbs_default, list(
 /mob/living/silicon/ai/get_status_tab_items()
 	var/list/status_tab_data = ..()
 	. = status_tab_data
-	status_tab_data[++status_tab_data.len] = list("Nanites:", "[program_picker.nanites] / [program_picker.max_nanites]")
-	status_tab_data[++status_tab_data.len] = list("Nanite Manufacture Rate:", "[(nanite_regen + 0.5 * program_picker.bandwidth)]")
+	status_tab_data[++status_tab_data.len] = list("Наниты:", "[program_picker.nanites] / [program_picker.max_nanites]")
+	status_tab_data[++status_tab_data.len] = list("Производство нанитов:", "[(nanite_regen + 0.5 * program_picker.bandwidth)]")
 	if(stat)
 		status_tab_data[++status_tab_data.len] = list("System status:", "Nonfunctional")
 		return
@@ -478,7 +478,7 @@ GLOBAL_LIST_INIT(ai_verbs_default, list(
 	if(powered_ai.bluespace_miner && powered_ai.next_payout <= world.time)
 		powered_ai.next_payout = 10 MINUTES + world.time
 		var/datum/money_account/science_account = GLOB.department_accounts[STATION_DEPARTMENT_SCIENCE]
-		science_account?.credit(powered_ai.bluespace_miner_rate, "Bluespace Miner Production", "AI Bluespace Miner Subsystem", science_account.owner_name)
+		science_account?.credit(powered_ai.bluespace_miner_rate, "Доход блюспейс-майнера.", "Блюспейс-майнер ИИ", science_account.owner_name)
 	var/miner_power = powered_ai.bluespace_miner ? powered_ai.bluespace_miner_rate * 2.5 : 0
 	if(bluespace_miner_power != miner_power)
 		bluespace_miner_power = miner_power
@@ -493,13 +493,13 @@ GLOBAL_LIST_INIT(ai_verbs_default, list(
 		station_server = server
 		break
 	if(!station_server)
-		to_chat(src, span_warning("No research server found!"))
+		to_chat(src, span_warning("Исследовательский сервер не найден!"))
 		return
 
 	var/upgraded = FALSE
 	var/datum/research/files = station_server.files
 	if(!files)
-		to_chat(src, span_warning("No research server found!"))
+		to_chat(src, span_warning("Исследовательский сервер не найден!"))
 		return
 	var/list/possible_tech = list()
 	for(var/datum/tech/T in files.possible_tech)
@@ -507,7 +507,7 @@ GLOBAL_LIST_INIT(ai_verbs_default, list(
 	while(!upgraded)
 		var/datum/tech/tech_to_upgrade = pick_n_take(possible_tech)
 		if(!tech_to_upgrade)
-			to_chat(src, span_notice("Current research cannot be discovered any further."))
+			to_chat(src, span_notice("Текущие исследования больше нельзя продвинуть."))
 			research_subsystem = FALSE
 			return
 		if(research_level < 10 && istype(tech_to_upgrade, /datum/tech/syndicate))
@@ -523,7 +523,7 @@ GLOBAL_LIST_INIT(ai_verbs_default, list(
 			continue
 		files.UpdateTech(tech_to_upgrade.id, current.level + 1)
 		files.RefreshResearch()
-		radio_announce("Discovered innovations have led to an increase in the field of [current]!", name, SCI_FREQ, src)
+		radio_announce("Сделанные открытия продвинули исследования в области: [current]!", name, SCI_FREQ, src)
 		upgraded = TRUE
 
 GAME_VERB_PROC_DESC(/mob/living/silicon/ai, pick_icon, "Поменять дисплей", "Choose what appears on your AI core display", VERB_CATEGORY_AICOMMANDS)
@@ -1299,7 +1299,7 @@ GAME_VERB_PROC_DESC(/mob/living/silicon/ai, control_integrated_radio, "Наст�
 	if(!program_picker)
 		return
 	program_picker.reset_programs()
-	to_chat(src, span_notice("Your programs have been reset to factory settings!"))
+	to_chat(src, span_notice("Ваши программы сброшены до заводских настроек!"))
 	throw_alert("programsreset", /atom/movable/screen/alert/programs_reset)
 
 /mob/living/silicon/ai/proc/add_program_picker()

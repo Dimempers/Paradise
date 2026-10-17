@@ -5,7 +5,7 @@ GLOBAL_LIST_EMPTY(ai_nodes)
 
 /obj/machinery/ai_node
 	name = "AI Node"
-	desc = "If you see me, make an issue report!"
+	desc = "Если вы это видите, сообщите о баге!"
 	icon = 'icons/obj/machines/ai_machinery.dmi'
 	icon_state = "processor-off"
 	density = TRUE
@@ -17,6 +17,7 @@ GLOBAL_LIST_EMPTY(ai_nodes)
 	var/active = FALSE
 	var/mob/living/silicon/ai/assigned_ai = null
 	var/resource_key
+	var/resource_name
 	var/resource_amount = 1
 	var/heat_amount = 25000
 	var/overheating = FALSE
@@ -25,19 +26,29 @@ GLOBAL_LIST_EMPTY(ai_nodes)
 	var/efficiency = 1
 	var/datum/milla_safe/ai_node_process/milla = new()
 
+/obj/machinery/ai_node/get_ru_names()
+	return alist(
+		NOMINATIVE = "узел ИИ",
+		GENITIVE = "узла ИИ",
+		DATIVE = "узлу ИИ",
+		ACCUSATIVE = "узел ИИ",
+		INSTRUMENTAL = "узлом ИИ",
+		PREPOSITIONAL = "узле ИИ",
+	)
+
 /obj/machinery/ai_node/Initialize(mapload)
 	. = ..()
 	GLOB.ai_nodes += src
 
 /obj/machinery/ai_node/examine(mob/user)
 	. = ..()
-	. += span_notice("This machine is temperature sensitive. Any temperature colder than 273K will freeze it, while any temperature higher than [overheat_temp]K will cause it to overheat.")
+	. += span_notice("Машина чувствительна к температуре: ниже 273K она замерзает, а выше [overheat_temp]K — перегревается.")
 
 /obj/machinery/ai_node/process()
 	..()
 	if(active)
 		if(stat & NOPOWER)
-			atom_say("ERROR: Insufficient power! Shutting down...")
+			atom_say("ОШИБКА: недостаточно энергии! Отключение...")
 			turn_off()
 			return
 		milla.invoke_async(src)
@@ -102,13 +113,13 @@ GLOBAL_LIST_EMPTY(ai_nodes)
 /obj/machinery/ai_node/proc/toggle(mob/user = null)
 	if(overheating)
 		if(user)
-			to_chat(user, span_notice("You turn the overheating [src] off."))
+			to_chat(user, span_notice("Вы выключаете перегревшийся [declent_ru(ACCUSATIVE)]."))
 		overheating = FALSE
 		update_icon(UPDATE_ICON_STATE)
 		return
 	active = !active
 	if(user)
-		to_chat(user, span_notice("You turn [src] [active ? "on" : "off"]."))
+		to_chat(user, span_notice("Вы [active ? "включаете" : "выключаете"] [declent_ru(ACCUSATIVE)]."))
 	if(active)
 		refresh_ai()
 	else
@@ -120,12 +131,12 @@ GLOBAL_LIST_EMPTY(ai_nodes)
 	find_ai()
 	if(!assigned_ai)
 		active = FALSE
-		atom_say("ERROR: No AI detected. Shutting down...")
+		atom_say("ОШИБКА: ИИ не обнаружен. Отключение...")
 		turn_off()
 	else
 		assigned_ai.program_picker.modify_resource(resource_key, resource_amount)
 		var/area/our_area = get_area(src)
-		to_chat(assigned_ai, span_notice("New server node connected at: [our_area.name]."))
+		to_chat(assigned_ai, span_notice("Подключён новый серверный узел: [our_area.name]."))
 		update_use_power(ACTIVE_POWER_USE)
 		update_icon(UPDATE_ICON_STATE)
 
@@ -134,7 +145,7 @@ GLOBAL_LIST_EMPTY(ai_nodes)
 	if(assigned_ai)
 		assigned_ai.program_picker.modify_resource(resource_key, -resource_amount)
 		var/area/our_area = get_area(src)
-		to_chat(assigned_ai, span_warning("Server node disconnected at: [our_area.name]!"))
+		to_chat(assigned_ai, span_warning("Серверный узел отключён: [our_area.name]!"))
 		assigned_ai = null
 	update_use_power(IDLE_POWER_USE)
 	update_icon(UPDATE_ICON_STATE)
@@ -159,7 +170,7 @@ GLOBAL_LIST_EMPTY(ai_nodes)
 /obj/machinery/ai_node/proc/overheat()
 	turn_off()
 	overheating = TRUE
-	atom_say("ERROR: Heat critical!")
+	atom_say("ОШИБКА: критический перегрев!")
 	take_damage(max_integrity / 3, BRUTE, sound_effect = FALSE)
 	update_use_power(IDLE_POWER_USE)
 	update_icon(UPDATE_ICON_STATE)
@@ -169,10 +180,10 @@ GLOBAL_LIST_EMPTY(ai_nodes)
 		return
 	var/area/our_area = get_area(src)
 	assigned_ai.program_picker.modify_resource(resource_key, -resource_amount)
-	to_chat(assigned_ai, span_warning("Server node disconnected at: [our_area.name]!"))
+	to_chat(assigned_ai, span_warning("Серверный узел отключён: [our_area.name]!"))
 	assigned_ai = new_ai
 	assigned_ai.program_picker.modify_resource(resource_key, resource_amount)
-	to_chat(assigned_ai, span_notice("New server node connected at: [our_area.name]."))
+	to_chat(assigned_ai, span_notice("Подключён новый серверный узел: [our_area.name]."))
 
 /datum/milla_safe/ai_node_process
 
@@ -202,9 +213,20 @@ GLOBAL_LIST_EMPTY(ai_nodes)
 
 /obj/machinery/ai_node/processing_node
 	name = "processing node"
-	desc = "A rack of processors with a manual on/off switch. While running, it grants an AI memory."
+	desc = "Стойка процессоров с ручным выключателем. Во время работы даёт ИИ память."
 	resource_key = "memory"
+	resource_name = "память"
 	icon_base = "processor"
+
+/obj/machinery/ai_node/processing_node/get_ru_names()
+	return alist(
+		NOMINATIVE = "вычислительный узел",
+		GENITIVE = "вычислительного узла",
+		DATIVE = "вычислительному узлу",
+		ACCUSATIVE = "вычислительный узел",
+		INSTRUMENTAL = "вычислительным узлом",
+		PREPOSITIONAL = "вычислительном узле",
+	)
 
 /obj/machinery/ai_node/processing_node/Initialize(mapload)
 	. = ..()
@@ -233,17 +255,28 @@ GLOBAL_LIST_EMPTY(ai_nodes)
 
 /obj/machinery/ai_node/network_node
 	name = "network node"
-	desc = "A rack of servers with a manual on/off switch. While running, it grants an AI bandwidth."
+	desc = "Стойка серверов с ручным выключателем. Во время работы даёт ИИ пропускную способность."
 	icon_state = "network-off"
 	resource_key = "bandwidth"
+	resource_name = "пропускная способность"
 	icon_base = "network"
+
+/obj/machinery/ai_node/network_node/get_ru_names()
+	return alist(
+		NOMINATIVE = "сетевой узел",
+		GENITIVE = "сетевого узла",
+		DATIVE = "сетевому узлу",
+		ACCUSATIVE = "сетевой узел",
+		INSTRUMENTAL = "сетевым узлом",
+		PREPOSITIONAL = "сетевом узле",
+	)
 
 /obj/machinery/ai_node/network_node/examine_more(mob/user)
 	. = ..()
-	. += "I don't know but I've been told, \
-	Captain's got a network node, \
-	Likes to press the on/off switch, \
-	Dig that crazy corporate snitch!"
+	. += "Мне сказали по секрету: \
+	Капитан узлом сетевым \
+	Щёлкает с утра до света — \
+	Стукачом слывёт штабным!"
 
 /obj/machinery/ai_node/network_node/Initialize(mapload)
 	. = ..()
@@ -270,7 +303,7 @@ GLOBAL_LIST_EMPTY(ai_nodes)
 
 /obj/machinery/computer/ai_resource
 	name = "AI Resource Control Console"
-	desc = "Used to reassign memory and bandwidth between multiple AI units."
+	desc = "Используется для перераспределения памяти и пропускной способности между несколькими ИИ."
 	icon_keyboard = "rd_key"
 	icon_screen = "ai_resource"
 	req_access = list(ACCESS_RD)
@@ -278,8 +311,18 @@ GLOBAL_LIST_EMPTY(ai_nodes)
 	light_color = LIGHT_COLOR_PURPLE
 	var/screen = ALLOCATED_RESOURCES
 
+/obj/machinery/computer/ai_resource/get_ru_names()
+	return alist(
+		NOMINATIVE = "консоль управления ресурсами ИИ",
+		GENITIVE = "консоли управления ресурсами ИИ",
+		DATIVE = "консоли управления ресурсами ИИ",
+		ACCUSATIVE = "консоль управления ресурсами ИИ",
+		INSTRUMENTAL = "консолью управления ресурсами ИИ",
+		PREPOSITIONAL = "консоли управления ресурсами ИИ",
+	)
+
 /obj/machinery/computer/ai_resource/attack_ai(mob/user)
-	to_chat(user, span_warning("ERROR: Firewall blocked! Station AI's are not permitted to interface with this console!"))
+	to_chat(user, span_warning("ОШИБКА: заблокировано брандмауэром! Станционным ИИ запрещено работать с этой консолью!"))
 	return
 
 /obj/machinery/computer/ai_resource/attack_hand(mob/user)
@@ -304,7 +347,7 @@ GLOBAL_LIST_EMPTY(ai_nodes)
 /obj/machinery/computer/ai_resource/ui_interact(mob/user, datum/tgui/ui = null)
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
-		ui = new(user, src, "AIResourceManagementConsole", name)
+		ui = new(user, src, "AIResourceManagementConsole", DECLENT_RU_CAP(src, NOMINATIVE))
 		ui.open()
 
 /obj/machinery/computer/ai_resource/ui_data(mob/user)
@@ -329,9 +372,9 @@ GLOBAL_LIST_EMPTY(ai_nodes)
 		data["ai_list"] += list(ai_data)
 	for(var/obj/machinery/ai_node/node as anything in GLOB.ai_nodes)
 		var/list/node_data = list(
-			"name" = node.name,
+			"name" = node.declent_ru(NOMINATIVE),
 			"uid" = node.UID(),
-			"resource" = node.resource_key,
+			"resource" = node.resource_name,
 			"amount" = node.resource_amount,
 			"assigned_ai" = node.assigned_ai?.name
 		)
@@ -343,10 +386,10 @@ GLOBAL_LIST_EMPTY(ai_nodes)
 		return
 	. = FALSE
 	if(!is_authenticated(ui.user))
-		to_chat(ui.user, span_warning("Access denied."))
+		to_chat(ui.user, span_warning("Доступ запрещён."))
 		return
 	if(SSticker.current_state == GAME_STATE_FINISHED)
-		to_chat(ui.user, span_warning("Access denied, AIs are no longer your station's property."))
+		to_chat(ui.user, span_warning("Доступ запрещён: ИИ больше не принадлежат вашей станции."))
 		return
 
 	switch(action)
@@ -368,7 +411,7 @@ GLOBAL_LIST_EMPTY(ai_nodes)
 				if(isapc(new_ai.loc))
 					continue
 				ais += new_ai
-			var/new_ai = tgui_input_list(ui.user, "Pick a new AI", "AI Selector", ais)
+			var/new_ai = tgui_input_list(ui.user, "Выберите новый ИИ", "Выбор ИИ", ais)
 			if(!new_ai)
 				return FALSE
 			var/obj/machinery/ai_node/selected_node = locateUID(params["uid"])

@@ -484,8 +484,8 @@
 	timeout = 30 SECONDS
 
 /atom/movable/screen/alert/programs_reset
-	name = "Programs Reset"
-	desc = "Your programs have been reset by a Program Reset Disk!"
+	name = "Сброс программ"
+	desc = "Ваши программы сброшены диском сброса программ!"
 	icon_state = "silicon_generic_alert"
 	timeout = 30 SECONDS
 

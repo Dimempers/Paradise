@@ -83,7 +83,7 @@
 /datum/program_picker/ui_interact(mob/user, datum/tgui/ui = null)
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
-		ui = new(user, src, "AIProgramPicker", "AI Program Menu")
+		ui = new(user, src, "AIProgramPicker", "Меню программ ИИ")
 		ui.open()
 
 /datum/program_picker/ui_data(mob/user)
@@ -115,7 +115,7 @@
 		return
 	var/mob/living/silicon/ai/A = ui.user
 	if(A.stat == DEAD)
-		to_chat(A, span_warning("You are dead!"))
+		to_chat(A, span_warning("Вы мертвы!"))
 		return
 
 	switch(action)
@@ -125,7 +125,7 @@
 				return FALSE
 			if(!program.installed)
 				if(program.cost > memory)
-					to_chat(A, span_warning("You cannot afford this program."))
+					to_chat(A, span_warning("Недостаточно памяти для этой программы."))
 					return FALSE
 				memory -= program.cost
 				program.installed = TRUE
@@ -135,14 +135,14 @@
 				var/datum/action/cooldown/ai_program/selected_program = locate(program.power_type) in A.actions
 				if(selected_program)
 					if(selected_program.spell_level >= selected_program.level_max)
-						to_chat(A, span_warning("This program cannot be upgraded further."))
+						to_chat(A, span_warning("Эту программу больше нельзя улучшить."))
 						return FALSE
 					if(bandwidth < 1)
-						to_chat(A, span_warning("You cannot afford this upgrade!"))
+						to_chat(A, span_warning("Недостаточно пропускной способности для улучшения!"))
 						return FALSE
 					selected_program.spell_level++
 					if(selected_program.spell_level >= selected_program.level_max)
-						to_chat(A, span_notice("This program cannot be upgraded any further."))
+						to_chat(A, span_notice("Программа улучшена до максимума."))
 					selected_program.on_purchase_upgrade()
 					program.upgrade(A)
 					return TRUE
@@ -157,13 +157,13 @@
 				return TRUE
 
 			if(program.upgrade_level >= program.max_level)
-				to_chat(A, span_notice("This program cannot be upgraded any further."))
+				to_chat(A, span_notice("Программа улучшена до максимума."))
 				return FALSE
 			if(!program.upgrade_level)
 				program.upgrade(A, first_install = TRUE)
 			else
 				if(bandwidth < 1)
-					to_chat(A, span_warning("You cannot afford this upgrade!"))
+					to_chat(A, span_warning("Недостаточно пропускной способности для улучшения!"))
 					return FALSE
 				program.upgrade(A)
 			to_chat(A, program.unlock_text)
@@ -181,7 +181,7 @@
 	var/upgrade = FALSE
 	var/upgrade_level = 0
 	var/max_level = 5
-	var/unlock_text = span_notice_alt("Hello World!")
+	var/unlock_text = span_notice_alt("Привет, мир!")
 	var/unlock_sound
 	var/cooldown = 30 SECONDS
 	var/installed = FALSE
@@ -190,7 +190,7 @@
 /datum/ai_program/New()
 	. = ..()
 	if(nanite_cost)
-		description += " Costs [nanite_cost] Nanites to use."
+		description += " Расход нанитов: [nanite_cost]."
 
 /datum/ai_program/proc/upgrade(mob/living/silicon/ai/user, first_install = FALSE)
 	if(!istype(user))
@@ -208,7 +208,7 @@
 	if(upgrade_level <= 0)
 		uninstall(user)
 		return
-	to_chat(user, span_warning("Program update data lost: [src.program_name]!"))
+	to_chat(user, span_warning("Утеряны данные обновления программы: [src.program_name]!"))
 	bandwidth_used--
 	user.program_picker.bandwidth++
 	if(!upgrade)
@@ -225,14 +225,14 @@
 	user.program_picker.bandwidth += bandwidth_used
 	bandwidth_used = 0
 	user.program_picker.memory += cost
-	to_chat(user, span_userdanger("Program core data lost: [src.program_name]!"))
+	to_chat(user, span_userdanger("Утеряны основные данные программы: [src.program_name]!"))
 	if(!upgrade)
 		var/datum/action/cooldown/ai_program/aspell = locate(power_type) in user.actions
 		qdel(aspell)
 
 /datum/action/innate/ai/choose_program
-	name = "Choose Programs"
-	desc = "Spend your memory and bandwidth to gain a variety of different abilities."
+	name = "Выбор программ"
+	desc = "Потратьте память и пропускную способность, чтобы получить различные способности."
 	button_icon = 'icons/mob/ai.dmi'
 	button_icon_state = "ai"
 	auto_use_uses = FALSE
@@ -242,16 +242,16 @@
 	if(!.)
 		return
 	if(isapc(owner_AI.loc))
-		to_chat(owner_AI, span_warning("Error: APCs do not have enough processing power to handle programs!"))
+		to_chat(owner_AI, span_warning("Ошибка: вычислительной мощности ЛКП недостаточно для работы программ!"))
 		return
 	if(istype(owner_AI.loc, /obj/item/aicard))
-		to_chat(owner_AI, span_warning("Error: InteliCards do not have enough processing power to handle programs!"))
+		to_chat(owner_AI, span_warning("Ошибка: вычислительной мощности интелкарты недостаточно для работы программ!"))
 		return
 	owner_AI.program_picker.ui_interact(owner_AI)
 
 /datum/action/cooldown/ai_program
-	name = "AI Program"
-	desc = "You aren't entirely sure what this does, but it's very beepy and boopy."
+	name = "Программа ИИ"
+	desc = "Вы не до конца уверены, что это делает, но оно очень бип-бупает."
 	background_icon_state = "bg_tech_blue"
 	check_flags = AB_CHECK_CONSCIOUS
 	var/datum/ai_program/program
@@ -303,7 +303,7 @@
 /datum/action/cooldown/ai_program/proc/desc_update()
 	desc = initial(desc)
 	if(program)
-		desc += " Costs [program.nanite_cost] Nanites to use."
+		desc += " Расход нанитов: [program.nanite_cost]."
 	build_all_button_icons(UPDATE_BUTTON_NAME)
 
 /datum/action/cooldown/ai_program/proc/camera_beam(target, icon_state, icon, time)
@@ -315,16 +315,16 @@
 /datum/action/cooldown/ai_program/proc/check_camera_vision(mob/user, atom/target)
 	var/turf/target_turf = get_turf(target)
 	if(!GLOB.cameranet.checkTurfVis(target_turf))
-		to_chat(user, span_warning("You don't have camera vision of this location!"))
+		to_chat(user, span_warning("У вас нет обзора камер в этом месте!"))
 		return FALSE
 	return TRUE
 
 /datum/action/cooldown/ai_program/ranged
-	name = "Ranged AI Action"
+	name = "Дистанционное действие ИИ"
 	click_to_activate = TRUE
 	ranged_mousepointer = 'icons/effects/mouse_pointers/mecha_mouse.dmi'
-	selection_activated_message = span_notice_alt("Hello World!")
-	selection_deactivated_message = span_danger_alt("Goodbye Cruel World!")
+	selection_activated_message = span_notice_alt("Привет, мир!")
+	selection_deactivated_message = span_danger_alt("Прощай, жестокий мир!")
 
 /datum/action/cooldown/ai_program/ranged/set_click_ability(mob/on_who)
 	. = ..()
@@ -336,41 +336,41 @@
 		to_chat(on_who, selection_deactivated_message)
 
 /datum/ai_program/rgb_lighting
-	program_name = "RGB Lighting"
+	program_name = "RGB-подсветка"
 	program_id = "rgb_lighting"
-	description = "Recolor a light to a desired color. At significantly high efficiency, it can change the color of an entire room's lighting by targeting the APC."
+	description = "Перекрашивает лампу в выбранный цвет. При достаточно высоком уровне может перекрасить освещение всей комнаты, если выбрать ЛКП."
 	nanite_cost = 5
 	power_type = /datum/action/cooldown/ai_program/ranged/rgb_lighting
-	unlock_text = "RGB Lighting installation complete!"
+	unlock_text = "Установка RGB-подсветки завершена!"
 
 /datum/action/cooldown/ai_program/ranged/rgb_lighting
-	name = "RGB Lighting"
-	desc = "Changes the color of a selected light."
+	name = "RGB-подсветка"
+	desc = "Меняет цвет выбранной лампы."
 	button_icon = 'icons/effects/random_spawners.dmi'
 	button_icon_state = "glowstick"
 	cooldown_time = 30 SECONDS
 	cooldown_min = 5 SECONDS
 	level_max = 5
-	selection_activated_message = span_notice_alt("You hook into the station's lighting controller...")
-	selection_deactivated_message = span_notice_alt("You cancel the request from the lighting controller.")
+	selection_activated_message = span_notice_alt("Вы подключаетесь к контроллеру освещения станции...")
+	selection_deactivated_message = span_notice_alt("Вы отменяете запрос к контроллеру освещения.")
 
 /datum/action/cooldown/ai_program/ranged/rgb_lighting/cast(atom/target, mob/living/silicon/ai/user)
 	if(!target)
-		to_chat(user, span_warning("No valid target!"))
+		to_chat(user, span_warning("Нет подходящей цели!"))
 		revert_cast()
 		return
 	if(!check_camera_vision(user, target))
 		revert_cast()
 		return
 	if(!istype(target, /obj/machinery/light) && !isapc(target))
-		to_chat(user, span_warning("You can only recolor lights!"))
+		to_chat(user, span_warning("Перекрашивать можно только лампы!"))
 		revert_cast()
 		return
 	if(!user.program_picker.spend_nanites(program.nanite_cost))
-		to_chat(user, span_warning("Not enough nanites!"))
+		to_chat(user, span_warning("Недостаточно нанитов!"))
 		revert_cast()
 		return
-	var/color_picked = tgui_input_color(user, "Please select a light color.", "RGB Lighting Color")
+	var/color_picked = tgui_input_color(user, "Выберите цвет освещения.", "Цвет RGB-подсветки")
 	if(!color_picked)
 		user.program_picker.refund_nanites(program.nanite_cost)
 		revert_cast()
@@ -382,7 +382,7 @@
 	var/new_color = rgb(rgb[1], rgb[2], rgb[3])
 	if(isapc(target))
 		if(spell_level < 3)
-			to_chat(user, span_warning("Your coloring subsystem is not strong enough to target an entire room!"))
+			to_chat(user, span_warning("Подсистема окраски недостаточно мощна, чтобы перекрасить целую комнату!"))
 			user.program_picker.refund_nanites(program.nanite_cost)
 			revert_cast()
 			return
@@ -403,39 +403,39 @@
 	set_recharge_duration(max(initial(cooldown_time) - (spell_level * 5 SECONDS), cooldown_min))
 
 /datum/ai_program/power_shunt
-	program_name = "Power Shunt"
+	program_name = "Шунт питания"
 	program_id = "power_shunt"
-	description = "Recharge an APC, Borg, or Mech with power directly from your SMES!"
+	description = "Заряжает ЛКП, киборга или экзокостюм энергией прямо из вашего СМЕС!"
 	nanite_cost = 20
 	power_type = /datum/action/cooldown/ai_program/ranged/power_shunt
-	unlock_text = "Power Shunt installation complete!"
+	unlock_text = "Установка шунта питания завершена!"
 
 /datum/action/cooldown/ai_program/ranged/power_shunt
-	name = "Power Shunt"
-	desc = "Recharge an APC, Borg, or Mech with power directly from your SMES."
+	name = "Шунт питания"
+	desc = "Заряжает ЛКП, киборга или экзокостюм энергией прямо из вашего СМЕС."
 	button_icon = 'icons/obj/engines_and_power/power.dmi'
 	button_icon_state = "smes-o"
 	cooldown_time = 120 SECONDS
 	cooldown_min = 30 SECONDS
 	level_max = 7
-	selection_activated_message = span_notice_alt("You tap into the station's powernet...")
-	selection_deactivated_message = span_notice_alt("You release your hold on the powernet.")
+	selection_activated_message = span_notice_alt("Вы подключаетесь к энергосети станции...")
+	selection_deactivated_message = span_notice_alt("Вы отключаетесь от энергосети.")
 	var/power_sent = 2500
 
 /datum/action/cooldown/ai_program/ranged/power_shunt/cast(atom/target, mob/living/silicon/ai/user)
 	if(!target)
-		to_chat(user, span_warning("No valid target!"))
+		to_chat(user, span_warning("Нет подходящей цели!"))
 		revert_cast()
 		return
 	if(!check_camera_vision(user, target))
 		revert_cast()
 		return
 	if(!isrobot(target) && !isapc(target) && !ismecha(target) && !ismachineperson(target))
-		to_chat(user, span_warning("You can only recharge borgs, mechs, and APCs!"))
+		to_chat(user, span_warning("Заряжать можно только киборгов, экзокостюмы и ЛКП!"))
 		revert_cast()
 		return
 	if(ismachineperson(target) && !user.universal_adapter)
-		to_chat(user, span_warning("This software lacks the required upgrade to recharge IPCs!"))
+		to_chat(user, span_warning("Программе не хватает нужного улучшения, чтобы заряжать КПБ!"))
 		revert_cast()
 		return
 	var/obj/machinery/power/smes/power_source
@@ -444,11 +444,11 @@
 			power_source = smes
 			break
 	if(!power_source)
-		to_chat(user, span_warning("No SMES detected to power from!"))
+		to_chat(user, span_warning("Не найден СМЕС с достаточным зарядом!"))
 		revert_cast()
 		return
 	if(!user.program_picker.spend_nanites(program.nanite_cost))
-		to_chat(user, span_warning("Not enough nanites!"))
+		to_chat(user, span_warning("Недостаточно нанитов!"))
 		revert_cast()
 		return
 	if(ismecha(target))
@@ -473,47 +473,47 @@
 	set_recharge_duration(max(initial(cooldown_time) - (max(spell_level - 3, 0) * 30 SECONDS), cooldown_min))
 
 /datum/ai_program/repair_nanites
-	program_name = "Repair Nanites"
+	program_name = "Ремонтные наниты"
 	program_id = "repair_nanites"
-	description = "Repair an APC, Borg, or Mech with large numbers of robotic nanomachines!"
+	description = "Ремонтирует ЛКП, киборга или экзокостюм роем роботизированных наномашин!"
 	cost = 2
 	nanite_cost = 75
 	power_type = /datum/action/cooldown/ai_program/ranged/repair_nanites
-	unlock_text = "Repair nanomachine firmware installation complete!"
+	unlock_text = "Установка прошивки ремонтных наномашин завершена!"
 
 /datum/action/cooldown/ai_program/ranged/repair_nanites
-	name = "Repair Nanites"
-	desc = "Repair an APC, Borg, or Mech with large numbers of robotic nanomachines!"
+	name = "Ремонтные наниты"
+	desc = "Ремонтирует ЛКП, киборга или экзокостюм роем роботизированных наномашин!"
 	button_icon = 'icons/obj/surgery.dmi'
 	button_icon_state = "tube"
 	cooldown_time = 150 SECONDS
 	cooldown_min = 30 SECONDS
 	level_max = 7
-	selection_activated_message = span_notice_alt("You prepare to order your nanomachines to repair...")
-	selection_deactivated_message = span_notice_alt("You rescind the order.")
+	selection_activated_message = span_notice_alt("Вы готовитесь отдать наномашинам приказ о ремонте...")
+	selection_deactivated_message = span_notice_alt("Вы отменяете приказ.")
 
 /datum/action/cooldown/ai_program/ranged/repair_nanites/cast(atom/target, mob/living/silicon/ai/user)
 	if(!target)
-		to_chat(user, span_warning("No valid target!"))
+		to_chat(user, span_warning("Нет подходящей цели!"))
 		revert_cast()
 		return
 	if(!check_camera_vision(user, target))
 		revert_cast()
 		return
 	if(!isrobot(target) && !isapc(target) && !ismecha(target) && !ismachineperson(target) && !isbot(target))
-		to_chat(user, span_warning("You can only repair borgs, mechs, and APCs!"))
+		to_chat(user, span_warning("Ремонтировать можно только киборгов, экзокостюмы и ЛКП!"))
 		revert_cast()
 		return
 	if(ismachineperson(target) && !user.universal_adapter)
-		to_chat(user, span_warning("This software lacks the required upgrade to repair IPCs!"))
+		to_chat(user, span_warning("Программе не хватает нужного улучшения, чтобы ремонтировать КПБ!"))
 		revert_cast()
 		return
 	if(isbot(target) && spell_level < 2)
-		to_chat(user, span_warning("This software is not upgraded enough to repair the robot!"))
+		to_chat(user, span_warning("Программа недостаточно улучшена, чтобы ремонтировать роботов!"))
 		revert_cast()
 		return
 	if(!user.program_picker.spend_nanites(program.nanite_cost))
-		to_chat(user, span_warning("Not enough nanites!"))
+		to_chat(user, span_warning("Недостаточно нанитов!"))
 		revert_cast()
 		return
 	if(ismecha(target) || isapc(target))
@@ -534,10 +534,10 @@
 	set_recharge_duration(max(initial(cooldown_time) - (max(spell_level - 3, 0) * 30 SECONDS), cooldown_min))
 
 /datum/ai_program/universal_adapter
-	program_name = "Universal Adapter"
+	program_name = "Универсальный адаптер"
 	program_id = "universal_adapter"
-	description = "Upgraded firmware allows IPCs to be valid targets for Power Shunt and Repair Nanites, at half efficiency."
-	unlock_text = "Universal adapter installation complete!"
+	description = "Улучшенная прошивка позволяет применять шунт питания и ремонтные наниты к КПБ с половинной эффективностью."
+	unlock_text = "Установка универсального адаптера завершена!"
 	upgrade = TRUE
 
 /datum/ai_program/universal_adapter/upgrade(mob/living/silicon/ai/user, first_install = FALSE)
@@ -562,28 +562,28 @@
 	user.universal_adapter = FALSE
 
 /datum/ai_program/airlock_restoration
-	program_name = "Airlock Restoration"
+	program_name = "Восстановление шлюзов"
 	program_id = "airlock_restoration"
-	description = "Repair an airlock's wires, if the AI control wire is not cut."
+	description = "Чинит провода шлюза, если провод управления ИИ не перерезан."
 	cost = 2
 	nanite_cost = 25
 	power_type = /datum/action/cooldown/ai_program/ranged/airlock_restoration
-	unlock_text = "Door repair and override firmware installation complete!"
+	unlock_text = "Установка прошивки ремонта и управления шлюзами завершена!"
 
 /datum/action/cooldown/ai_program/ranged/airlock_restoration
-	name = "Airlock Restoration"
-	desc = "Repair the wires in an airlock that still has an intact AI control wire."
+	name = "Восстановление шлюзов"
+	desc = "Чинит провода шлюза, у которого цел провод управления ИИ."
 	button_icon = 'icons/obj/doors/doorint.dmi'
 	button_icon_state = "door_closed"
 	cooldown_time = 60 SECONDS
 	cooldown_min = 60 SECONDS
 	level_max = 5
-	selection_activated_message = span_notice_alt("You prepare to deploy repairing nanites to a door...")
-	selection_deactivated_message = span_notice_alt("You cancel the request.")
+	selection_activated_message = span_notice_alt("Вы готовитесь направить ремонтные наниты к шлюзу...")
+	selection_deactivated_message = span_notice_alt("Вы отменяете запрос.")
 
 /datum/action/cooldown/ai_program/ranged/airlock_restoration/cast(atom/target, mob/living/silicon/ai/user)
 	if(!target)
-		to_chat(user, span_warning("No valid target!"))
+		to_chat(user, span_warning("Нет подходящей цели!"))
 		revert_cast()
 		return
 	if(!check_camera_vision(user, target))
@@ -591,15 +591,15 @@
 		return
 	var/obj/machinery/door/airlock/airlock = target
 	if(!istype(airlock))
-		to_chat(user, span_warning("You can only repair airlocks!"))
+		to_chat(user, span_warning("Ремонтировать можно только шлюзы!"))
 		revert_cast()
 		return
 	if(airlock.wires.is_cut(WIRE_AI_CONTROL))
-		to_chat(user, span_warning("Error: Null Connection to Airlock!"))
+		to_chat(user, span_warning("Ошибка: нет соединения со шлюзом!"))
 		revert_cast()
 		return
 	if(!user.program_picker.spend_nanites(program.nanite_cost))
-		to_chat(user, span_warning("Not enough nanites!"))
+		to_chat(user, span_warning("Недостаточно нанитов!"))
 		revert_cast()
 		return
 	var/turf/T = get_turf(airlock)
@@ -617,31 +617,31 @@
 
 /datum/action/cooldown/ai_program/ranged/airlock_restoration/on_purchase_upgrade()
 	if(spell_level == 5)
-		desc += " Firmware version sufficient enough to repair damage caused by a cryptographic sequencer."
+		desc += " Версия прошивки позволяет устранять повреждения от криптографического секвенсора."
 		build_all_button_icons(UPDATE_BUTTON_NAME)
 
 /datum/ai_program/extinguishing_system
-	program_name = "Automated Extinguishing System"
+	program_name = "Автоматическое пожаротушение"
 	program_id = "extinguishing_system"
-	description = "Deploy a nanofrost globule to a target to rapidly extinguish plasmafires."
+	description = "Отправляет к цели сгусток нанофроста, быстро гасящий плазменные пожары."
 	nanite_cost = 50
 	power_type = /datum/action/cooldown/ai_program/ranged/extinguishing_system
-	unlock_text = "Nanofrost synthesizer online."
+	unlock_text = "Синтезатор нанофроста запущен."
 
 /datum/action/cooldown/ai_program/ranged/extinguishing_system
-	name = "Automated Extinguishing System"
-	desc = "Deploy a nanofrost globule to a target to rapidly extinguish plasmafires."
+	name = "Автоматическое пожаротушение"
+	desc = "Отправляет к цели сгусток нанофроста, быстро гасящий плазменные пожары."
 	button_icon = 'icons/effects/effects.dmi'
 	button_icon_state = "frozen_smoke_capsule"
 	cooldown_time = 60 SECONDS
 	cooldown_min = 30 SECONDS
 	level_max = 3
-	selection_activated_message = span_notice_alt("You prepare to synthesize a nanofrost globule...")
-	selection_deactivated_message = span_notice_alt("You let the nanofrost dissipate.")
+	selection_activated_message = span_notice_alt("Вы готовитесь синтезировать сгусток нанофроста...")
+	selection_deactivated_message = span_notice_alt("Вы даёте нанофросту рассеяться.")
 
 /datum/action/cooldown/ai_program/ranged/extinguishing_system/cast(atom/target, mob/living/silicon/ai/user)
 	if(!target)
-		to_chat(user, span_warning("No valid target!"))
+		to_chat(user, span_warning("Нет подходящей цели!"))
 		revert_cast()
 		return
 	var/turf/target_turf = get_turf(target)
@@ -649,11 +649,11 @@
 		revert_cast()
 		return
 	if(!isturf(target_turf))
-		to_chat(user, span_warning("Invalid location for nanofrost deployment!"))
+		to_chat(user, span_warning("Сюда нельзя отправить нанофрост!"))
 		revert_cast()
 		return
 	if(!user.program_picker.spend_nanites(program.nanite_cost))
-		to_chat(user, span_warning("Not enough nanites!"))
+		to_chat(user, span_warning("Недостаточно нанитов!"))
 		revert_cast()
 		return
 	var/obj/effect/nanofrost_container/nanofrost = new /obj/effect/nanofrost_container(target_turf)
@@ -666,10 +666,10 @@
 	set_recharge_duration(max(initial(cooldown_time) - (spell_level * 15 SECONDS), cooldown_min))
 
 /datum/ai_program/bluespace_miner
-	program_name = "Bluespace Miner Subsystem"
+	program_name = "Блюспейс-майнер"
 	program_id = "bluespace_miner"
-	description = "You link yourself to a miniature bluespace harvester, generating income for the science account at the cost of increasing your core's power needs."
-	unlock_text = "Bluespace miner installation complete!"
+	description = "Вы подключаетесь к миниатюрному блюспейс-сборщику, который приносит доход на счёт научного отдела ценой роста энергопотребления вашего ядра."
+	unlock_text = "Установка блюспейс-майнера завершена!"
 	upgrade = TRUE
 
 /datum/ai_program/bluespace_miner/upgrade(mob/living/silicon/ai/user, first_install = FALSE)
@@ -695,10 +695,10 @@
 	user.bluespace_miner = FALSE
 
 /datum/ai_program/multimarket_analyser
-	program_name = "Multimarket Analysis Subsystem"
+	program_name = "Анализ рынков"
 	program_id = "multimarket_analyser"
-	description = "You connect to a digital marketplace to price-check all orders from the station, ensuring you get the best prices! This reduces the cost of crates in cargo!"
-	unlock_text = "Online marketplace detected... connected!"
+	description = "Вы подключаетесь к цифровой торговой площадке и сверяете цены всех заказов станции, находя лучшие предложения! Ящики в отделе снабжения дешевеют!"
+	unlock_text = "Обнаружена онлайн-площадка... подключено!"
 	max_level = 6
 	upgrade = TRUE
 
@@ -725,27 +725,27 @@
 	SSshuttle.refresh_supply_prices()
 
 /datum/ai_program/light_repair
-	program_name = "Light Synthesizer"
+	program_name = "Синтезатор ламп"
 	program_id = "light_repair"
-	description = "Replace damaged or missing lightbulbs."
+	description = "Заменяет повреждённые или отсутствующие лампы."
 	nanite_cost = 5
 	power_type = /datum/action/cooldown/ai_program/ranged/light_repair
-	unlock_text = "Light replacer configuration installed."
+	unlock_text = "Конфигурация заменителя ламп установлена."
 
 /datum/action/cooldown/ai_program/ranged/light_repair
-	name = "Light Synthesizer"
-	desc = "Replace damaged or missing lightbulbs."
+	name = "Синтезатор ламп"
+	desc = "Заменяет повреждённые или отсутствующие лампы."
 	button_icon = 'icons/obj/janitor.dmi'
 	button_icon_state = "lightreplacer0"
 	cooldown_time = 30 SECONDS
 	cooldown_min = 5 SECONDS
 	level_max = 5
-	selection_activated_message = span_notice_alt("You prepare to synthesize a lightbulb...")
-	selection_deactivated_message = span_notice_alt("You cancel the request.")
+	selection_activated_message = span_notice_alt("Вы готовитесь синтезировать лампу...")
+	selection_deactivated_message = span_notice_alt("Вы отменяете запрос.")
 
 /datum/action/cooldown/ai_program/ranged/light_repair/cast(atom/target, mob/living/silicon/ai/user)
 	if(!target)
-		to_chat(user, span_warning("No valid target!"))
+		to_chat(user, span_warning("Нет подходящей цели!"))
 		revert_cast()
 		return
 	var/turf/target_turf = get_turf(target)
@@ -754,7 +754,7 @@
 		return
 	var/repaired = FALSE
 	if(!user.program_picker.spend_nanites(program.nanite_cost))
-		to_chat(user, span_warning("Not enough nanites!"))
+		to_chat(user, span_warning("Недостаточно нанитов!"))
 		revert_cast()
 		return
 	for(var/obj/machinery/light/light in target_turf.contents)
@@ -770,7 +770,7 @@
 		repaired = TRUE
 
 	if(!repaired)
-		to_chat(user, span_warning("You can only repair lights!"))
+		to_chat(user, span_warning("Чинить можно только лампы!"))
 		user.program_picker.refund_nanites(program.nanite_cost)
 		revert_cast()
 		return
@@ -779,28 +779,28 @@
 	set_recharge_duration(max(initial(cooldown_time) - (spell_level * 5 SECONDS), cooldown_min))
 
 /datum/ai_program/nanosurgeon_deployment
-	program_name = "Nanosurgeon Deployment"
+	program_name = "Нанохирурги"
 	program_id = "nanosurgeon_deployment"
-	description = "Heal a crew member with large numbers of robotic nanomachines!"
+	description = "Лечит члена экипажа роем роботизированных наномашин!"
 	cost = 3
 	nanite_cost = 75
 	power_type = /datum/action/cooldown/ai_program/ranged/nanosurgeon_deployment
-	unlock_text = "Surgical nanomachine firmware installation complete!"
+	unlock_text = "Установка прошивки хирургических наномашин завершена!"
 
 /datum/action/cooldown/ai_program/ranged/nanosurgeon_deployment
-	name = "Nanosurgeon Deployment"
-	desc = "Heal a crew member with large numbers of robotic nanomachines!"
+	name = "Нанохирурги"
+	desc = "Лечит члена экипажа роем роботизированных наномашин!"
 	button_icon = 'icons/obj/surgery.dmi'
 	button_icon_state = "scalpel_laser1_on"
 	cooldown_time = 150 SECONDS
 	cooldown_min = 30 SECONDS
 	level_max = 10
-	selection_activated_message = span_notice_alt("You prepare to order your nanomachines to perform organic repairs...")
-	selection_deactivated_message = span_notice_alt("You rescind the order.")
+	selection_activated_message = span_notice_alt("Вы готовитесь приказать наномашинам лечить органику...")
+	selection_deactivated_message = span_notice_alt("Вы отменяете приказ.")
 
 /datum/action/cooldown/ai_program/ranged/nanosurgeon_deployment/cast(atom/target, mob/living/silicon/ai/user)
 	if(!target)
-		to_chat(user, span_warning("No valid target!"))
+		to_chat(user, span_warning("Нет подходящей цели!"))
 		revert_cast()
 		return
 	if(!check_camera_vision(user, target))
@@ -808,11 +808,11 @@
 		return
 	var/mob/living/carbon/human/patient = target
 	if(!istype(patient) || ismachineperson(patient))
-		to_chat(user, span_warning("You can only heal organic crew!"))
+		to_chat(user, span_warning("Лечить можно только органический экипаж!"))
 		revert_cast()
 		return
 	if(!user.program_picker.spend_nanites(program.nanite_cost))
-		to_chat(user, span_warning("Not enough nanites!"))
+		to_chat(user, span_warning("Недостаточно нанитов!"))
 		revert_cast()
 		return
 	user.play_sound_remote(patient, 'sound/magic/magic_block.ogg', 50)
@@ -820,9 +820,9 @@
 	var/allow_moving = FALSE
 	if(spell_level == level_max)
 		allow_moving = TRUE
-		to_chat(patient, span_notice("You feel a flow of healing nanites stream to you from a nearby camera."))
+		to_chat(patient, span_notice("Вы чувствуете, как из ближайшей камеры к вам струится поток лечебных нанитов."))
 	else
-		to_chat(patient, span_notice("You feel a flow of healing nanites stream to you from a nearby camera. Hold still for them to work!"))
+		to_chat(patient, span_notice("Вы чувствуете, как из ближайшей камеры к вам струится поток лечебных нанитов. Не двигайтесь, чтобы они сработали!"))
 	var/doafter_flags = DEFAULT_DOAFTER_IGNORE
 	if(allow_moving)
 		doafter_flags |= DA_IGNORE_TARGET_LOC_CHANGE
@@ -846,10 +846,10 @@
 	set_recharge_duration(max(initial(cooldown_time) - (max(spell_level - 3, 0) * 30 SECONDS), cooldown_min))
 
 /datum/ai_program/enhanced_doors
-	program_name = "Enhanced Door Controls"
+	program_name = "Улучшенное управление шлюзами"
 	program_id = "enhanced_doors"
-	description = "You enhance the subroutines that let you control doors, speeding up response times!"
-	unlock_text = "Doors connected and optimized. You feel right at home."
+	description = "Вы улучшаете подпрограммы управления шлюзами, ускоряя их отклик!"
+	unlock_text = "Шлюзы подключены и оптимизированы. Вы чувствуете себя как дома."
 	upgrade = TRUE
 	var/original_door_delay = 3 SECONDS
 
@@ -869,12 +869,12 @@
 	user.door_bolt_delay = original_door_delay
 
 /datum/ai_program/research_subsystem
-	program_name = "Experimental Research Subsystem"
+	program_name = "Экспериментальные исследования"
 	program_id = "research_subsystem"
-	description = "Put your processors to work spinning centrifuges and studying results. You unlock a new point of research in a random field."
+	description = "Ваши процессоры вращают центрифуги и изучают результаты. Вы открываете новый уровень исследований в случайной области."
 	cost = 5
 	max_level = 10
-	unlock_text = "Research and Discovery submodule installation complete. Automated information gathering enabled."
+	unlock_text = "Установка подмодуля исследований завершена. Автоматический сбор данных включён."
 	upgrade = TRUE
 
 /datum/ai_program/research_subsystem/upgrade(mob/living/silicon/ai/user, first_install = FALSE)
@@ -903,35 +903,35 @@
 	user.research_subsystem = FALSE
 
 /datum/ai_program/emergency_sealant
-	program_name = "Emergency Sealant"
+	program_name = "Аварийный герметик"
 	program_id = "emergency_sealant"
-	description = "Deploy an area of metal foam to rapidly repair and seal hull breaches."
+	description = "Покрывает область металлической пеной, быстро заделывая пробоины в корпусе."
 	cost = 2
 	nanite_cost = 50
 	power_type = /datum/action/cooldown/ai_program/ranged/emergency_sealant
-	unlock_text = "Metal foam synthesizer online."
+	unlock_text = "Синтезатор металлической пены запущен."
 
 /datum/action/cooldown/ai_program/ranged/emergency_sealant
-	name = "Emergency Sealant"
-	desc = "Deploy an area of metal foam to rapidly repair and seal hull breaches."
+	name = "Аварийный герметик"
+	desc = "Покрывает область металлической пеной, быстро заделывая пробоины в корпусе."
 	button_icon = 'icons/obj/structures.dmi'
 	button_icon_state = "reinforced"
 	cooldown_time = 180 SECONDS
 	cooldown_min = 30 SECONDS
 	level_max = 5
-	selection_activated_message = span_notice_alt("You fill a canister with metal foam...")
-	selection_deactivated_message = span_notice_alt("You dissolve the unused canister.")
+	selection_activated_message = span_notice_alt("Вы наполняете баллон металлической пеной...")
+	selection_deactivated_message = span_notice_alt("Вы растворяете неиспользованный баллон.")
 
 /datum/action/cooldown/ai_program/ranged/emergency_sealant/cast(atom/target, mob/living/silicon/ai/user)
 	if(!target)
-		to_chat(user, span_warning("No valid target!"))
+		to_chat(user, span_warning("Нет подходящей цели!"))
 		revert_cast()
 		return
 	if(!check_camera_vision(user, target))
 		revert_cast()
 		return
 	if(!user.program_picker.spend_nanites(program.nanite_cost))
-		to_chat(user, span_warning("Not enough nanites!"))
+		to_chat(user, span_warning("Недостаточно нанитов!"))
 		revert_cast()
 		return
 	user.play_sound_remote(target, 'sound/effects/bubbles2.ogg', 50)
@@ -948,55 +948,48 @@
 	set_recharge_duration(max(initial(cooldown_time) - (spell_level * 30 SECONDS), cooldown_min))
 
 /datum/ai_program/holosign_displayer
-	program_name = "Holosign Displayer"
+	program_name = "Проектор голознаков"
 	program_id = "holosign_displayer"
-	description = "Deploy a holographic sign to alert crewmembers to potential hazards."
+	description = "Проецирует голографический знак, предупреждающий экипаж о возможной опасности."
 	nanite_cost = 10
 	power_type = /datum/action/cooldown/ai_program/ranged/holosign_displayer
-	unlock_text = "Metal foam synthesizer online."
+	unlock_text = "Голографический проектор запущен."
 
 /datum/action/cooldown/ai_program/ranged/holosign_displayer
-	name = "Holosign Displayer"
-	desc = "Deploy a holographic sign to alert crewmembers to potential hazards."
+	name = "Проектор голознаков"
+	desc = "Проецирует голографический знак, предупреждающий экипаж о возможной опасности."
 	button_icon = 'icons/obj/device.dmi'
 	button_icon_state = "signmaker"
 	cooldown_time = 30 SECONDS
 	cooldown_min = 30 SECONDS
 	level_max = 8
-	selection_activated_message = span_notice_alt("You spool up your projector...")
-	selection_deactivated_message = span_notice_alt("You stop spooling the projector.")
+	selection_activated_message = span_notice_alt("Вы запускаете проектор...")
+	selection_deactivated_message = span_notice_alt("Вы останавливаете проектор.")
 	var/static/list/sign_choices = list(
-		"Engineering",
-		"Security",
-		"Wet Floor"
+		"Инженерный барьер" = /obj/structure/holosign/barrier/engineering,
+		"Барьер охраны" = /obj/structure/holosign/barrier,
+		"Мокрый пол" = /obj/structure/holosign/wetsign,
 	)
 
 /datum/action/cooldown/ai_program/ranged/holosign_displayer/cast(atom/target, mob/living/silicon/ai/user)
 	if(!target)
-		to_chat(user, span_warning("No valid target!"))
+		to_chat(user, span_warning("Нет подходящей цели!"))
 		revert_cast()
 		return
 	if(!check_camera_vision(user, target))
 		revert_cast()
 		return
 	if(!user.program_picker.spend_nanites(program.nanite_cost))
-		to_chat(user, span_warning("Not enough nanites!"))
+		to_chat(user, span_warning("Недостаточно нанитов!"))
 		revert_cast()
 		return
-	var/sign_id = tgui_input_list(user, "Select a holosign!", "AI", sign_choices)
+	var/sign_id = tgui_input_list(user, "Выберите голознак!", "ИИ", sign_choices)
 	if(!sign_id)
 		return
-	var/sign_type
-	switch(sign_id)
-		if("Engineering")
-			sign_type = /obj/structure/holosign/barrier/engineering
-		if("Wet Floor")
-			sign_type = /obj/structure/holosign/wetsign
-		if("Security")
-			sign_type = /obj/structure/holosign/barrier
-		else
-			revert_cast()
-			return
+	var/sign_type = sign_choices[sign_id]
+	if(!sign_type)
+		revert_cast()
+		return
 	var/obj/structure/holosign/sign = new sign_type(get_turf(target), src)
 	addtimer(CALLBACK(src, PROC_REF(sign_timer_complete), sign), (60 + 30 * spell_level) SECONDS, TIMER_UNIQUE)
 	user.play_sound_remote(target, 'sound/machines/click.ogg', 20)
@@ -1009,34 +1002,34 @@
 	qdel(sign)
 
 /datum/ai_program/honk_subsystem
-	program_name = "Honk Subsystem"
+	program_name = "Хонк-подсистема"
 	program_id = "honk_subsystem"
-	description = "Download a program from Clowns.NT to be able to play bike horn sounds on demand."
+	description = "Загружает программу с Clowns.NT, позволяющую по запросу воспроизводить звук велосипедного гудка."
 	nanite_cost = 5
 	power_type = /datum/action/cooldown/ai_program/ranged/honk_subsystem
-	unlock_text = "Honker.exe installed."
+	unlock_text = "Honker.exe установлен."
 
 /datum/action/cooldown/ai_program/ranged/honk_subsystem
-	name = "Honk Subsystem"
-	desc = "Download a program from Clowns.NT to be able to play bike horn sounds on demand."
+	name = "Хонк-подсистема"
+	desc = "Загружает программу с Clowns.NT, позволяющую по запросу воспроизводить звук велосипедного гудка."
 	button_icon = 'icons/obj/items.dmi'
 	button_icon_state = "bike_horn"
 	cooldown_time = 30 SECONDS
 	cooldown_min = 15 SECONDS
 	level_max = 10
-	selection_activated_message = span_notice_alt("You prepare to honk...")
-	selection_deactivated_message = span_notice_alt("You reduce the amount of humor in your subsystems.")
+	selection_activated_message = span_notice_alt("Вы готовитесь хонкнуть...")
+	selection_deactivated_message = span_notice_alt("Вы снижаете уровень юмора в своих подсистемах.")
 
 /datum/action/cooldown/ai_program/ranged/honk_subsystem/cast(atom/target, mob/living/silicon/ai/user)
 	if(!target)
-		to_chat(user, span_warning("No valid target!"))
+		to_chat(user, span_warning("Нет подходящей цели!"))
 		revert_cast()
 		return
 	if(!check_camera_vision(user, target))
 		revert_cast()
 		return
 	if(!user.program_picker.spend_nanites(program.nanite_cost))
-		to_chat(user, span_warning("Not enough nanites!"))
+		to_chat(user, span_warning("Недостаточно нанитов!"))
 		revert_cast()
 		return
 	if(spell_level >= 10)
@@ -1048,12 +1041,12 @@
 	set_recharge_duration(max(initial(cooldown_time) - (spell_level * 15 SECONDS), cooldown_min))
 
 /datum/ai_program/enhanced_tracker
-	program_name = "Enhanced Tracking Subsystem"
+	program_name = "Улучшенное слежение"
 	program_id = "enhanced_tracker"
-	description = "New camera firmware allows automated alerts when an individual of interest enters camera view."
+	description = "Новая прошивка камер автоматически оповещает, когда интересующая персона попадает в обзор камер."
 	cost = 5
 	power_type = /datum/action/cooldown/ai_program/enhanced_tracker
-	unlock_text = "Tag and track software online."
+	unlock_text = "Программа пометки и слежения запущена."
 	max_level = 8
 
 /datum/ai_program/enhanced_tracker/upgrade(mob/living/silicon/ai/user, first_install = FALSE)
@@ -1075,8 +1068,8 @@
 	user.enhanced_tracking_delay = initial(user.enhanced_tracking_delay)
 
 /datum/action/cooldown/ai_program/enhanced_tracker
-	name = "Enhanced Tracking Subsystem"
-	desc = "Select a target of interest to be alerted to their presence on cameras."
+	name = "Улучшенное слежение"
+	desc = "Выберите цель, чтобы получать оповещения о её появлении на камерах."
 	button_icon = 'icons/obj/items.dmi'
 	button_icon_state = "videocam"
 	cooldown_time = 10 SECONDS
@@ -1086,7 +1079,7 @@
 /datum/action/cooldown/ai_program/enhanced_tracker/cast(atom/target, mob/living/silicon/ai/user)
 	if(!istype(user))
 		return
-	var/target_name = tgui_input_list(user, "Pick a trackable target...", "AI", user.trackable_mobs())
+	var/target_name = tgui_input_list(user, "Выберите цель для слежения...", "ИИ", user.trackable_mobs())
 	if(!target_name)
 		user.set_tracked_mob(null)
 		return
@@ -1114,7 +1107,7 @@
 			continue
 	if(!closest_camera)
 		return
-	closest_camera.visible_message(span_warning("A purple light flashes on [closest_camera]!"))
+	closest_camera.visible_message(span_warning("На камере вспыхивает фиолетовый огонёк!"))
 	if(GLOB.alarm_manager.trigger_alarm("Tracking", A, A.cameras, closest_camera))
 		addtimer(CALLBACK(GLOB.alarm_manager, TYPE_PROC_REF(/datum/alarm_manager, cancel_alarm), "Tracking", A, closest_camera), 1 MINUTES)
 
@@ -1122,34 +1115,34 @@
 	tracker_alert_cooldown = FALSE
 
 /datum/ai_program/pointer
-	program_name = "Holopointer"
+	program_name = "Голоуказатель"
 	program_id = "holopointer"
-	description = "Illuminate a hologram to notify or beckon crew."
+	description = "Проецирует голограмму, чтобы предупредить или подозвать экипаж."
 	nanite_cost = 5
 	power_type = /datum/action/cooldown/ai_program/ranged/pointer
-	unlock_text = "Hologram emitters online."
+	unlock_text = "Голоизлучатели запущены."
 
 /datum/action/cooldown/ai_program/ranged/pointer
-	name = "Holopointer"
-	desc = "Illuminate a hologram to notify or beckon crew."
+	name = "Голоуказатель"
+	desc = "Проецирует голограмму, чтобы предупредить или подозвать экипаж."
 	button_icon = 'icons/mob/telegraphing/telegraph_holographic.dmi'
 	button_icon_state = "target_circle"
 	cooldown_time = 15 SECONDS
 	cooldown_min = 15 SECONDS
 	level_max = 1
-	selection_activated_message = span_notice_alt("You prepare to illuminate a hologram...")
-	selection_deactivated_message = span_notice_alt("You spool down your projector.")
+	selection_activated_message = span_notice_alt("Вы готовитесь спроецировать голограмму...")
+	selection_deactivated_message = span_notice_alt("Вы выключаете проектор.")
 
 /datum/action/cooldown/ai_program/ranged/pointer/cast(atom/target, mob/living/silicon/ai/user)
 	if(!target)
-		to_chat(user, span_warning("No valid target!"))
+		to_chat(user, span_warning("Нет подходящей цели!"))
 		revert_cast()
 		return
 	if(!check_camera_vision(user, target))
 		revert_cast()
 		return
 	if(!user.program_picker.spend_nanites(program.nanite_cost))
-		to_chat(user, span_warning("Not enough nanites!"))
+		to_chat(user, span_warning("Недостаточно нанитов!"))
 		revert_cast()
 		return
 	new /obj/effect/temp_visual/ai_pointer(get_turf(target))

@@ -62,60 +62,110 @@
 
 /obj/item/ai_upgrade/ai_program_reset
 	name = "Program Reset Disk"
-	desc = "Insert this disk into the AI core to completely reset their programs."
+	desc = "Вставьте этот диск в ядро ИИ, чтобы полностью сбросить его программы."
+
+/obj/item/ai_upgrade/ai_program_reset/get_ru_names()
+	return alist(
+		NOMINATIVE = "диск сброса программ",
+		GENITIVE = "диска сброса программ",
+		DATIVE = "диску сброса программ",
+		ACCUSATIVE = "диск сброса программ",
+		INSTRUMENTAL = "диском сброса программ",
+		PREPOSITIONAL = "диске сброса программ",
+	)
 
 /obj/item/ai_upgrade/ai_program_reset/ai_upgrade_action(mob/living/silicon/ai/AI, mob/user)
 	if(!istype(AI))
 		return
-	to_chat(user, span_notice("You reset [AI]'s program storage to factory settings."))
+	to_chat(user, span_notice("Вы сбрасываете программы ИИ [AI] до заводских настроек."))
 	AI.reset_programs()
 
 /obj/item/ai_upgrade/expanded_storage
 	name = "expanded storage upgrade"
-	desc = "An experimental upgrade labelled EX.ST. Within is an algorithm to compress an AI's processes, granting them spare memory."
+	desc = "Экспериментальное улучшение с маркировкой EX.ST. Содержит алгоритм сжатия процессов ИИ, освобождающий дополнительную память."
+
+/obj/item/ai_upgrade/expanded_storage/get_ru_names()
+	return alist(
+		NOMINATIVE = "улучшение расширенного хранилища",
+		GENITIVE = "улучшения расширенного хранилища",
+		DATIVE = "улучшению расширенного хранилища",
+		ACCUSATIVE = "улучшение расширенного хранилища",
+		INSTRUMENTAL = "улучшением расширенного хранилища",
+		PREPOSITIONAL = "улучшении расширенного хранилища",
+	)
 
 /obj/item/ai_upgrade/expanded_storage/ai_upgrade_action(mob/living/silicon/ai/AI, mob/user)
 	if(!istype(AI))
 		return
-	to_chat(AI, span_notice("[user] has upgraded you an expanded storage module. Extra memory granted!"))
+	to_chat(AI, span_notice("[user] устанавлива[PLUR_ET_YUT(user)] вам модуль расширенного хранилища. Получена дополнительная память!"))
 	AI.program_picker.total_memory += 2
 	AI.program_picker.memory += 2
-	to_chat(user, span_notice("You upgrade [AI]. [src] is consumed in the process."))
+	to_chat(user, span_notice("Вы улучшаете ИИ [AI]. [DECLENT_RU_CAP(src, NOMINATIVE)] расходуется."))
 	qdel(src)
 
 /obj/item/ai_upgrade/expanded_network
 	name = "expanded network array upgrade"
-	desc = "An experimental upgrade labelled EX.AR. Within is an algorithm to optimize an AI's network, granting them spare bandwidth."
+	desc = "Экспериментальное улучшение с маркировкой EX.AR. Содержит алгоритм оптимизации сети ИИ, освобождающий дополнительную пропускную способность."
+
+/obj/item/ai_upgrade/expanded_network/get_ru_names()
+	return alist(
+		NOMINATIVE = "улучшение сетевого массива",
+		GENITIVE = "улучшения сетевого массива",
+		DATIVE = "улучшению сетевого массива",
+		ACCUSATIVE = "улучшение сетевого массива",
+		INSTRUMENTAL = "улучшением сетевого массива",
+		PREPOSITIONAL = "улучшении сетевого массива",
+	)
 
 /obj/item/ai_upgrade/expanded_network/ai_upgrade_action(mob/living/silicon/ai/AI, mob/user)
 	if(!istype(AI))
 		return
-	to_chat(AI, span_notice("[user] has upgraded you an expanded network array module. Extra bandwidth granted!"))
+	to_chat(AI, span_notice("[user] устанавлива[PLUR_ET_YUT(user)] вам модуль расширенного сетевого массива. Получена дополнительная пропускная способность!"))
 	AI.program_picker.total_bandwidth += 1
 	AI.program_picker.bandwidth += 1
-	to_chat(user, span_notice("You upgrade [AI]. [src] is consumed in the process."))
+	to_chat(user, span_notice("Вы улучшаете ИИ [AI]. [DECLENT_RU_CAP(src, NOMINATIVE)] расходуется."))
 	qdel(src)
 
 /obj/item/ai_upgrade/expanded_tank
 	name = "expanded nanite tank upgrade"
-	desc = "An experimental upgrade labelled NA.TA. Within is a bluespace compacting program to make an AI's nanite reserves just a bit bigger."
+	desc = "Экспериментальное улучшение с маркировкой NA.TA. Содержит программу блюспейс-сжатия, немного увеличивающую запас нанитов ИИ."
+
+/obj/item/ai_upgrade/expanded_tank/get_ru_names()
+	return alist(
+		NOMINATIVE = "улучшение нанитового резервуара",
+		GENITIVE = "улучшения нанитового резервуара",
+		DATIVE = "улучшению нанитового резервуара",
+		ACCUSATIVE = "улучшение нанитового резервуара",
+		INSTRUMENTAL = "улучшением нанитового резервуара",
+		PREPOSITIONAL = "улучшении нанитового резервуара",
+	)
 
 /obj/item/ai_upgrade/expanded_tank/ai_upgrade_action(mob/living/silicon/ai/AI, mob/user)
 	if(!istype(AI))
 		return
-	to_chat(AI, span_notice("[user] has upgraded you an expanded nanite tank module. Extra nanite storage capacity granted!"))
+	to_chat(AI, span_notice("[user] устанавлива[PLUR_ET_YUT(user)] вам модуль расширенного нанитового резервуара. Запас нанитов увеличен!"))
 	AI.program_picker.max_nanites += 10
-	to_chat(user, span_notice("You upgrade [AI]. [src] is consumed in the process."))
+	to_chat(user, span_notice("Вы улучшаете ИИ [AI]. [DECLENT_RU_CAP(src, NOMINATIVE)] расходуется."))
 	qdel(src)
 
 /obj/item/ai_upgrade/expanded_fabricator
 	name = "expanded nanite fabricator upgrade"
-	desc = "An experimental upgrade labelled NA.FA. Within is a program to compress the fabricators of an AI's nanites, allowing them to construct them quicker."
+	desc = "Экспериментальное улучшение с маркировкой NA.FA. Содержит программу оптимизации нанитовых фабрикаторов ИИ, ускоряющую производство нанитов."
+
+/obj/item/ai_upgrade/expanded_fabricator/get_ru_names()
+	return alist(
+		NOMINATIVE = "улучшение нанитового фабрикатора",
+		GENITIVE = "улучшения нанитового фабрикатора",
+		DATIVE = "улучшению нанитового фабрикатора",
+		ACCUSATIVE = "улучшение нанитового фабрикатора",
+		INSTRUMENTAL = "улучшением нанитового фабрикатора",
+		PREPOSITIONAL = "улучшении нанитового фабрикатора",
+	)
 
 /obj/item/ai_upgrade/expanded_fabricator/ai_upgrade_action(mob/living/silicon/ai/AI, mob/user)
 	if(!istype(AI))
 		return
-	to_chat(AI, span_notice("[user] has upgraded you an expanded nanite fabricator module. Extra nanite regeneration granted!"))
+	to_chat(AI, span_notice("[user] устанавлива[PLUR_ET_YUT(user)] вам модуль расширенного нанитового фабрикатора. Производство нанитов ускорено!"))
 	AI.nanite_regen += 0.5
-	to_chat(user, span_notice("You upgrade [AI]. [src] is consumed in the process."))
+	to_chat(user, span_notice("Вы улучшаете ИИ [AI]. [DECLENT_RU_CAP(src, NOMINATIVE)] расходуется."))
 	qdel(src)

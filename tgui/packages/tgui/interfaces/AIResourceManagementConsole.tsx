@@ -53,7 +53,7 @@ export const AIResourceManagementConsole = (props: unknown) => {
   const { screen } = data;
 
   return (
-    <Window width={350} height={425}>
+    <Window width={400} height={425}>
       <Window.Content scrollable>
         <Stack fill vertical>
           <Stack.Item>
@@ -63,14 +63,14 @@ export const AIResourceManagementConsole = (props: unknown) => {
                 icon="list"
                 onClick={() => act('menu', { screen: 0 })}
               >
-                Allocated Resources
+                Распределение ресурсов
               </Tabs.Tab>
               <Tabs.Tab
                 selected={screen === 1}
                 icon="circle-nodes"
                 onClick={() => act('menu', { screen: 1 })}
               >
-                Online Nodes
+                Активные узлы
               </Tabs.Tab>
             </Tabs>
           </Stack.Item>
@@ -91,20 +91,20 @@ const AllocatedResources = (props: unknown) => {
   return (
     <Box>
       {(!ai_list || ai_list.length === 0) && (
-        <NoticeBox>No AI detected.</NoticeBox>
+        <NoticeBox>ИИ не обнаружены.</NoticeBox>
       )}
       {!!ai_list &&
         ai_list.map((ai) => (
           <Section key={ai.uid} title={ai.name}>
             <LabeledList>
-              <LabeledList.Item label="Memory">{ai.memory}</LabeledList.Item>
-              <LabeledList.Item label="Maximum Memory">
+              <LabeledList.Item label="Память">{ai.memory}</LabeledList.Item>
+              <LabeledList.Item label="Максимум памяти">
                 {ai.memory_max}
               </LabeledList.Item>
-              <LabeledList.Item label="Bandwidth">
+              <LabeledList.Item label="Пропускная способность">
                 {ai.bandwidth}
               </LabeledList.Item>
-              <LabeledList.Item label="Maximum Bandwidth">
+              <LabeledList.Item label="Максимум пропускной способности">
                 {ai.bandwidth_max}
               </LabeledList.Item>
             </LabeledList>
@@ -120,7 +120,7 @@ const OnlineNodes = (props: unknown) => {
   return (
     <Box>
       {(!nodes_list || nodes_list.length === 0) && (
-        <NoticeBox>No nodes detected.</NoticeBox>
+        <NoticeBox>Узлы не обнаружены.</NoticeBox>
       )}
       {!!nodes_list &&
         nodes_list.map((node) => (
@@ -133,19 +133,21 @@ const OnlineNodes = (props: unknown) => {
                   icon="circle-nodes"
                   onClick={() => act('reassign', { uid: node.uid })}
                 >
-                  Reassign
+                  Переназначить
                 </Button>
               </Box>
             }
           >
             <LabeledList>
-              <LabeledList.Item label="Assigned AI">
+              <LabeledList.Item label="Назначенный ИИ">
                 {node.assigned_ai}
               </LabeledList.Item>
-              <LabeledList.Item label="Resource">
+              <LabeledList.Item label="Ресурс">
                 {capitalize(node.resource)}
               </LabeledList.Item>
-              <LabeledList.Item label="Amount">{node.amount}</LabeledList.Item>
+              <LabeledList.Item label="Количество">
+                {node.amount}
+              </LabeledList.Item>
             </LabeledList>
           </Section>
         ))}
