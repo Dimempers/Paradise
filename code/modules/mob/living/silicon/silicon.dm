@@ -16,6 +16,7 @@
 	var/list/alarm_types_show = list("Motion" = 0, "Fire" = 0, "Atmosphere" = 0, "Power" = 0, "Camera" = 0)
 	var/list/alarm_types_clear = list("Motion" = 0, "Fire" = 0, "Atmosphere" = 0, "Power" = 0, "Camera" = 0)
 	var/list/alarms_listend_for = list("Motion", "Fire", "Atmosphere", "Power", "Camera")
+	var/door_bolt_delay = 3 SECONDS
 	var/list/speech_synthesizer_langs = list()	//which languages can be vocalized by the speech synthesizer
 	var/designation = ""
 	var/obj/item/camera/siliconcam/aiCamera = null //photography
@@ -156,6 +157,9 @@
 	else if(length(alarms_to_show))
 
 		var/list/msg = list("--- ")
+
+		if(alarm_types_show["Tracking"])
+			msg += "СЛЕЖЕНИЕ: обнаружено тревог — [alarm_types_show["Tracking"]]. - "
 
 		if(alarm_types_show["Burglar"])
 			msg += "BURGLAR: [alarm_types_show["Burglar"]] alarms detected. - "

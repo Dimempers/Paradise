@@ -7664,6 +7664,7 @@
 /obj/machinery/vending/wallmed{
 	pixel_x = 26
 	},
+/obj/machinery/ai_node/processing_node,
 /turf/simulated/floor/plasteel,
 /area/station/science/storage)
 "bAe" = (
@@ -24635,6 +24636,7 @@
 /obj/machinery/atmospherics/unary/vent_scrubber/on{
 	dir = 4
 	},
+/obj/machinery/ai_node/network_node,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},
@@ -34015,6 +34017,7 @@
 /obj/structure/table/reinforced,
 /obj/item/folder/blue,
 /obj/item/pen,
+/obj/item/ai_upgrade/ai_program_reset,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},
@@ -87274,7 +87277,7 @@
 /obj/effect/turf_decal/stripes/line{
 	dir = 4
 	},
-/obj/item/twohanded/required/kirbyplants,
+/obj/machinery/computer/ai_resource,
 /turf/simulated/floor/plasteel,
 /area/station/command/office/rd)
 "qnE" = (

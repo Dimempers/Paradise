@@ -483,6 +483,12 @@
 	icon_state = "newlaw"
 	timeout = 30 SECONDS
 
+/atom/movable/screen/alert/programs_reset
+	name = "Сброс программ"
+	desc = "Ваши программы сброшены диском сброса программ!"
+	icon_state = "silicon_generic_alert"
+	timeout = 30 SECONDS
+
 /atom/movable/screen/alert/hackingapc
 	name = "Взлом ЛКП"
 	desc = "Идёт взлом контроллера питания. После завершения вы получите над ним полный контроль и дополнительные возможности."

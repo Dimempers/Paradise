@@ -916,6 +916,7 @@
 	pixel_x = -7;
 	pixel_y = -10
 	},
+/obj/machinery/ai_node/processing_node,
 /turf/simulated/floor/plating,
 /area/coldcolony/malta/maintenance/research)
 "apX" = (
@@ -23380,6 +23381,7 @@
 /obj/machinery/atmospherics/unary/vent_pump/on{
 	dir = 8
 	},
+/obj/machinery/ai_node/network_node,
 /turf/simulated/floor/plating,
 /area/coldcolony/malta/research/server)
 "iLh" = (
@@ -25007,6 +25009,7 @@
 /area/coldcolony/malta/resid_serv/bar/atrium)
 "jrZ" = (
 /obj/structure/table/reinforced,
+/obj/item/ai_upgrade/ai_program_reset,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},
@@ -56957,13 +56960,9 @@
 /turf/simulated/floor/plasteel,
 /area/shuttle/pirate_corvette)
 "vtr" = (
-/obj/structure/table,
 /obj/effect/turf_decal/delivery/hollow,
-/obj/item/clothing/head/cone{
-	desc = "Старый дорожный конус. Говорят он увеличивает интеллект носителя.";
-	name = "Символ Разумизма";
-	pixel_x = -4;
-	pixel_y = 7
+/obj/machinery/computer/ai_resource{
+	dir = 8
 	},
 /turf/simulated/floor/plasteel{
 	dir = 6;
