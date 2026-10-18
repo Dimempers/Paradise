@@ -60,6 +60,8 @@ GLOBAL_LIST_INIT(ai_verbs_default, list(
 	alarms_listend_for = list("Motion", "Fire", "Atmosphere", "Power", "Camera", "Burglar")
 	var/viewalerts = 0
 	var/icon/holo_icon//Default // is assigned when AI is created.
+	var/icon/holo_icon_base
+	var/ai_holocolor
 	var/obj/mecha/controlled_mech //For controlled_mech a mech, to determine whether to relaymove or use the AI eye.
 	var/obj/item/pda/silicon/ai/aiPDA = null
 	var/obj/item/multitool/aiMulti = null
@@ -213,7 +215,8 @@ GLOBAL_LIST_INIT(ai_verbs_default, list(
 	set_anchored(TRUE)
 	set_density(TRUE)
 
-	holo_icon = getHologramIcon(icon('icons/mob/ai.dmi',"holo1"))
+	holo_icon_base = icon('icons/mob/ai.dmi',"holo1")
+	holo_icon = getHologramIcon(holo_icon_base, FALSE)
 
 	if(B?.clock)
 		INVOKE_ASYNC(src, TYPE_PROC_REF(/atom, ratvar_act))
@@ -962,6 +965,12 @@ GAME_VERB_PROC_DESC(/mob/living/silicon/ai, ai_hologram_change, "Сменить 
 			if(Entry[2] == ckey) //Custom holograms
 				custom_hologram = 1  // option is given in hologram menu
 
+	ai_holocolor = tgui_input_color(usr, "Выберите цвет голограммы", "Цвет голограммы", ai_holocolor || COLOR_AI_HOLOGRAM_BLUE)
+	if(ai_holocolor)
+		var/list/holo_hsv = rgb2hsv(COLOR_AI_HOLOGRAM_BLUE)
+		holo_hsv[1] = rgb2hsv(ai_holocolor)[1]
+		ai_holocolor = hsv2rgb(holo_hsv)
+
 	var/input
 	switch(tgui_alert(usr, "Would you like to select a hologram based on a crew member, an animal, or switch to a unique avatar?", "Change Hologram", list("Crew Member", "Unique", "Animal")))
 		if("Crew Member")
@@ -974,8 +983,7 @@ GAME_VERB_PROC_DESC(/mob/living/silicon/ai, ai_hologram_change, "Сменить 
 				input = tgui_input_list(usr, "Select a crew member", "Change Hologram", personnel_list)
 				var/icon/character_icon = personnel_list[input]
 				if(character_icon)
-					qdel(holo_icon)//Clear old icon so we're not storing it in memory.
-					holo_icon = getHologramIcon(icon(character_icon))
+					holo_icon_base = icon(character_icon)
 			else
 				alert("No suitable records found. Aborting.")
 
@@ -1003,44 +1011,43 @@ GAME_VERB_PROC_DESC(/mob/living/silicon/ai, ai_hologram_change, "Сменить 
 
 			input = tgui_input_list(usr, "Please select a hologram", "Change Hologram", icon_list)
 			if(input)
-				qdel(holo_icon)
 				switch(input)
 					if("Bear")
-						holo_icon = getHologramIcon(icon('icons/mob/animal.dmi',"bear"))
+						holo_icon_base = icon('icons/mob/animal.dmi',"bear")
 					if("Carp")
-						holo_icon = getHologramIcon(icon('icons/mob/carp.dmi',"carp"))
+						holo_icon_base = icon('icons/mob/carp.dmi',"carp")
 					if("Chicken")
-						holo_icon = getHologramIcon(icon('icons/mob/animal.dmi',"chicken_brown"))
+						holo_icon_base = icon('icons/mob/animal.dmi',"chicken_brown")
 					if("Corgi")
-						holo_icon = getHologramIcon(icon('icons/mob/animal.dmi',"corgi"))
+						holo_icon_base = icon('icons/mob/animal.dmi',"corgi")
 					if("Cow")
-						holo_icon = getHologramIcon(icon('icons/mob/animal.dmi',"cow"))
+						holo_icon_base = icon('icons/mob/animal.dmi',"cow")
 					if("Crab")
-						holo_icon = getHologramIcon(icon('icons/mob/animal.dmi',"crab"))
+						holo_icon_base = icon('icons/mob/animal.dmi',"crab")
 					if("Deer")
-						holo_icon = getHologramIcon(icon('icons/mob/animal.dmi',"deer"))
+						holo_icon_base = icon('icons/mob/animal.dmi',"deer")
 					if("Fox")
-						holo_icon = getHologramIcon(icon('icons/mob/pets.dmi',"fox"))
+						holo_icon_base = icon('icons/mob/pets.dmi',"fox")
 					if("Goat")
-						holo_icon = getHologramIcon(icon('icons/mob/animal.dmi',"goat"))
+						holo_icon_base = icon('icons/mob/animal.dmi',"goat")
 					if("Goose")
-						holo_icon = getHologramIcon(icon('icons/mob/animal.dmi',"goose"))
+						holo_icon_base = icon('icons/mob/animal.dmi',"goose")
 					if("Kitten")
-						holo_icon = getHologramIcon(icon('icons/mob/pets.dmi',"cat"))
+						holo_icon_base = icon('icons/mob/pets.dmi',"cat")
 					if("Kitten2")
-						holo_icon = getHologramIcon(icon('icons/mob/pets.dmi',"cat2"))
+						holo_icon_base = icon('icons/mob/pets.dmi',"cat2")
 					if("Pig")
-						holo_icon = getHologramIcon(icon('icons/mob/animal.dmi',"pig"))
+						holo_icon_base = icon('icons/mob/animal.dmi',"pig")
 					if("Poly")
-						holo_icon = getHologramIcon(icon('icons/mob/animal.dmi',"parrot_fly"))
+						holo_icon_base = icon('icons/mob/animal.dmi',"parrot_fly")
 					if("Pug")
-						holo_icon = getHologramIcon(icon('icons/mob/pets.dmi',"pug"))
+						holo_icon_base = icon('icons/mob/pets.dmi',"pug")
 					if("Seal")
-						holo_icon = getHologramIcon(icon('icons/mob/animal.dmi',"seal"))
+						holo_icon_base = icon('icons/mob/animal.dmi',"seal")
 					if("Spider")
-						holo_icon = getHologramIcon(icon('icons/mob/animal.dmi',"guard"))
+						holo_icon_base = icon('icons/mob/animal.dmi',"guard")
 					if("Turkey")
-						holo_icon = getHologramIcon(icon('icons/mob/animal.dmi',"turkey"))
+						holo_icon_base = icon('icons/mob/animal.dmi',"turkey")
 
 		else
 			var/icon_list[] = list(
@@ -1058,33 +1065,32 @@ GAME_VERB_PROC_DESC(/mob/living/silicon/ai, ai_hologram_change, "Сменить 
 
 			input = tgui_input_list(usr, "Please select a hologram", "Change Hologram", icon_list)
 			if(input)
-				qdel(holo_icon)
 				switch(input)
 					if("default")
-						holo_icon = getHologramIcon(icon('icons/mob/ai.dmi',"holo1"))
+						holo_icon_base = icon('icons/mob/ai.dmi',"holo1")
 					if("floating face")
-						holo_icon = getHologramIcon(icon('icons/mob/ai.dmi',"holo2"))
+						holo_icon_base = icon('icons/mob/ai.dmi',"holo2")
 					if("xeno queen")
-						holo_icon = getHologramIcon(icon('icons/mob/ai.dmi',"holo3"))
+						holo_icon_base = icon('icons/mob/ai.dmi',"holo3")
 					if("eldritch")
-						holo_icon = getHologramIcon(icon('icons/mob/ai.dmi',"holo4"))
+						holo_icon_base = icon('icons/mob/ai.dmi',"holo4")
 					if("AUTO")
-						holo_icon = getHologramIcon(icon('icons/mob/ai.dmi',"holo5"))
+						holo_icon_base = icon('icons/mob/ai.dmi',"holo5")
 					if("beach ball")
-						holo_icon = getHologramIcon(icon('icons/mob/ai.dmi',"holo6"))
+						holo_icon_base = icon('icons/mob/ai.dmi',"holo6")
 					if("pair of bees")
-						holo_icon = getHologramIcon(icon('icons/mob/ai.dmi',"holo7"))
+						holo_icon_base = icon('icons/mob/ai.dmi',"holo7")
 					if("ancient machine")
-						holo_icon = getHologramIcon(icon('icons/mob/ancient_machine.dmi', "ancient_machine"))
+						holo_icon_base = icon('icons/mob/ancient_machine.dmi', "ancient_machine")
 					if("custom")
 						if(icon_exists('icons/mob/custom_synthetic/custom-synthetic.dmi', "[ckey]-ai-holo"))
-							holo_icon = getHologramIcon(icon('icons/mob/custom_synthetic/custom-synthetic.dmi', "[ckey]-ai-holo"))
+							holo_icon_base = icon('icons/mob/custom_synthetic/custom-synthetic.dmi', "[ckey]-ai-holo")
 						else if(icon_exists('icons/mob/custom_synthetic/custom-synthetic64.dmi', "[ckey]-ai-holo"))
-							holo_icon = getHologramIcon(icon('icons/mob/custom_synthetic/custom-synthetic64.dmi', "[ckey]-ai-holo"))
+							holo_icon_base = icon('icons/mob/custom_synthetic/custom-synthetic64.dmi', "[ckey]-ai-holo")
 						else
-							holo_icon = getHologramIcon(icon('icons/mob/ai.dmi',"holo1"))
+							holo_icon_base = icon('icons/mob/ai.dmi',"holo1")
 
-	return
+	holo_icon = getHologramIcon(holo_icon_base, FALSE, holo_color = ai_holocolor)
 
 //Toggles the luminosity and applies it by re-entereing the camera.
 GAME_VERB_PROC_DESC(/mob/living/silicon/ai, toggle_camera_light, "Подсветка камер", "Toggles the lights on the cameras throughout the station.", VERB_CATEGORY_AICOMMANDS)
@@ -1567,3 +1573,26 @@ GAME_VERB_PROC_DESC(/mob/living/silicon/ai, control_integrated_radio, "Наст�
 
 /mob/living/silicon/ai/get_lootpanel_cache_key()
 	return "[display_icon_override] [portrait_appearance?.icon] [portrait_appearance?.icon_state]"
+
+/mob/living/silicon/ai/point_at(atom/pointed_atom)
+	if(pointed_atom in src)
+		return FALSE
+	var/turf/target_turf = get_turf(pointed_atom)
+	if(!target_turf)
+		return FALSE
+	var/obj/machinery/hologram/holopad/best_pad
+	for(var/obj/machinery/hologram/holopad/pad as anything in GLOB.holopads)
+		if(!pad.is_operational() || pad.pointing || !pad.validate_location(target_turf))
+			continue
+		var/turf/pad_turf = get_turf(pad)
+		if(!GLOB.cameranet.checkTurfVis(pad_turf))
+			continue
+		if(!best_pad || get_dist(pad_turf, target_turf) < get_dist(get_turf(best_pad), target_turf))
+			best_pad = pad
+	if(!best_pad)
+		return FALSE
+	if(!best_pad.holo_point(pointed_atom, invisibility))
+		return FALSE
+	SEND_SIGNAL(src, COMSIG_MOB_POINTED, pointed_atom)
+	log_emote("points at [pointed_atom] using holopad", src)
+	return TRUE

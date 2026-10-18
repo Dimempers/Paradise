@@ -15932,7 +15932,7 @@
 /turf/simulated/floor/plasteel,
 /area/station/command/bridge)
 "bqS" = (
-/obj/machinery/hologram/holopad,
+/obj/machinery/hologram/holopad/secure,
 /obj/structure/cable{
 	icon_state = "2-4"
 	},
@@ -19381,7 +19381,7 @@
 /turf/simulated/floor/wood,
 /area/station/command/office/captain)
 "bIO" = (
-/obj/machinery/hologram/holopad,
+/obj/machinery/hologram/holopad/secure,
 /turf/simulated/floor/wood,
 /area/station/command/office/captain)
 "bIR" = (
@@ -65556,7 +65556,7 @@
 /obj/structure/cable{
 	icon_state = "2-8"
 	},
-/obj/machinery/hologram/holopad,
+/obj/machinery/hologram/holopad/secure,
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers{
 	dir = 5
 	},
@@ -81847,7 +81847,7 @@
 /area/station/hallway/primary/central/north)
 "umC" = (
 /obj/machinery/alarm/directional/south,
-/obj/machinery/hologram/holopad,
+/obj/machinery/hologram/holopad/secure,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},

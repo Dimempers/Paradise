@@ -11910,7 +11910,7 @@
 	},
 /area/coldcolony/malta/security/securearmory)
 "euO" = (
-/obj/machinery/hologram/holopad,
+/obj/machinery/hologram/holopad/secure,
 /turf/simulated/floor/plasteel{
 	dir = 1;
 	icon_state = "darkblue"
@@ -18665,7 +18665,7 @@
 	},
 /area/coldcolony/ruin/abandoned_banya)
 "gTh" = (
-/obj/machinery/hologram/holopad,
+/obj/machinery/hologram/holopad/secure,
 /turf/simulated/floor/wood/fancy/light,
 /area/coldcolony/malta/bridge/captain)
 "gTl" = (
@@ -23000,7 +23000,7 @@
 /obj/structure/cable{
 	icon_state = "1-2"
 	},
-/obj/machinery/hologram/holopad,
+/obj/machinery/hologram/holopad/secure,
 /obj/machinery/atmospherics/pipe/simple/hidden/supply,
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers,
 /turf/simulated/floor/plasteel{
@@ -23349,7 +23349,7 @@
 	},
 /area/coldcolony/malta/security/main)
 "iKD" = (
-/obj/machinery/hologram/holopad,
+/obj/machinery/hologram/holopad/secure,
 /turf/simulated/floor/plasteel{
 	dir = 4;
 	icon_state = "darkblue"
@@ -24784,7 +24784,7 @@
 	},
 /area/coldcolony/malta/quartermaster/miningeva)
 "joH" = (
-/obj/machinery/hologram/holopad,
+/obj/machinery/hologram/holopad/secure,
 /turf/simulated/floor/plasteel{
 	dir = 8;
 	icon_state = "darkblue"
@@ -33748,7 +33748,7 @@
 /obj/structure/cable{
 	icon_state = "4-8"
 	},
-/obj/machinery/hologram/holopad,
+/obj/machinery/hologram/holopad/secure,
 /turf/simulated/floor/carpet/royalblack,
 /area/coldcolony/malta/bridge)
 "mFN" = (
@@ -34762,7 +34762,7 @@
 	},
 /area/coldcolony/malta/security/permabrig)
 "nah" = (
-/obj/machinery/hologram/holopad,
+/obj/machinery/hologram/holopad/secure,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},
@@ -57705,7 +57705,7 @@
 	},
 /area/coldcolony/malta/medical/virology)
 "vGl" = (
-/obj/machinery/hologram/holopad,
+/obj/machinery/hologram/holopad/secure,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},
