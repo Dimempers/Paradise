@@ -805,6 +805,19 @@ to destroy them and players will be able to make replacements.
 	req_components = list(
 		/obj/item/stock_parts/capacitor = 1,
 	)
+	var/secure = FALSE
+
+/obj/item/circuitboard/holopad/multitool_act(mob/living/user, obj/item/tool)
+	. = TRUE
+	secure = !secure
+	build_path = secure ? /obj/machinery/hologram/holopad/secure : /obj/machinery/hologram/holopad
+	to_chat(user, span_notice("Вы [secure ? "включаете" : "отключаете"] защищённый режим на [declent_ru(PREPOSITIONAL)]."))
+
+/obj/item/circuitboard/holopad/examine(mob/user)
+	. = ..()
+	. += span_notice("На плате есть порт, который можно <b>импульсом</b> переключить в защищённый режим.")
+	if(secure)
+		. += span_notice("Рядом со словом \"secure\" мигает красный огонёк.")
 
 /obj/item/circuitboard/chem_dispenser
 	board_name = "Chem Dispenser"

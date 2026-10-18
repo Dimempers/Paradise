@@ -10942,7 +10942,7 @@
 	},
 /obj/machinery/atmospherics/pipe/simple/hidden/supply,
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers,
-/obj/machinery/hologram/holopad,
+/obj/machinery/hologram/holopad/secure,
 /mob/living/simple_animal/bot/secbot/pingsky{
 	desc = "Worse than nothing";
 	name = "AI Defender"
@@ -23406,7 +23406,7 @@
 	icon_state = "2-8"
 	},
 /obj/item/beacon,
-/obj/machinery/hologram/holopad,
+/obj/machinery/hologram/holopad/secure,
 /turf/simulated/floor/plasteel{
 	icon_state = "dark"
 	},
@@ -67169,7 +67169,7 @@
 	},
 /area/station/hallway/secondary/entry/commercial)
 "kuE" = (
-/obj/machinery/hologram/holopad,
+/obj/machinery/hologram/holopad/secure,
 /turf/simulated/floor/wood/fancy/light{
 	color = "orange"
 	},
