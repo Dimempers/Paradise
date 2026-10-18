@@ -77,6 +77,7 @@ GLOBAL_LIST_INIT(ai_verbs_default, list(
 	var/universal_adapter = FALSE
 	var/adapter_efficiency = 0.5
 	var/market_price_modifier = 1
+	var/airlock_hack_modifier = 1
 	var/bluespace_miner = FALSE
 	var/bluespace_miner_rate = 100
 	var/next_payout = 10 MINUTES
