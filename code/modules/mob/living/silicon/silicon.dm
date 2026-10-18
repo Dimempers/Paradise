@@ -16,7 +16,6 @@
 	var/list/alarm_types_show = list("Motion" = 0, "Fire" = 0, "Atmosphere" = 0, "Power" = 0, "Camera" = 0)
 	var/list/alarm_types_clear = list("Motion" = 0, "Fire" = 0, "Atmosphere" = 0, "Power" = 0, "Camera" = 0)
 	var/list/alarms_listend_for = list("Motion", "Fire", "Atmosphere", "Power", "Camera")
-	var/door_bolt_delay = 3 SECONDS
 	var/list/speech_synthesizer_langs = list()	//which languages can be vocalized by the speech synthesizer
 	var/designation = ""
 	var/obj/item/camera/siliconcam/aiCamera = null //photography

@@ -848,25 +848,24 @@
 /datum/ai_program/enhanced_doors
 	program_name = "Улучшенное управление шлюзами"
 	program_id = "enhanced_doors"
-	description = "Вы улучшаете подпрограммы управления шлюзами, ускоряя их отклик!"
+	description = "Вы улучшаете подпрограммы управления шлюзами и быстрее взламываете шлюзы с отключённым управлением ИИ: на 15% за каждый уровень."
 	unlock_text = "Шлюзы подключены и оптимизированы. Вы чувствуете себя как дома."
 	upgrade = TRUE
-	var/original_door_delay = 3 SECONDS
 
 /datum/ai_program/enhanced_doors/upgrade(mob/living/silicon/ai/user, first_install = FALSE)
 	..()
 	if(!istype(user))
 		return
-	user.door_bolt_delay = original_door_delay * (1 - (upgrade_level * 0.1))
+	user.airlock_hack_modifier = 1 - (upgrade_level * 0.15)
 	installed = TRUE
 
 /datum/ai_program/enhanced_doors/downgrade(mob/living/silicon/ai/user)
 	..()
-	user.door_bolt_delay = original_door_delay * (1 - (upgrade_level * 0.1))
+	user.airlock_hack_modifier = 1 - (upgrade_level * 0.15)
 
 /datum/ai_program/enhanced_doors/uninstall(mob/living/silicon/ai/user)
 	..()
-	user.door_bolt_delay = original_door_delay
+	user.airlock_hack_modifier = 1
 
 /datum/ai_program/research_subsystem
 	program_name = "Экспериментальные исследования"
