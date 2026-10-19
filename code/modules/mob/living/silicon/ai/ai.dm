@@ -468,8 +468,11 @@ GLOBAL_LIST_INIT(ai_verbs_default, list(
 	use_power(1) // Just incase we need to wake up the power system.
 
 /obj/machinery/ai_powersupply/process()
-	if(QDELETED(powered_ai) || powered_ai.stat & DEAD)
+	if(QDELETED(powered_ai))
 		qdel(src)
+		return
+	if(powered_ai.stat == DEAD)
+		use_power = NO_POWER_USE
 		return
 	powered_ai.program_picker.nanites = min(powered_ai.program_picker.max_nanites, powered_ai.program_picker.nanites + (powered_ai.nanite_regen + 0.5 * powered_ai.program_picker.bandwidth))
 	if(!powered_ai.anchored)

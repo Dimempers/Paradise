@@ -147,6 +147,12 @@
 			dump_storage(user, over_object)
 			return
 
+	if(ismodcontrol(over_object))
+		var/obj/item/mod/control/mod = over_object
+		if(mod.bag && !(mod.item_flags & IN_STORAGE))
+			dump_storage(user, mod.bag)
+		return
+
 	if(istype(src, /obj/item/storage/lockbox) || (!istable(over_object) && !isfloorturf(over_object)) \
 		|| !length(contents) || loc != user || user.incapacitated() || !over_object.IsReachableBy(user))
 		return
