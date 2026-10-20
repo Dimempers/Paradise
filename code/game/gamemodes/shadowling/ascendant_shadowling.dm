@@ -15,7 +15,7 @@
 	nightvision = 8
 	lighting_cutoff = LIGHTING_CUTOFF_HIGH
 
-	universal_speak = 1
+	initial_language_holder = /datum/language_holder/universal
 
 	response_help   = "stares at"
 	response_disarm = "flails at"

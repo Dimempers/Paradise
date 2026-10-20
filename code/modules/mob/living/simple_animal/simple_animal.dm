@@ -5,7 +5,7 @@
 	maxHealth = 20
 	gender = MALE // Placeholder.
 
-	universal_understand = 1
+	initial_language_holder = /datum/language_holder/understand_all
 	status_flags = CANPUSH
 
 	hud_type = /datum/hud/simple_animal

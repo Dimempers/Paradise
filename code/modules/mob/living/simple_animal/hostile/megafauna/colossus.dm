@@ -46,7 +46,7 @@ Difficulty: Very Hard
 	pixel_x = -32
 	base_pixel_x = -32
 	del_on_death = TRUE
-	universal_speak = TRUE
+	initial_language_holder = /datum/language_holder/universal
 	tts_seed = null
 	achievement_type = /datum/award/achievement/boss/colossus_kill
 	crusher_achievement_type = /datum/award/achievement/boss/colossus_crusher

@@ -56,7 +56,7 @@
 	response_disarm = "аккуратно отодвигает"
 	response_harm = "бьёт крылом"
 	stop_automated_movement = TRUE
-	universal_speak = TRUE
+	initial_language_holder = /datum/language_holder/universal
 	mob_size = MOB_SIZE_SMALL
 	holder_type = /obj/item/holder/parrot
 

@@ -7,8 +7,3 @@
 	say(message) //drones do not get to whisper, only speak normally
 	return TRUE
 
-/mob/living/silicon/robot/drone/get_default_language()
-	if(default_language)
-		return default_language
-	return GLOB.all_languages[LANGUAGE_DRONE]
-

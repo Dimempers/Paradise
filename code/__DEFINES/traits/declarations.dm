@@ -325,6 +325,18 @@
 #define TRAIT_NOHARDCRIT "nohardcrit"
 #define TRAIT_SMALL_MOB "small_mob"
 #define TRAIT_GOOD_HEARING "good_hearing"
+#define TRAIT_ABDUCTOR_HIVEMIND "abductor_hivemind"
+#define TRAIT_BORER_HIVEMIND "borer_hivemind"
+#define TRAIT_CHANGELING_HIVEMIND "changeling_hivemind"
+#define TRAIT_DRONE_BINARY "drone_binary"
+#define TRAIT_EVENTLING_HIVEMIND "eventling_hivemind"
+#define TRAIT_GOLEM_HIVEMIND "golem_hivemind"
+#define TRAIT_GREY_TELEPATHY "grey_telepathy"
+#define TRAIT_SHADOWLING_HIVEMIND "shadowling_hivemind"
+#define TRAIT_SWARMER_HIVEMIND "swarmer_hivemind"
+#define TRAIT_TERRORSPIDER_HIVEMIND "terrorspider_hivemind"
+#define TRAIT_WRYN_HIVEMIND "wryn_hivemind"
+#define TRAIT_XENO_HIVEMIND "xeno_hivemind"
 /// Another biotype thing
 #define TRAIT_PLANT_ORIGIN "plant_origin"
 /// Another damn biotype

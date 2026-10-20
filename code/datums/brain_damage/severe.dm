@@ -27,24 +27,16 @@
 	scan_desc = "обширное повреждение языкового центра мозга"
 	gain_text = span_warning_alt("Слова перестают складываться у вас в голове...")
 	lose_text = span_notice_alt("Вы внезапно вспоминаете, как устроены языки.")
-	var/list/datum/language/known_languages
-	var/datum/language/previous_default
 
 /datum/brain_trauma/severe/aphasia/on_gain()
-	known_languages = owner.languages?.Copy()
-	previous_default = owner.default_language
-	owner.languages = null
-	owner.add_language(LANGUAGE_APHASIA)
-	owner.default_language = GLOB.all_languages[LANGUAGE_APHASIA]
+	owner.add_blocked_language(GLOB.all_languages - /datum/language/aphasia, source = LANGUAGE_APHASIA)
+	owner.grant_language(/datum/language/aphasia, source = LANGUAGE_APHASIA)
 	return ..()
 
 /datum/brain_trauma/severe/aphasia/on_lose(silent)
-	owner.remove_language(LANGUAGE_APHASIA)
-	for(var/datum/language/language as anything in known_languages)
-		owner.add_language(language.name)
-	owner.default_language = previous_default
-	known_languages = null
-	previous_default = null
+	if(!QDELING(owner))
+		owner.remove_blocked_language(GLOB.all_languages, source = LANGUAGE_APHASIA)
+		owner.remove_language(/datum/language/aphasia, source = LANGUAGE_APHASIA)
 	return ..()
 
 /datum/brain_trauma/severe/blindness

@@ -3,6 +3,7 @@
 // AI (i.e. game AI, not the AI player) controlled bots
 /mob/living/simple_animal/bot
 	abstract_type = /mob/living/simple_animal/bot
+	initial_language_holder = /datum/language_holder/synthetic
 	icon = 'icons/obj/aibots.dmi'
 	layer = MOB_LAYER - 0.1
 	light_range = 3
@@ -241,31 +242,8 @@
 	access_card.access += ACCESS_ROBOTICS	// This access is so bots can be immediately set to patrol and leave Robotics, instead of having to be let out first.
 	set_custom_texts()
 	Radio = new/obj/item/radio/headset/bot(src)
-	//same, as AI
-	add_language(LANGUAGE_GALACTIC_COMMON, TRUE)
-	add_language(LANGUAGE_SOL_COMMON, TRUE)
-	add_language(LANGUAGE_TRADER, TRUE)
-	add_language(LANGUAGE_NEO_RUSSIAN, TRUE)
-	add_language(LANGUAGE_GUTTER, TRUE)
-	add_language(LANGUAGE_UNATHI, TRUE)
-	add_language(LANGUAGE_TAJARAN, TRUE)
-	add_language(LANGUAGE_VULPKANIN, TRUE)
-	add_language(LANGUAGE_SKRELL, TRUE)
-	add_language(LANGUAGE_VOX, TRUE)
-	add_language(LANGUAGE_DRASK, TRUE)
-	add_language(LANGUAGE_DIONA, TRUE)
-	add_language(LANGUAGE_TRINARY, TRUE)
-	add_language(LANGUAGE_KIDAN, TRUE)
-	add_language(LANGUAGE_SLIME, TRUE)
-	add_language(LANGUAGE_CLOWN, TRUE)
-	add_language(LANGUAGE_MOTH, TRUE)
-	add_language(LANGUAGE_RESOMI, TRUE)
-
-	if(!HAS_TRAIT(SSstation, STATION_TRAIT_BOTS_GLITCHED))
-		default_language = GLOB.all_languages[LANGUAGE_GALACTIC_COMMON]
-	else
-		var/datum/language/bot_speak = pick(languages)
-		set_default_language(bot_speak)
+	if(HAS_TRAIT(SSstation, STATION_TRAIT_BOTS_GLITCHED))
+		set_active_language(get_random_spoken_language())
 
 	bot_core = new bot_core_type(src)
 	addtimer(CALLBACK(src, PROC_REF(add_bot_filter)), 3 SECONDS)

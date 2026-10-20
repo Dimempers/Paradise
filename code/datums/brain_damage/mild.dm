@@ -10,7 +10,7 @@
 	var/uncapped = FALSE
 
 /datum/brain_trauma/mild/hallucinations/on_gain()
-	owner.add_language(LANGUAGE_APHASIA)
+	owner.grant_language(/datum/language/aphasia, source = UID())
 	return ..()
 
 /datum/brain_trauma/mild/hallucinations/on_life()
@@ -20,8 +20,8 @@
 
 /datum/brain_trauma/mild/hallucinations/on_lose(silent)
 	owner.SetHallucinate(0)
-	if(!owner.has_trauma_type(/datum/brain_trauma/severe/aphasia))
-		owner.remove_language(LANGUAGE_APHASIA)
+	if(!QDELING(owner))
+		owner.remove_language(/datum/language/aphasia, source = UID())
 	return ..()
 
 /datum/brain_trauma/mild/stuttering
