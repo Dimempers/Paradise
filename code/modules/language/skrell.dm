@@ -11,7 +11,7 @@
 	key = "k"
 	flags = LANGUAGE_RESTRICTED
 	default_priority = 90
-	icon_state = null
+	icon_state = "skrell"
 	syllables = list("qr", "qrr", "xuq", "qil", "quum", "xuqm", "vol", "xrim", "zaoo", "qu-uu", "qix", "qoo", "zix")
 	special_characters = list("!", "*")
 

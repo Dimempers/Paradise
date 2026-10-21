@@ -149,3 +149,50 @@
 			TEST_ASSERT(!GLOB.department_radio_keys["[prefix][key]"], "[language] key [key] collides with a radio key")
 	for(var/key in SSradio.saymodes)
 		TEST_ASSERT(!GLOB.language_keys[":[key]"], "saymode key [key] collides with a language key")
+
+/datum/unit_test/language_aphasia/Run()
+	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
+	var/obj/item/language_test_probe/probe = allocate(/obj/item/language_test_probe)
+	probe.forceMove(speaker.loc)
+
+	speaker.gain_trauma(/datum/brain_trauma/severe/aphasia)
+	TEST_ASSERT_EQUAL(speaker.get_selected_language(), /datum/language/aphasia, "severe aphasia did not switch speech to aphasia")
+	TEST_ASSERT(!speaker.has_language(/datum/language/common, UNDERSTOOD_LANGUAGE), "severe aphasia did not block understanding common")
+	speaker.say("Помогите")
+	TEST_ASSERT_EQUAL(length(probe.heard), 1, "probe did not hear aphasic speech")
+	var/list/heard = probe.heard[1]
+	TEST_ASSERT_EQUAL(heard[2], /datum/language/aphasia, "aphasic speech was not in aphasia")
+
+	speaker.cure_trauma_type(/datum/brain_trauma/severe/aphasia, TRAUMA_RESILIENCE_ABSOLUTE)
+	TEST_ASSERT(!speaker.has_language(/datum/language/aphasia), "curing aphasia kept the aphasia language")
+	TEST_ASSERT(speaker.has_language(/datum/language/common, UNDERSTOOD_LANGUAGE), "curing aphasia kept common blocked")
+	TEST_ASSERT_EQUAL(speaker.get_selected_language(), /datum/language/common, "curing aphasia did not restore common speech")
+
+	speaker.gain_trauma(/datum/brain_trauma/mild/hallucinations)
+	TEST_ASSERT(speaker.has_language(/datum/language/aphasia, SPOKEN_LANGUAGE), "hallucinations did not grant aphasia")
+	TEST_ASSERT_EQUAL(speaker.get_selected_language(), /datum/language/common, "hallucinations replaced the default language")
+	speaker.cure_trauma_type(/datum/brain_trauma/mild/hallucinations, TRAUMA_RESILIENCE_ABSOLUTE)
+	TEST_ASSERT(!speaker.has_language(/datum/language/aphasia), "curing hallucinations kept aphasia")
+
+/datum/unit_test/language_temporary_sources/Run()
+	var/mob/living/carbon/human/subject = allocate(/mob/living/carbon/human)
+
+	subject.Druggy(10 SECONDS)
+	TEST_ASSERT(subject.has_language(/datum/language/beachbum, SPOKEN_LANGUAGE), "drugs did not grant beachbum")
+	subject.SetDruggy(0)
+	TEST_ASSERT(!subject.has_language(/datum/language/beachbum), "sobering up kept beachbum")
+
+	var/obj/item/clothing/head/pirate/hat = allocate(/obj/item/clothing/head/pirate)
+	subject.equip_to_slot_if_possible(hat, ITEM_SLOT_HEAD)
+	TEST_ASSERT(subject.has_language(/datum/language/piratespeak, SPOKEN_LANGUAGE), "pirate hat did not grant piratespeak")
+	qdel(hat)
+	TEST_ASSERT(!subject.has_language(/datum/language/piratespeak), "destroyed pirate hat kept piratespeak")
+
+	var/obj/item/mmi/robotic_brain/posibrain = allocate(/obj/item/mmi/robotic_brain)
+	TEST_ASSERT(posibrain.brainmob.has_language(/datum/language/machine, SPOKEN_LANGUAGE), "positronic brain does not know machine")
+
+/datum/unit_test/language_icons/Run()
+	for(var/datum/language/language as anything in GLOB.all_languages)
+		var/state = language::icon_state
+		TEST_ASSERT(state, "[language] has no chat icon")
+		TEST_ASSERT(icon_exists(language::icon, state), "[language] icon state [state] is missing")

@@ -9,7 +9,7 @@
 	key = "%"
 	flags = LANGUAGE_RESTRICTED
 	default_priority = 90
-	icon_state = null
+	icon_state = "drask"
 	syllables = list("hoorb", "vrrm", "ooorm", "urrrum", "ooum", "ee", "ffm", "hhh", "mn", "ongg")
 
 /datum/language/drask/get_random_name(

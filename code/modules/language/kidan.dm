@@ -9,7 +9,7 @@
 	key = "4"
 	flags = LANGUAGE_RESTRICTED
 	default_priority = 90
-	icon_state = null
+	icon_state = "kidan"
 	syllables = list("click", "clack")
 	mutual_understanding = list(
 		/datum/language/buzzwords = 20,

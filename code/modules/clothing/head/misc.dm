@@ -175,7 +175,8 @@
 
 /obj/item/clothing/head/pirate/dropped(mob/user, slot, silent = FALSE)
 	. = ..()
-	if(QDELETED(src))
+	var/datum/language_holder/holder = user.get_language_holder()
+	if(!(LANGUAGE_HAT in LAZYACCESS(holder.spoken_languages, /datum/language/piratespeak)))
 		return
 	user.remove_language(/datum/language/piratespeak, source = LANGUAGE_HAT)
 	to_chat(user, span_boldnotice("Вы больше не можете говорить по-пиратски."))

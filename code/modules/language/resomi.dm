@@ -9,7 +9,7 @@
 	key = "sa"
 	flags = LANGUAGE_RESTRICTED
 	default_priority = 90
-	icon_state = null
+	icon_state = "resomi"
 	syllables = list(
 		"ki", "skre", "chir", "vli", "tri", "kree", "zrit", "pree", "skrit", "kli",
 		"shree", "tchi", "vree", "kri", "zri", "shkree", "tiv", "lit", "skra", "krrr",

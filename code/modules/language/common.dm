@@ -78,7 +78,7 @@
 	key = "2"
 	default_priority = 40
 	space_chance = 100
-	icon_state = null
+	icon_state = "trader"
 	syllables = list(
 		"lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit",
 		"sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore",
@@ -99,7 +99,7 @@
 	spans = list("gutter")
 	key = "3"
 	default_priority = 40
-	icon_state = null
+	icon_state = "gutter"
 	syllables = list("gra", "ba", "ba", "breh", "bra", "rah", "dur", "ra", "ro", "gro", "go", "ber", "bar", "geh", "heh", "gra")
 	mutual_understanding = list(
 		/datum/language/common = 20,
@@ -115,7 +115,7 @@
 	runechat_span = "clown"
 	key = "0"
 	default_priority = 40
-	icon_state = null
+	icon_state = "clown"
 	syllables = list("honk", "squeak", "bonk", "toot", "narf", "zub", "wee", "wub", "norf")
 
 /datum/language/com_srus
@@ -130,7 +130,7 @@
 	default_priority = 40
 	space_chance = 40
 	always_use_default_namelist = TRUE
-	icon_state = null
+	icon_state = "com_srus"
 	syllables = list(
 		"dyen", "bar", "bota", "vyek", "tvo", "slov", "slav", "syen", "doup", "vah", "laz", "gloz", "yet",
 		"nyet", "da", "sky", "glav", "glaz", "netz", "doomat", "zat", "moch", "boz",
