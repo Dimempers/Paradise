@@ -301,7 +301,7 @@ GLOBAL_LIST_INIT(cloner_biomass_items, list(\
 	H.dna = R.dna.Clone()
 
 	for(var/language in R.languages)
-		H.grant_language(language)
+		H.grant_language(language, source = LANGUAGE_MIND)
 
 	if(is_taipan(z))
 		H.faction.Add("syndicate")	// So that Syndie guys remain Syndie guys after cloning

@@ -119,7 +119,9 @@
 		if(translator.can_wingdings)
 			check_wingdings = FALSE
 
-	if(HAS_TRAIT(src, TRAIT_COMIC) 		|| (locate(/obj/item/organ/internal/cyberimp/brain/clown_voice) in internal_organs) 		|| HAS_TRAIT(src, TRAIT_JESTER))
+	if(HAS_TRAIT(src, TRAIT_COMIC) \
+		|| (locate(/obj/item/organ/internal/cyberimp/brain/clown_voice) in internal_organs) \
+		|| HAS_TRAIT(src, TRAIT_JESTER))
 		spans |= SPAN_SANS
 
 	if(check_wingdings && HAS_TRAIT(src, TRAIT_WINGDINGS))

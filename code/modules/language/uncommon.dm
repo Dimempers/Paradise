@@ -2,7 +2,7 @@
 	name = "Галактический диалект"
 	desc = "Второй по распространённости язык человечества."
 	key = "un"
-	flags = LANGUAGE_TONGUELESS_SPEECH
+	flags = LANGUAGE_TONGUELESS_SPEECH | LANGUAGE_RESTRICTED
 	sentence_chance = 0
 	between_word_sentence_chance = 10
 	between_word_space_chance = 75

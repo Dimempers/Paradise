@@ -45,6 +45,11 @@
 /datum/brain_trauma/special/imaginary_friend/proc/relay_hearing(list/hearing_args)
 	if(QDELETED(friend))
 		return
+	var/list/original_mods = hearing_args[HEARING_MESSAGE_MODE]
+	var/list/relayed_mods = LAZYCOPY(original_mods)
+	relayed_mods[MODE_IGNORE_ATMOSPHERICS] = TRUE
+	hearing_args[HEARING_MESSAGE_MODE] = relayed_mods
+	hearing_args[HEARING_RANGE] = INFINITY
 	friend.relaying_hearing = TRUE
 	friend.Hear(arglist(hearing_args))
 	friend.relaying_hearing = FALSE
@@ -206,6 +211,11 @@ GAME_VERB_HIDDEN(/mob/camera/imaginary_friend, suicide, "suicide")
 /mob/camera/imaginary_friend/Hear(atom/movable/speaker, datum/language/message_language, raw_message, radio_freq, radio_freq_name, radio_freq_color, list/spans, list/message_mods = list(), message_range = 0)
 	if(!relaying_hearing)
 		return FALSE
+	return ..()
+
+/mob/camera/imaginary_friend/translate_language(atom/movable/speaker, datum/language/language, raw_message, list/spans, list/message_mods)
+	if(relaying_hearing)
+		return raw_message
 	return ..()
 
 /mob/camera/imaginary_friend/setDir(newdir)

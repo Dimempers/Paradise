@@ -2,6 +2,7 @@
 	name = "Пляжный"
 	desc = "Древний язык с далёкой Пляжной планеты. Под действием космических наркотиков люди волшебным образом начинают на нём говорить."
 	key = "bb"
+	flags = LANGUAGE_RESTRICTED
 	space_chance = 80
 	sentence_chance = 5
 	additional_syllable_low = -2

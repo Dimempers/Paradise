@@ -208,6 +208,13 @@
 /datum/language_holder/proc/get_understood_languages()
 	return assoc_to_keys(understood_languages) - assoc_to_keys(blocked_understanding)
 
+/datum/language_holder/proc/get_mind_languages()
+	var/list/mind_languages = list()
+	for(var/language in spoken_languages)
+		if(LANGUAGE_MIND in spoken_languages[language])
+			mind_languages += language
+	return mind_languages
+
 /datum/language_holder/proc/open_language_menu(mob/user)
 	if(!language_menu)
 		language_menu = new (src)
@@ -277,7 +284,7 @@ GLOBAL_LIST_INIT(prototype_language_holders, init_language_holder_prototypes())
 
 /datum/language_holder/universal/New()
 	. = ..()
-	grant_all_languages(source = LANGUAGE_MIND)
+	grant_all_languages(source = LANGUAGE_ATOM)
 
 /datum/language_holder/understand_all
 

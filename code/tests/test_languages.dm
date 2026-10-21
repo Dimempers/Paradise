@@ -54,6 +54,27 @@
 	TEST_ASSERT(character.has_language(/datum/language/tajaran), "joining the round removed the preference language")
 	TEST_ASSERT(!character.has_language(/datum/language/narsie), "joining the round granted the lobby languages")
 
+/datum/unit_test/language_universal_transfer/Run()
+	var/mob/living/carbon/human/body = allocate(/mob/living/carbon/human)
+	var/mob/living/simple_animal/shade/shade = allocate(/mob/living/simple_animal/shade)
+	body.mind_initialize()
+
+	body.mind.transfer_to(shade)
+
+	TEST_ASSERT(shade.has_language(/datum/language/narsie), "universal mob lost its languages to the old body")
+	TEST_ASSERT(!body.has_language(/datum/language/narsie), "old body received the universal languages")
+
+/datum/unit_test/language_clone_record/Run()
+	var/mob/living/carbon/human/subject = allocate(/mob/living/carbon/human)
+	subject.grant_language(/datum/language/codespeak, source = LANGUAGE_MIND)
+	subject.grant_language(/datum/language/piratespeak, source = LANGUAGE_HAT)
+
+	var/list/recorded = subject.get_language_holder().get_mind_languages()
+
+	TEST_ASSERT(/datum/language/codespeak in recorded, "clone record lost a mind language")
+	TEST_ASSERT(!(/datum/language/piratespeak in recorded), "clone record kept a temporary language")
+	TEST_ASSERT(!(/datum/language/common in recorded), "clone record kept a species language")
+
 /datum/unit_test/language_binary_listeners/Run()
 	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
 	allocate(/mob/camera)
