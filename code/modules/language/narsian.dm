@@ -10,7 +10,6 @@
 	sentence_chance = 10
 	between_word_sentence_chance = 5
 	between_word_space_chance = 95
-	additional_syllable_low = -1
 	additional_syllable_high = 0
 	var/static/list/base_syllables = list(
 		"h", "v", "c", "e", "g", "d", "r", "n", "h", "o", "p",

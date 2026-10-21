@@ -124,6 +124,12 @@
 	var/atom/demo_last_loc
 
 	var/initial_language_holder = /datum/language_holder/atom_basic
+	var/verb_say = "говор%(ит,ят)%"
+	var/verb_ask = "спрашива%(ет,ют)%"
+	var/verb_exclaim = "восклица%(ет,ют)%"
+	var/verb_whisper = "шепч%(ет,ут)%"
+	var/verb_yell = "крич%(ит,ат)%"
+	var/speech_span
 	VAR_PRIVATE/datum/language_holder/language_holder
 
 /mutable_appearance/emissive_blocker
@@ -1790,7 +1796,6 @@
 	return get_language_holder().get_random_understood_language()
 
 /atom/movable/proc/get_partially_understood_languages() as /list
-	SHOULD_BE_PURE(TRUE)
 	return get_language_holder().best_mutual_languages
 
 /atom/movable/proc/get_random_spoken_language()

@@ -91,7 +91,6 @@
 	. = ..()
 	H.remove_language(/datum/language/common)
 	H.set_active_language(/datum/language/human)
-	H.dna.species.default_language = LANGUAGE_SOL_COMMON
 
 /datum/outfit/oldstation/officer
 	name = "Old station officer"

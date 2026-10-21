@@ -533,6 +533,19 @@ GLOBAL_LIST_INIT(prototype_language_holders, init_language_holder_prototypes())
 		/datum/language/carptongue = list(LANGUAGE_ATOM),
 	)
 
+/datum/language_holder/carp/hear_common
+	understood_languages = list(
+		/datum/language/carptongue = list(LANGUAGE_ATOM),
+		/datum/language/common = list(LANGUAGE_ATOM),
+	)
+	spoken_languages = list(
+		/datum/language/carptongue = list(LANGUAGE_ATOM),
+	)
+
+/datum/language_holder/venus
+	understood_languages = list(/datum/language/sylvan = list(LANGUAGE_ATOM))
+	spoken_languages = list(/datum/language/sylvan = list(LANGUAGE_ATOM))
+
 /datum/language_holder/spider
 	understood_languages = list(/datum/language/buzzwords = list(LANGUAGE_ATOM))
 	spoken_languages = list(/datum/language/buzzwords = list(LANGUAGE_ATOM))
@@ -546,6 +559,10 @@ GLOBAL_LIST_INIT(prototype_language_holders, init_language_holder_prototypes())
 		/datum/language/common = list(LANGUAGE_ATOM),
 		/datum/language/mushroom = list(LANGUAGE_ATOM),
 	)
+
+/datum/language_holder/mushroom/simple
+	understood_languages = list(/datum/language/mushroom = list(LANGUAGE_ATOM))
+	spoken_languages = list(/datum/language/mushroom = list(LANGUAGE_ATOM))
 
 /datum/language_holder/plant
 	understood_languages = list(

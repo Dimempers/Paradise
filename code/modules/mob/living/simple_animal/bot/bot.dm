@@ -1218,19 +1218,16 @@ GAME_VERB(/mob/living/simple_animal/bot, show_laws, "Набор законов",
 /mob/living/simple_animal/bot/proc/door_opened(obj/machinery/door/D)
 	frustration = 0
 
-/mob/living/simple_animal/bot/handle_message_mode(message_mode, message, verb, speaking, used_radios)
-	switch(message_mode)
-		if(INTERCOM_MODE)
-			for(var/obj/item/radio/intercom/I in view(1, src))
-				I.talk_into(src, message, null, verb, speaking)
-				used_radios += I
-		if(HEADSET_MODE)
-			Radio.talk_into(src, message, null, verb, speaking)
-			used_radios += Radio
-		else
-			if(message_mode)
-				Radio.talk_into(src, message, message_mode, verb, speaking)
-				used_radios += Radio
+/mob/living/simple_animal/bot/radio(message, list/message_mods = list(), list/spans, language)
+	. = ..()
+	var/channel = message_mods[RADIO_EXTENSION]
+	if(channel == INTERCOM_MODE)
+		for(var/obj/item/radio/intercom/intercom in view(MODE_RANGE_INTERCOM, src))
+			intercom.talk_into(src, message, null, spans, language, message_mods)
+		return . | ITALICS | REDUCE_RANGE
+	if(message_mods[MODE_HEADSET] || channel)
+		Radio.talk_into(src, message, channel, spans, language, message_mods)
+		return . | ITALICS | REDUCE_RANGE
 
 /mob/living/simple_animal/bot/is_mechanical()
 	return TRUE

@@ -6,7 +6,6 @@
 	exclaim_verbs = list("невнятно выкрикива%(ет,ют)%")
 	whisper_verbs = list("невнятно шепч%(ет,ут)%")
 	flags = LANGUAGE_RESTRICTED | LANGUAGE_NOBABEL | LANGUAGE_HIDE_ICON_IF_NOT_UNDERSTOOD
-	key = "i"
 	syllables = list("м", "н", "гх", "х", "л", "с", "р", "а", "е", "и", "о", "у")
 	space_chance = 0
 	sentence_chance = 0

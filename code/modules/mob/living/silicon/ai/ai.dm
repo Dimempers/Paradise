@@ -1243,17 +1243,13 @@ GAME_VERB_PROC_DESC(/mob/living/silicon/ai, control_integrated_radio, "Наст�
 /mob/living/silicon/ai/try_get_ai()
 	return src
 
-/mob/living/silicon/ai/proc/relay_speech(mob/living/M, list/message_pieces, verb)
-	var/message_clean = combine_message(message_pieces, M)
-	message_clean = replace_characters(message_clean, list("+"))
-
-	var/message = verb_message(message_pieces, message_clean, M, genderize_decode(M, verb))
-
-	var/name_used = M.GetVoice()
+/mob/living/silicon/ai/proc/relay_speech(atom/movable/speaker, datum/language/message_language, raw_message, list/spans, list/message_mods)
+	raw_message = translate_language(speaker, message_language, raw_message, spans, message_mods)
+	var/message_clean = replace_characters(apply_message_emphasis(capitalize(raw_message)), list("+"))
 	//This communication is imperfect because the holopad "filters" voices and is only designed to connect to the master only.
-	var/rendered = span_gamesay("<i>Relayed Speech: [span_name("[name_used]")] [message]</i>")
+	var/rendered = span_gamesay("<i>Relayed Speech: [span_name("[speaker.GetVoice()]")] [speaker.generate_messagepart(raw_message, spans, message_mods)]</i>")
 	if(client?.prefs.toggles2 & PREFTOGGLE_2_RUNECHAT)
-		create_chat_message(M, message_clean, list("radio"))
+		create_chat_message(speaker, message_clean, list("radio"))
 	show_message(rendered, 2)
 
 /mob/living/silicon/ai/proc/malfhacked(obj/machinery/power/apc/apc)

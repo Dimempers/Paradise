@@ -233,12 +233,6 @@
 
 	return (is_uppercase(input) && length_char(input) >= 2) ? uppertext(word) : word
 
-/datum/language/proc/format_message(message, mob/speaker)
-	return span_message("<span class='[jointext(spans, " ")]'>[message]</span>")
-
-/datum/language/proc/get_talkinto_msg_range(message)
-	return (copytext(message, length(message)) == "!") ? 2 : 1
-
 /datum/language/proc/get_spoken_verb(msg_end)
 	switch(msg_end)
 		if("!")

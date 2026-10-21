@@ -1,11 +1,3 @@
-/atom/movable
-	var/verb_say = "говор%(ит,ят)%"
-	var/verb_ask = "спрашива%(ет,ют)%"
-	var/verb_exclaim = "восклица%(ет,ют)%"
-	var/verb_whisper = "шепч%(ет,ут)%"
-	var/verb_yell = "крич%(ит,ат)%"
-	var/speech_span
-
 /atom/movable/proc/say(
 	message,
 	bubble_type,
@@ -34,7 +26,7 @@
 	message_mods[SAY_MOD_VERB] ||= say_mod(message, message_mods, language)
 	send_speech(message, message_range, src, bubble_type, spans, language, message_mods, forced = forced)
 
-/atom/movable/proc/atom_say(message, use_tts = TRUE)
+/atom/movable/atom_say(message, use_tts = TRUE)
 	if(!message)
 		return
 	return say(message, sanitize = FALSE, message_mods = list(MODE_NO_TTS = !use_tts))
@@ -116,8 +108,6 @@
 
 	var/say_mod = genderize_decode(src, message_mods[SAY_MOD_VERB] || say_mod(input, message_mods))
 
-	SEND_SIGNAL(src, COMSIG_MOVABLE_SAY_QUOTE, args)
-
 	if(copytext_char(input, -2) == "!!")
 		spans |= SPAN_YELL
 
@@ -132,13 +122,11 @@
 
 	if(!has_language(language))
 		var/datum/language/dialect = GLOB.language_datum_instances[language]
-		if(dialect.flags & LANGUAGE_INNATE)
-			return raw_message
 		var/list/mutual_languages
 		var/list/partially_understood_languages = get_partially_understood_languages()
 		if(LAZYLEN(partially_understood_languages))
 			mutual_languages = partially_understood_languages.Copy()
-			for(var/bonus_language in message_mods[LANGUAGE_MUTUAL_BONUS])
+			for(var/bonus_language in LAZYACCESS(message_mods, LANGUAGE_MUTUAL_BONUS))
 				mutual_languages[bonus_language] = max(message_mods[LANGUAGE_MUTUAL_BONUS][bonus_language], mutual_languages[bonus_language])
 
 		raw_message = dialect.scramble_paragraph(raw_message, mutual_languages)
@@ -227,6 +215,7 @@
 	var/atom/movable/source
 	var/obj/item/radio/radio
 	var/atom/follow_target
+	var/check_name
 
 INITIALIZE_IMMEDIATE(/atom/movable/virtualspeaker)
 
@@ -235,8 +224,8 @@ INITIALIZE_IMMEDIATE(/atom/movable/virtualspeaker)
 	src.radio = radio
 	src.follow_target = follow_target
 	source = speaker
+	name = name_override || speaker?.GetVoice() || name
 	if(istype(speaker))
-		name = name_override || speaker.GetVoice()
 		gender = speaker.gender
 		verb_say = speaker.get_default_say_verb()
 		verb_ask = speaker.verb_ask

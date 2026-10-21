@@ -369,11 +369,8 @@ GLOBAL_LIST_INIT(say_prefixes, list(":", ".", "#", "№"))
 /mob/living/proc/radio(message, list/message_mods = list(), list/spans, language)
 	return NONE
 
-/mob/living/proc/announce_radio_use(obj/item/radio_device, list/message_mods, datum/language/language)
+/mob/living/proc/announce_radio_use(obj/item/radio_device, list/message_mods)
 	if(!client)
-		return
-	var/datum/language/dialect = GLOB.language_datum_instances[language]
-	if(dialect?.flags & LANGUAGE_NO_TALK_MSG)
 		return
 	var/static/list/special_radio_channels = list(SYND_FREQ_NAME, SYNDTEAM_FREQ_NAME, SEC_FREQ_NAME, PROC_FREQ_NAME, COMM_FREQ_NAME, ERT_FREQ_NAME, DTH_FREQ_NAME, NINJA_FREQ_NAME, SYND_TAIPAN_FREQ_NAME, SOV_FREQ_NAME)
 	var/radio_sound = (message_mods[RADIO_EXTENSION] in special_radio_channels) ? 'sound/items/radio_security.ogg' : 'sound/items/radio_common.ogg'

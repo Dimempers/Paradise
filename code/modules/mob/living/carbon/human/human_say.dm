@@ -197,7 +197,7 @@
 
 	if(!used_radio)
 		return .
-	announce_radio_use(used_radio, message_mods, language)
+	announce_radio_use(used_radio, message_mods)
 	return . | ITALICS | REDUCE_RANGE
 
 /mob/living/carbon/human/get_default_saymode()

@@ -473,7 +473,7 @@
 			if(character.mind)
 				if(character.mind.assigned_role != character.mind.special_role)
 					var/arrivalmessage = "Новый [rank ? "[rank]" : "турист" ] [join_message ? join_message : "прибыл на станцию"]."
-					announcer.say(";[arrivalmessage]", ignore_languages = TRUE)
+					announcer.say(";[arrivalmessage]", language = /datum/language/common)
 		else
 			if(character.mind)
 				if(character.mind.assigned_role != character.mind.special_role)

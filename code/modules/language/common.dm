@@ -7,7 +7,6 @@
 	key = "9"
 	flags = LANGUAGE_TONGUELESS_SPEECH | LANGUAGE_HIDE_ICON_IF_UNDERSTOOD | LANGUAGE_RESTRICTED
 	default_priority = 100
-	space_chance = 20
 	sentence_chance = 0
 	between_word_sentence_chance = 10
 	between_word_space_chance = 75

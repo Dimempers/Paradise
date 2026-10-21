@@ -7,7 +7,6 @@
 	key = "cl"
 	flags = LANGUAGE_RESTRICTED
 	space_chance = 10
-	sentence_chance = 2
 	between_word_sentence_chance = 10
 	between_word_space_chance = 75
 	additional_syllable_low = 0

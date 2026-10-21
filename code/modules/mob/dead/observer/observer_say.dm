@@ -29,6 +29,8 @@
 	var/mob/speaker_mob = speaker.GetSource() || speaker
 	if(!istype(speaker_mob) || isAI(speaker_mob))
 		return speaker_name
-	if(!speaker_mob.real_name || speaker_name == speaker_mob.real_name)
+	var/atom/movable/virtualspeaker/virtual_speaker = speaker
+	var/shown_name = istype(virtual_speaker) ? (virtual_speaker.check_name || speaker_name) : speaker_name
+	if(!speaker_mob.real_name || shown_name == speaker_mob.real_name)
 		return speaker_name
 	return "[speaker_mob.real_name] ([speaker_name])"

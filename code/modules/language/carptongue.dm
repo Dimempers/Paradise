@@ -9,7 +9,6 @@
 	flags = LANGUAGE_NO_STUTTER | LANGUAGE_TONGUELESS_SPEECH | LANGUAGE_RESTRICTED
 	sentence_chance = 0
 	space_chance = 0
-	between_word_sentence_chance = 0
 	between_word_space_chance = 75
 	additional_syllable_low = -2
 	additional_syllable_high = -1

@@ -4,8 +4,6 @@
 	key = "bb"
 	space_chance = 80
 	sentence_chance = 5
-	between_word_sentence_chance = 0
-	between_word_space_chance = 100
 	additional_syllable_low = -2
 	additional_syllable_high = -1
 	default_priority = 90

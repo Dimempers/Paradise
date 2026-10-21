@@ -3,7 +3,6 @@
 	desc = "Оперативники Синдиката используют набор кодовых слов, чтобы передавать сложную информацию. Для остальных это звучит как случайные понятия и названия напитков."
 	key = "cd"
 	flags = LANGUAGE_TONGUELESS_SPEECH | LANGUAGE_HIDE_ICON_IF_NOT_UNDERSTOOD | LANGUAGE_RESTRICTED | LANGUAGE_NOBABEL
-	default_priority = 0
 	icon_state = "codespeak"
 	always_use_default_namelist = TRUE
 

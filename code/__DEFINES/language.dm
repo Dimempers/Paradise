@@ -5,8 +5,6 @@
 #define LANGUAGE_HIDE_ICON_IF_NOT_UNDERSTOOD (1<<3)
 #define LANGUAGE_RESTRICTED (1<<4)
 #define LANGUAGE_NOBABEL (1<<5)
-#define LANGUAGE_INNATE (1<<6)
-#define LANGUAGE_NO_TALK_MSG (1<<7)
 
 #define DISPLAY_LANGUAGE_ICON_NONE 0
 #define DISPLAY_LANGUAGE_ICON_FULL 1
@@ -37,6 +35,8 @@
 #define LANGUAGE_DISEASE "disease"
 #define LANGUAGE_DNA "dna"
 #define LANGUAGE_CHANGELING "changeling"
+#define LANGUAGE_MALF "malf"
+#define LANGUAGE_STONER "stoner"
 
 #define SPOKEN_LANGUAGE (1<<0)
 #define UNDERSTOOD_LANGUAGE (1<<1)

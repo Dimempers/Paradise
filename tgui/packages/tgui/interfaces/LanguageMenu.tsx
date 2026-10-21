@@ -63,9 +63,7 @@ const LangUnderstandIcon = (props: LanguageProps) => {
   const { language } = props;
   if (!language.can_understand && language.partial_understanding > 0) {
     return (
-      <Tooltip
-        content={`Вы понимаете ${language.name} лишь частично.`}
-      >
+      <Tooltip content={`Вы понимаете ${language.name} лишь частично.`}>
         <Box
           inline
           style={{

@@ -1,0 +1,100 @@
+/obj/item/language_test_probe
+	var/list/heard = list()
+
+/obj/item/language_test_probe/Initialize(mapload)
+	. = ..()
+	become_hearing_sensitive(ROUNDSTART_TRAIT)
+
+/obj/item/language_test_probe/Hear(atom/movable/speaker, datum/language/message_language, raw_message, radio_freq, radio_freq_name, radio_freq_color, list/spans, list/message_mods = list(), message_range)
+	. = ..()
+	heard += list(list(speaker, message_language, raw_message))
+
+/datum/unit_test/language_species_swap/Run()
+	var/mob/living/carbon/human/dummy = allocate(/mob/living/carbon/human)
+	dummy.set_species(/datum/species/human)
+
+	TEST_ASSERT(dummy.has_language(/datum/language/common, SPOKEN_LANGUAGE), "human does not speak common")
+	TEST_ASSERT(dummy.has_language(/datum/language/human, SPOKEN_LANGUAGE), "human does not speak sol common")
+
+	dummy.set_species(/datum/species/unathi)
+	TEST_ASSERT(dummy.has_language(/datum/language/unathi, SPOKEN_LANGUAGE), "unathi does not speak sinta'unathi")
+	TEST_ASSERT(!dummy.has_language(/datum/language/human, UNDERSTOOD_LANGUAGE), "species change kept the old species language")
+	TEST_ASSERT_EQUAL(dummy.get_selected_language(), /datum/language/common, "unathi does not default to common")
+
+	dummy.grant_language(/datum/language/piratespeak, source = LANGUAGE_MIND)
+	dummy.set_species(/datum/species/human)
+	TEST_ASSERT(dummy.has_language(/datum/language/piratespeak, SPOKEN_LANGUAGE), "species change removed a mind language")
+	TEST_ASSERT(!dummy.has_language(/datum/language/unathi, UNDERSTOOD_LANGUAGE), "species change kept the old species language")
+
+/datum/unit_test/language_mind_transfer/Run()
+	var/mob/living/carbon/human/first_body = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/second_body = allocate(/mob/living/carbon/human)
+	first_body.mind_initialize()
+	first_body.grant_language(/datum/language/codespeak, source = LANGUAGE_MIND)
+	first_body.grant_language(/datum/language/clown, source = LANGUAGE_ATOM)
+
+	first_body.mind.transfer_to(second_body)
+
+	TEST_ASSERT(second_body.has_language(/datum/language/codespeak), "mind language did not follow the mind")
+	TEST_ASSERT(!first_body.has_language(/datum/language/codespeak), "mind language stayed in the old body")
+	TEST_ASSERT(first_body.has_language(/datum/language/clown), "atom language left the old body")
+	TEST_ASSERT(!second_body.has_language(/datum/language/clown), "atom language followed the mind")
+
+/datum/unit_test/language_speech/Run()
+	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
+	var/obj/item/language_test_probe/probe = allocate(/obj/item/language_test_probe)
+	speaker.set_species(/datum/species/unathi)
+
+	probe.forceMove(speaker.loc)
+
+	speaker.say("Привет")
+	TEST_ASSERT_EQUAL(length(probe.heard), 1, "probe did not hear plain speech")
+	var/list/heard = probe.heard[1]
+	TEST_ASSERT_EQUAL(heard[2], /datum/language/common, "plain speech was not in the default language")
+	TEST_ASSERT_EQUAL(heard[3], "Привет.", "plain speech text was changed")
+
+	probe.heard.Cut()
+	speaker.say(":o Шшш")
+	TEST_ASSERT_EQUAL(length(probe.heard), 1, "probe did not hear keyed speech")
+	heard = probe.heard[1]
+	TEST_ASSERT_EQUAL(heard[2], /datum/language/unathi, "language key was not applied")
+	TEST_ASSERT_EQUAL(heard[3], "Шшш.", "language key was not stripped")
+
+	probe.heard.Cut()
+	speaker.say(":j Мяу")
+	heard = probe.heard[1]
+	TEST_ASSERT_EQUAL(heard[2], /datum/language/common, "a language the speaker does not know was used")
+	TEST_ASSERT_EQUAL(heard[3], "Мяу.", "an unknown language key was not stripped")
+
+	probe.heard.Cut()
+	ADD_TRAIT(speaker, TRAIT_CHANGELING_HIVEMIND, UID())
+	speaker.say(":g Улей")
+	TEST_ASSERT_EQUAL(length(probe.heard), 0, "hivemind speech was heard out loud")
+	REMOVE_TRAIT(speaker, TRAIT_CHANGELING_HIVEMIND, UID())
+
+/datum/unit_test/language_translation/Run()
+	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/listener = allocate(/mob/living/carbon/human)
+	speaker.set_species(/datum/species/tajaran)
+	listener.set_species(/datum/species/human)
+
+	var/message = "Это тестовое сообщение."
+	TEST_ASSERT_NOTEQUAL(listener.translate_language(speaker, /datum/language/tajaran, message), message, "unknown language was not scrambled")
+	TEST_ASSERT_EQUAL(speaker.translate_language(speaker, /datum/language/tajaran, message), message, "known language was scrambled")
+
+	var/datum/language/codespeak = GLOB.language_datum_instances[/datum/language/codespeak]
+	TEST_ASSERT_NOTEQUAL(codespeak.scramble_paragraph(message), message, "codespeak was not scrambled")
+	TEST_ASSERT(listener.has_partial_language(/datum/language/uncommon), "common does not give partial understanding of uncommon")
+
+/datum/unit_test/language_definitions/Run()
+	var/list/used_keys = list()
+	for(var/datum/language/language as anything in GLOB.all_languages)
+		var/key = language::key
+		if(!key)
+			continue
+		TEST_ASSERT(!used_keys[key], "[language] reuses key [key] of [used_keys[key]]")
+		used_keys[key] = language
+		for(var/prefix in GLOB.say_prefixes)
+			TEST_ASSERT(!GLOB.department_radio_keys["[prefix][key]"], "[language] key [key] collides with a radio key")
+	for(var/key in SSradio.saymodes)
+		TEST_ASSERT(!GLOB.language_keys[":[key]"], "saymode key [key] collides with a language key")

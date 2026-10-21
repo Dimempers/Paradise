@@ -141,7 +141,7 @@
 /mob/proc/generate_name()
 	return name
 
-/mob/proc/GetAltName()
+/atom/movable/proc/GetAltName()
 	return ""
 
 /**

@@ -6,7 +6,6 @@
 	exclaim_verbs = list("громко грохоч%(ет,ут)%")
 	key = "te"
 	flags = LANGUAGE_RESTRICTED
-	space_chance = 20
 	sentence_chance = 0
 	between_word_sentence_chance = 10
 	between_word_space_chance = 75
