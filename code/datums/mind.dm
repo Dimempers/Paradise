@@ -186,7 +186,7 @@
 	if(new_character.mind) // remove any mind currently in our new body's mind variable
 		new_character.mind.current = null
 
-	if(old_current && !QDELETED(old_current))
+	if(old_current && !QDELETED(old_current) && !isnewplayer(old_current))
 		var/datum/language_holder/empty/temp_holder = new()
 		var/datum/language_holder/old_holder = old_current.get_language_holder()
 		var/datum/language_holder/new_holder = new_character.get_language_holder()

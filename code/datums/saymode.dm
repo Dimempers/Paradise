@@ -279,7 +279,7 @@
 			var/list/dead_message = message_start_dead + message_body
 			dead_mob.show_message(dead_message.Join(" "), 2)
 
-	for(var/mob/living/listener as anything in GLOB.alive_mob_list)
+	for(var/mob/living/listener in GLOB.alive_mob_list)
 		if(!can_hear(listener))
 			continue
 		var/list/listener_start = message_start

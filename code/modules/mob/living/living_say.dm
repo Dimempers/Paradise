@@ -413,10 +413,13 @@ GLOBAL_LIST_INIT(say_prefixes, list(":", ".", "#", "№"))
 			if(player_mob.get_preference(PREFTOGGLE_CHAT_GHOSTEARS) || (player_mob.z == z && get_dist(player_mob, src) <= world.view))
 				listening |= player_mob
 
+	var/turf/source_turf = get_turf(source)
 	var/list/speech_bubble_recipients = list()
 	for(var/atom/movable/listening_movable as anything in listening)
 		if(!listening_movable)
 			stack_trace("somehow theres a null returned from get_hearers_in_view() in send_speech!")
+			continue
+		if(whisper_range && !ismob(listening_movable) && get_dist(source_turf, get_turf(listening_movable)) > message_range)
 			continue
 		if(!(listening_movable.Hear(src, message_language, message, null, null, null, spans, message_mods, message_range) & HEAR_HEARD))
 			continue

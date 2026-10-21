@@ -24,6 +24,7 @@
 
 #define RADIO_EXTENSION "department specific"
 #define RADIO_KEY "department specific key"
+#define RADIO_TRANSMITTED_FREQS "radio transmitted frequencies"
 #define LANGUAGE_EXTENSION "language specific"
 #define LANGUAGE_MUTUAL_BONUS "language mutual bonus"
 #define SAY_MOD_VERB "say_mod_verb"

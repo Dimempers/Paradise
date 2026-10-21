@@ -560,7 +560,7 @@ For the other part of the code, check silicon say.dm. Particularly robot talk.*/
 		return
 	if(speaker && LAZYLEN(masters))//Master is mostly a safety in case lag hits or something. Radio_freq so AIs dont hear holopad stuff through radios.
 		for(var/mob/living/silicon/ai/master in masters)
-			if(masters[master] && speaker != master)
+			if(masters[master] && speaker != master && speaker != masters[master])
 				master.relay_speech(speaker, message_language, raw_message, spans, message_mods)
 
 	for(var/datum/holocall/holocall_to_update as anything in holo_calls)

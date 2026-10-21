@@ -40,6 +40,36 @@
 	TEST_ASSERT(first_body.has_language(/datum/language/clown), "atom language left the old body")
 	TEST_ASSERT(!second_body.has_language(/datum/language/clown), "atom language followed the mind")
 
+/datum/unit_test/language_lobby_transfer/Run()
+	var/mob/new_player/lobby = allocate(/mob/new_player)
+	var/mob/living/carbon/human/character = allocate(/mob/living/carbon/human)
+	var/datum/mind/lobby_mind = new("language_test")
+	lobby_mind.current = lobby
+	lobby.mind = lobby_mind
+	lobby.get_language_holder()
+	character.grant_language(/datum/language/tajaran, source = LANGUAGE_MIND)
+
+	lobby_mind.transfer_to(character)
+
+	TEST_ASSERT(character.has_language(/datum/language/tajaran), "joining the round removed the preference language")
+	TEST_ASSERT(!character.has_language(/datum/language/narsie), "joining the round granted the lobby languages")
+
+/datum/unit_test/language_binary_listeners/Run()
+	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
+	allocate(/mob/camera)
+	var/datum/saymode/binary/binary = SSradio.get_say_mode(/datum/saymode/binary)
+	TEST_ASSERT(binary.handle_message(speaker, "Проверка") & SAYMODE_MESSAGE_HANDLED, "binary saymode did not handle the message")
+
+/datum/unit_test/room_test/language_whisper_objects/Run()
+	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
+	var/obj/item/language_test_probe/near_probe = allocate(/obj/item/language_test_probe)
+	var/obj/item/language_test_probe/far_probe = allocate(/obj/item/language_test_probe, locate(speaker.x + 3, speaker.y, speaker.z))
+
+	speaker.whisper("Секрет")
+
+	TEST_ASSERT_EQUAL(length(near_probe.heard), 1, "an adjacent object did not hear a whisper")
+	TEST_ASSERT_EQUAL(length(far_probe.heard), 0, "a distant object heard a whisper")
+
 /datum/unit_test/language_speech/Run()
 	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
 	var/obj/item/language_test_probe/probe = allocate(/obj/item/language_test_probe)

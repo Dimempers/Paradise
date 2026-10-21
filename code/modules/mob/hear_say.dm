@@ -1,14 +1,15 @@
 /mob/Hear(atom/movable/speaker, datum/language/message_language, raw_message, radio_freq, radio_freq_name, radio_freq_color, list/spans, list/message_mods = list(), message_range = 0)
-	if(!client)
+	if(!client && !LAZYACCESS(_listen_lookup, COMSIG_MOVABLE_HEAR))
 		return FALSE
 
 	var/atom/movable/source = speaker.GetSource() || speaker
 
+	var/ghost_in_view
 	if(isobserver(src) && !radio_freq && get_preference(PREFTOGGLE_CHAT_GHOSTEARS))
+		ghost_in_view = (source in view(src))
 		var/mob/speaker_mob = source
-		if(!istype(speaker_mob) || !speaker_mob.client)
-			if(!(source in view(src)))
-				return FALSE
+		if(!ghost_in_view && (!istype(speaker_mob) || !speaker_mob.client))
+			return FALSE
 
 	var/italics = (SPAN_ITALICS in spans)
 	var/turf/hearer_turf = get_turf(src)
@@ -42,13 +43,13 @@
 
 	SEND_SIGNAL(src, COMSIG_MOVABLE_HEAR, args)
 
-	if(!raw_message)
+	if(!client || !raw_message)
 		return FALSE
 
 	var/list/shown_spans = spans ? spans.Copy() : list()
 	if(italics)
 		shown_spans |= SPAN_ITALICS
-	if(!radio_freq && isobserver(src) && get_preference(PREFTOGGLE_CHAT_GHOSTEARS) && (source in view(src)))
+	if(ghost_in_view)
 		shown_spans |= "bold"
 
 	var/message_clean = replace_characters(apply_message_emphasis(capitalize(raw_message)), list("+"))

@@ -266,7 +266,8 @@
 		// Only change the name if they have a job tag set, otherwise everyone becomes unknown, and thats bad
 		if(new_name != "")
 			tcm.sender_name = new_name
-		// Makes heads of staff bold
+
+	// Makes heads of staff bold
 	if(toggle_command_bold)
 		var/job = tcm.sender_job
 		var/rank = tcm.sender_rank
@@ -275,7 +276,8 @@
 			realjob = rank
 
 		if((realjob in ert_jobs) || (realjob in heads) || (realjob in cc_jobs) || (realjob in tsf_jobs))
-			tcm.message = "<b>[capitalize(tcm.message)]</b>"
+			tcm.message = capitalize(tcm.message)
+			tcm.spans |= "bold"
 
 	// Language Conversion
 	var/datum/language/conversion_language = GLOB.language_types_by_name[setting_language]

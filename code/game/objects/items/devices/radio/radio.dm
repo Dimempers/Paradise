@@ -509,6 +509,10 @@ GLOBAL_LIST_INIT(default_pirate_channels, list(
 		return
 
 	var/datum/radio_frequency/connection = message_mode
+	if(message_mods)
+		if(connection.frequency in message_mods[RADIO_TRANSMITTED_FREQS])
+			return TRUE
+		LAZYADD(message_mods[RADIO_TRANSMITTED_FREQS], connection.frequency)
 
 	// ||-- The mob's name identity --||
 	var/displayname = talking_movable.GetVoice()
@@ -598,7 +602,7 @@ GLOBAL_LIST_INIT(default_pirate_channels, list(
 	if((message_mods[RADIO_EXTENSION] || message_mods[MODE_HEADSET]) && get(loc, /mob) == speaker)
 		return
 
-	talk_into(speaker, raw_message, null, spans, message_language, list(SAY_MOD_VERB = message_mods[SAY_MOD_VERB]))
+	talk_into(speaker, raw_message, null, spans, message_language, message_mods)
 
 // To the person who asks "Why is this in a callback?"
 // You see, if you use QDEL_IN on the tcm and on broadcast_message()
