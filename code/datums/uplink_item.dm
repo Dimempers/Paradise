@@ -1689,6 +1689,13 @@
 	surplus = 35
 	item = /obj/item/storage/box/syndie_kit/counterfeiter_bundle
 
+/datum/uplink_item/stealthy_tools/codespeak_manual
+	name = "Учебник кодового языка"
+	desc = "Агентов Синдиката можно обучить набору кодовых слов, передающих сложную информацию. Для остальных это звучит как случайные понятия и названия напитков. \
+			Этот учебник научит вас кодовому языку. Ударив им другого человека, вы обучите и его. Подарочное издание, количество использований не ограничено."
+	item = /obj/item/language_manual/codespeak_manual/unlimited
+	cost = 3
+
 /datum/uplink_item/stealthy_tools/chameleonflag
 	name = "Флаг \"Хамелеон\""
 	desc = "Флаг, оснащённый технологией \"Хамелеон\". Она позволяет изменять внешний вид флага. \
