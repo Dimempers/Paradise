@@ -54,7 +54,7 @@
 	TEST_ASSERT(character.has_language(/datum/language/tajaran), "joining the round removed the preference language")
 	TEST_ASSERT(!character.has_language(/datum/language/narsie), "joining the round granted the lobby languages")
 
-/datum/unit_test/language_universal_transfer/Run()
+/datum/unit_test/room_test/language_universal_transfer/Run()
 	var/mob/living/carbon/human/body = allocate(/mob/living/carbon/human)
 	var/mob/living/simple_animal/shade/shade = allocate(/mob/living/simple_animal/shade)
 	body.mind_initialize()
@@ -91,7 +91,7 @@
 	TEST_ASSERT_EQUAL(length(near_probe.heard), 1, "an adjacent object did not hear a whisper")
 	TEST_ASSERT_EQUAL(length(far_probe.heard), 0, "a distant object heard a whisper")
 
-/datum/unit_test/language_speech/Run()
+/datum/unit_test/room_test/language_speech/Run()
 	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
 	var/obj/item/language_test_probe/probe = allocate(/obj/item/language_test_probe)
 	speaker.set_species(/datum/species/unathi)
@@ -150,7 +150,7 @@
 	for(var/key in SSradio.saymodes)
 		TEST_ASSERT(!GLOB.language_keys[":[key]"], "saymode key [key] collides with a language key")
 
-/datum/unit_test/language_aphasia/Run()
+/datum/unit_test/room_test/language_aphasia/Run()
 	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
 	var/obj/item/language_test_probe/probe = allocate(/obj/item/language_test_probe)
 	probe.forceMove(speaker.loc)
