@@ -278,6 +278,7 @@
 #define TRAIT_XRAY "xray"
 #define TRAIT_HULK "hulk"
 #define TRAIT_CLUMSY "clumsy"
+#define TRAIT_NAIVE "naive"
 #define TRAIT_OBESITY "obesity"
 #define TRAIT_NO_BREATH "no_breath"
 #define TRAIT_WINGDINGS "wingdings"

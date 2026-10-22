@@ -12,10 +12,15 @@
 	var/list/sales_items = generate_discounts ? list() : null
 
 	for(var/datum/uplink_item/uplink_item as anything in GLOB.uplink_items)
-		if(length(uplink_item.uplinktypes) && !(target_uplink.uplink_type in uplink_item.uplinktypes) && target_uplink.uplink_type != UPLINK_TYPE_ADMIN)
+		var/checked_uplink_type = target_uplink.uplink_type
+		if(checked_uplink_type == UPLINK_TYPE_CLOWN_OPS && !istype(uplink_item, /datum/uplink_item/clownops))
+			if(!(uplink_item.type in GLOB.clownops_shared_stock))
+				continue
+			checked_uplink_type = UPLINK_TYPE_NUCLEAR
+		if(length(uplink_item.uplinktypes) && !(checked_uplink_type in uplink_item.uplinktypes) && checked_uplink_type != UPLINK_TYPE_ADMIN)
 			continue
 
-		if(length(uplink_item.excludefrom) && (target_uplink.uplink_type in uplink_item.excludefrom) && target_uplink.uplink_type != UPLINK_TYPE_ADMIN)
+		if(length(uplink_item.excludefrom) && (checked_uplink_type in uplink_item.excludefrom) && checked_uplink_type != UPLINK_TYPE_ADMIN)
 			continue
 
 		if(uplink_item.limited_stock != -1 || (uplink_item.can_discount && uplink_item.refundable))
