@@ -205,10 +205,13 @@
 	return "0"
 
 /atom/movable/proc/GetJob()
+	return
 
 /atom/movable/proc/GetSource()
+	return
 
 /atom/movable/proc/GetRadio()
+	return
 
 /atom/movable/virtualspeaker
 	var/job
