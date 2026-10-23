@@ -68,8 +68,8 @@
 
 /obj/item/melee/energy/attack_self(mob/living/carbon/user)
 	if(!can_clumsy_use && HAS_TRAIT(user, TRAIT_CLUMSY) && prob(50))
-		to_chat(user, span_warning("You accidentally cut yourself with [src], like a doofus!"))
-		user.take_organ_damage(5,5)
+		to_chat(user, span_warning("Вы случайно порезались [declent_ru(INSTRUMENTAL)]!"))
+		user.take_organ_damage(5, 5)
 	active = !active
 	if(active)
 		force = force_on
@@ -78,7 +78,7 @@
 		throw_speed = 4
 		w_class = w_class_on
 		playsound(user, 'sound/weapons/saberon.ogg', 35, TRUE) //changed it from 50% volume to 35% because deafness
-		to_chat(user, span_notice("[src] is now active."))
+		to_chat(user, span_notice("Вы включаете [declent_ru(ACCUSATIVE)]."))
 	else
 		force = initial(force)
 		throwforce = initial(throwforce)
@@ -88,7 +88,7 @@
 			attack_verb = list()
 		w_class = initial(w_class)
 		playsound(user, 'sound/weapons/saberoff.ogg', 35, TRUE)  //changed it from 50% volume to 35% because deafness
-		to_chat(user, span_notice("[src] can now be concealed."))
+		to_chat(user, span_notice("Вы выключаете [declent_ru(ACCUSATIVE)]."))
 	add_fingerprint(user)
 	update_icon(UPDATE_ICON_STATE)
 

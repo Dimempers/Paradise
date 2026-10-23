@@ -21,6 +21,7 @@
 	var/gasPerThrow = 3 //How much gas is drawn from a tank's pressure to fire
 	var/list/loadedItems = list() //The items loaded into the cannon that will be fired out
 	var/pressure_setting = LOW_PRESSURE //How powerful the cannon is - higher pressure = more gas but more powerful throws
+	var/needs_air = TRUE
 
 /obj/item/pneumatic_cannon/Destroy()
 	QDEL_NULL(tank)
@@ -40,6 +41,8 @@
 
 /obj/item/pneumatic_cannon/examine(mob/user)
 	. = ..()
+	if(!needs_air)
+		return
 	if(!in_range(user, src))
 		. += span_notice(">You'll need to get closer to see any more.")
 	else
@@ -50,6 +53,8 @@
 			. += span_notice("[icon2html(I, user)] It has \a [I] loaded.")
 
 /obj/item/pneumatic_cannon/screwdriver_act(mob/living/user, obj/item/I)
+	if(!needs_air)
+		return FALSE
 	. = TRUE
 	if(!tank)
 		to_chat(user, span_warning("There is no tank inside."))
@@ -63,6 +68,8 @@
 	update_icon(UPDATE_OVERLAYS)
 
 /obj/item/pneumatic_cannon/wrench_act(mob/living/user, obj/item/I)
+	if(!needs_air)
+		return FALSE
 	. = TRUE
 	if(!I.use_tool(src, user, 0, volume = I.tool_volume))
 		return
@@ -77,7 +84,7 @@
 	if(user.a_intent == INTENT_HARM)
 		return ..()
 
-	if(istype(I, /obj/item/tank/internals))
+	if(needs_air && istype(I, /obj/item/tank/internals))
 		add_fingerprint(user)
 		if(tank)
 			to_chat(user, span_warning("There is already [tank] installed."))
@@ -97,21 +104,21 @@
 		return ATTACK_CHAIN_PROCEED
 
 	if(loadedWeightClass >= maxWeightClass)
-		to_chat(user, span_warning("The [name] cannot hold any more items!"))
+		to_chat(user, span_warning("[DECLENT_RU_CAP(src, NOMINATIVE)] больше ничего не вмеща[PLUR_ET_YUT(src)]!"))
 		return ATTACK_CHAIN_PROCEED
 
 	if((loadedWeightClass + I.w_class) > maxWeightClass)
-		to_chat(user, span_warning("The [I.name] won't fit into [src]!"))
+		to_chat(user, span_warning("[DECLENT_RU_CAP(I, NOMINATIVE)] не помеща[PLUR_ET_YUT(I)]ся в [declent_ru(ACCUSATIVE)]!"))
 		return ATTACK_CHAIN_PROCEED
 
 	if(I.w_class > w_class)
-		to_chat(user, span_warning("The [I.name] is too large to fit into [src]!"))
+		to_chat(user, span_warning("[DECLENT_RU_CAP(I, NOMINATIVE)] не проход[PLUR_IT_YAT(I)] в [declent_ru(ACCUSATIVE)] по размеру!"))
 		return ATTACK_CHAIN_PROCEED
 
 	if(!user.drop_transfer_item_to_loc(I, src))
 		return ..()
 
-	to_chat(user, span_notice("You load [I.name] into [src]"))
+	to_chat(user, span_notice("Вы заряжаете [I.declent_ru(ACCUSATIVE)] в [declent_ru(ACCUSATIVE)]."))
 	loadedItems += I
 	loadedWeightClass += I.w_class
 	return ATTACK_CHAIN_BLOCKED_ALL
@@ -136,13 +143,13 @@
 	if(!loadedItems || !loadedWeightClass)
 		to_chat(user, span_warning("[src] has nothing loaded."))
 		return
-	if(!tank)
+	if(needs_air && !tank)
 		to_chat(user, span_warning("[src] can't fire without a source of gas."))
 		return
 	if(HAS_TRAIT(user, TRAIT_PACIFISM))
 		to_chat(user, span_warning("You can't bring yourself to fire [src]! You don't want to risk harming anyone..."))
 		return
-	if(tank && !tank.air_contents.remove(gasPerThrow * pressure_setting))
+	if(needs_air && tank && !tank.air_contents.remove(gasPerThrow * pressure_setting))
 		to_chat(user, span_warning("[src] lets out a weak hiss and doesn't react!"))
 		return
 	if(user && HAS_TRAIT(user, TRAIT_CLUMSY) && prob(75))
