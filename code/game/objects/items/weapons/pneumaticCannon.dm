@@ -104,21 +104,21 @@
 		return ATTACK_CHAIN_PROCEED
 
 	if(loadedWeightClass >= maxWeightClass)
-		to_chat(user, span_warning("[DECLENT_RU_CAP(src, NOMINATIVE)] больше ничего не вмеща[PLUR_ET_YUT(src)]!"))
+		to_chat(user, span_warning("The [name] cannot hold any more items!"))
 		return ATTACK_CHAIN_PROCEED
 
 	if((loadedWeightClass + I.w_class) > maxWeightClass)
-		to_chat(user, span_warning("[DECLENT_RU_CAP(I, NOMINATIVE)] не помеща[PLUR_ET_YUT(I)]ся в [declent_ru(ACCUSATIVE)]!"))
+		to_chat(user, span_warning("The [I.name] won't fit into [src]!"))
 		return ATTACK_CHAIN_PROCEED
 
 	if(I.w_class > w_class)
-		to_chat(user, span_warning("[DECLENT_RU_CAP(I, NOMINATIVE)] не проход[PLUR_IT_YAT(I)] в [declent_ru(ACCUSATIVE)] по размеру!"))
+		to_chat(user, span_warning("The [I.name] is too large to fit into [src]!"))
 		return ATTACK_CHAIN_PROCEED
 
 	if(!user.drop_transfer_item_to_loc(I, src))
 		return ..()
 
-	to_chat(user, span_notice("Вы заряжаете [I.declent_ru(ACCUSATIVE)] в [declent_ru(ACCUSATIVE)]."))
+	to_chat(user, span_notice("You load [I.name] into [src]"))
 	loadedItems += I
 	loadedWeightClass += I.w_class
 	return ATTACK_CHAIN_BLOCKED_ALL

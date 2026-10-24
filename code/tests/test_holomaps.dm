@@ -1,10 +1,9 @@
-/datum/unit_test/holomap_cleanup/Run()
+/datum/unit_test/room_test/holomap_cleanup/Run()
 	var/obj/machinery/station_map/map = allocate(/obj/machinery/station_map)
 	var/mob/living/carbon/human/viewer = allocate(/mob/living/carbon/human)
 	var/datum/hud/viewer_hud = allocate(/datum/hud, viewer)
 	viewer.hud_used = viewer_hud
 	var/atom/movable/screen/holomap/map_screen = viewer_hud.holomap
-	allocated += map_screen
 	if(!map.holomap_datum)
 		map.setup_holomap()
 

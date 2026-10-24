@@ -49,6 +49,7 @@
 	)
 
 /obj/machinery/station_map/Initialize(mapload)
+	. = ..()
 	if(!current_z_level)
 		current_z_level = loc.z
 	SSholomaps.station_holomaps += src
@@ -57,7 +58,6 @@
 	floor_markings.pixel_w = -src.pixel_x
 	floor_markings.pixel_z = -src.pixel_y
 	add_overlay(floor_markings)
-	..()
 	component_parts = list()
 	component_parts += new /obj/item/circuitboard/machine/station_map(null)
 	component_parts += new /obj/item/stock_parts/scanning_module(null)
@@ -91,7 +91,7 @@
 
 /obj/machinery/station_map/attack_hand(mob/user)
 	if(user == watching_mob)
-		close_map(user)
+		close_map()
 		return
 
 	if(watching_mob && watching_mob != user)

@@ -82,4 +82,3 @@
 	add_attack_logs(user, gun, "Triggered a self-destructing firing pin", ATKLOG_FEW)
 	explosion(src, devastation_range = -1, light_impact_range = 2, flash_range = 3, cause = src)
 	qdel(gun)
-
