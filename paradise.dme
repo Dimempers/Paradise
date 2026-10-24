@@ -4239,6 +4239,7 @@
 #include "code\modules\procedural_mapping\mapGenerators\nature.dm"
 #include "code\modules\procedural_mapping\mapGenerators\syndicate.dm"
 #include "code\modules\projectiles\accuracy.dm"
+#include "code\modules\projectiles\firing_pins.dm"
 #include "code\modules\projectiles\gun.dm"
 #include "code\modules\projectiles\projectile.dm"
 #include "code\modules\projectiles\recoil.dm"

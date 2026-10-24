@@ -104,20 +104,8 @@
 		current_z_level = user_turf.z
 		open_map(user)
 
-/obj/machinery/station_map/tactical/close_map()
-	if(auto_update_timer_id)
-		deltimer(auto_update_timer_id)
-		auto_update_timer_id = null
-	if(watching_mob)
-		UnregisterSignal(watching_mob, COMSIG_MOVABLE_MOVED)
-		var/atom/movable/screen/holomap/map_screen = watching_mob.hud_used?.holomap
-		if(watching_mob.client)
-			watching_mob.client.screen -= map_screen
-			watching_mob.client.images -= holomap_datum?.base_map
-		if(map_screen?.used_station_map == src)
-			map_screen.used_station_map = null
-			map_screen.used_base_map = null
-	watching_mob = null
+/obj/machinery/station_map/tactical/close_map(animate_close = FALSE)
+	. = ..(animate_close)
 	last_draw_x = null
 	last_draw_y = null
 
@@ -164,9 +152,6 @@
 	marker.maptext = MAPTEXT("[html_encode(label)]")
 	marker.maptext_width = 160
 	markers += marker
-
-/obj/machinery/station_map/proc/on_map_click(mob/user, icon_x, icon_y, list/modifiers)
-	return FALSE
 
 /obj/machinery/station_map/tactical/on_map_click(mob/user, icon_x, icon_y, list/modifiers)
 	var/obj/item/implant/tacmap/nuclear/implant = loc

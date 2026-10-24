@@ -128,7 +128,7 @@
 		var/obj/projectile/P = hitby
 		if(P.shield_buster && active)
 			toggle(owner, TRUE)
-			to_chat(owner, span_warning("Снаряд выводит [declent_ru(ACCUSATIVE)] из строя!"))
+			to_chat(owner, span_warning("[hitby] overloaded your [src]!"))
 	return FALSE
 
 /obj/item/shield/energy/IsReflect()
@@ -139,7 +139,7 @@
 
 /obj/item/shield/energy/proc/toggle(mob/living/carbon/human/user, forced)
 	if(!can_clumsy_use && HAS_TRAIT(user, TRAIT_CLUMSY) && prob(50) && !forced)
-		to_chat(user, span_warning("Вы случайно ударили себя по голове [declent_ru(INSTRUMENTAL)]!"))
+		to_chat(user, span_warning("You beat yourself in the head with [src]."))
 		user.take_organ_damage(5)
 	active = !active
 	if(active)
@@ -149,7 +149,7 @@
 		update_icon()
 		w_class = WEIGHT_CLASS_BULKY
 		playsound(user, 'sound/weapons/saberon.ogg', 35, TRUE)
-		to_chat(user, span_notice("Вы включаете [declent_ru(ACCUSATIVE)]."))
+		to_chat(user, span_notice("[src] is now active."))
 	else
 		force = 3
 		throwforce = 3
@@ -157,7 +157,7 @@
 		update_icon()
 		w_class = WEIGHT_CLASS_TINY
 		playsound(user, 'sound/weapons/saberoff.ogg', 35, TRUE)
-		to_chat(user, span_notice("Вы выключаете [declent_ru(ACCUSATIVE)]."))
+		to_chat(user, span_notice("[src] can now be concealed."))
 	if(ishuman(user))
 		var/mob/living/carbon/human/H = user
 		H.update_held_items()

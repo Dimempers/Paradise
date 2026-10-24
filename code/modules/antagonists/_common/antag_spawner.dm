@@ -33,13 +33,13 @@
 
 /obj/item/antag_spawner/nuke_ops/proc/check_usability(mob/user)
 	if(used)
-		to_chat(user, span_warning("[DECLENT_RU_CAP(src, NOMINATIVE)] больше не работает!"))
+		to_chat(user, span_warning("[src] is out of power!"))
 		return FALSE
 	if(!(user.mind.has_antag_datum(/datum/antagonist/nuclear_operative)))
-		to_chat(user, span_danger("Ошибка авторизации. Доступ запрещён."))
+		to_chat(user, span_danger("AUTHENTICATION FAILURE. ACCESS DENIED."))
 		return FALSE
 	if(checking)
-		to_chat(user, span_warning("Устройство уже устанавливает связь с командованием Синдиката. Подождите."))
+		to_chat(user, span_danger("The device is already connecting to Syndicate command. Please wait."))
 		return FALSE
 	return TRUE
 
@@ -53,7 +53,7 @@
 
 	checking = TRUE
 
-	to_chat(user, span_notice("Вы активируете [declent_ru(ACCUSATIVE)] и ожидаете подтверждения."))
+	to_chat(user, span_notice("You activate [src] and wait for confirmation."))
 	var/list/nuke_candidates = SSghost_spawns.poll_candidates("Вы хотите сыграть за [rolename]?", ROLE_OPERATIVE, TRUE, 15 SECONDS, source = poll_icon)
 	if(LAZYLEN(nuke_candidates))
 		checking = FALSE
@@ -66,7 +66,7 @@
 		qdel(src)
 	else
 		checking = FALSE
-		to_chat(user, span_warning("Не удалось связаться с командованием Синдиката. Повторите попытку позже или верните устройство через аплинк, чтобы получить телекристаллы обратно."))
+		to_chat(user, span_warning("Unable to connect to Syndicate command. Please wait and try again later or use the teleporter on your uplink to get your points refunded."))
 
 /obj/item/antag_spawner/nuke_ops/spawn_antag(client/C, turf/T, datum/mind/user)
 	var/mob/living/carbon/human/M = new/mob/living/carbon/human(T)

@@ -2,7 +2,6 @@
 	name = "bananium fission explosive"
 	gender = FEMALE
 	desc = "Бананиевая боеголовка. Похоже, обратный отсчёт ведётся до начала представления."
-	icon = 'icons/obj/machines/bananium_nuke.dmi'
 	icon_state = "bananiumbomb_base"
 	cinematic_type = CLOWN_NUKE
 

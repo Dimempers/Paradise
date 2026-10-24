@@ -184,7 +184,6 @@
 	name = "Dark H.O.N.K"
 	gender = MALE
 	desc = "Боевая модель экзокостюма \"Dark H.O.N.K.\" с усиленной бронёй и клоунским вооружением."
-	icon = 'icons/obj/mecha/dark_honker.dmi'
 	icon_state = "darkhonker"
 	initial_icon = "darkhonker"
 	ui_theme = "syndicate"
@@ -218,7 +217,6 @@
 /obj/structure/mecha_wreckage/honker/dark
 	name = "Dark H.O.N.K wreckage"
 	gender = PLURAL
-	icon = 'icons/obj/mecha/dark_honker.dmi'
 	icon_state = "darkhonker-broken"
 
 /obj/structure/mecha_wreckage/honker/dark/get_ru_names()
@@ -315,7 +313,6 @@
 	name = "banana bunch"
 	gender = FEMALE
 	desc = "Гроздь бананов. Обезьяна знает, как устроить с её помощью громкую шутку."
-	icon = 'icons/obj/clown_ops.dmi'
 	icon_state = "banana_bunch"
 	var/ripening = FALSE
 
