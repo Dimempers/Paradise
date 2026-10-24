@@ -61,6 +61,7 @@
 #include "test_timer_sanity.dm"
 #include "test_transit_tubes.dm"
 #include "test_washing.dm"
+#include "test_zombies.dm"
 #endif
 
 #ifdef REFERENCE_TRACKING_DEBUG //Don't try and parse this file if ref tracking isn't turned on. IE: don't parse ref tracking please mr linter
