@@ -920,6 +920,20 @@ GLOBAL_VAR_INIT(off_mob_spawns, FALSE)
 	H.zone_selected = BODY_ZONE_CHEST
 	for(var/datum/disease/virus/zombie/infection in H.diseases)
 		infection.stage = 8
+	H.AddComponent( \
+		/datum/component/ghost_direct_control, \
+		ban_type = ROLE_ZOMBIE, \
+		role_name = "зомби", \
+		poll_question = "Хотите занять тело зомби?", \
+		poll_candidates = SSticker.HasRoundStarted(), \
+		poll_length = 20 SECONDS, \
+		assumed_control_message = "Вы — зомби! Голод ведёт вас к живым.", \
+		after_assumed_control = CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(awaken_npc_zombie)), \
+	)
+
+/proc/awaken_npc_zombie(mob/living/carbon/human/zombie)
+	if(HAS_TRAIT(zombie, TRAIT_I_WANT_BRAINS) && !zombie.mind.has_antag_datum(/datum/antagonist/zombie))
+		zombie.mind.add_antag_datum(/datum/antagonist/zombie)
 
 /obj/effect/mob_spawn/human/alive/zombie/non_infectious
 	name = "NPC Zombie (Non-infectious)"
