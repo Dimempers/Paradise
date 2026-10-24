@@ -358,6 +358,12 @@
 #define TRAIT_NO_DECAY "no_decay"
 /// This human mob will not be affected by piercing, such as caltrops, prickles, needles etc.
 #define TRAIT_PIERCEIMMUNE "pierce_immunity"
+#define TRAIT_I_WANT_BRAINS "mob_zombie"
+#define TRAIT_NON_INFECTIOUS_ZOMBIE "non_infectious_zombie"
+#define TRAIT_PLAGUE_ZOMBIE "plague_zombie"
+#define TRAIT_NPC_ZOMBIE "npc_zombie"
+#define TRAIT_I_WANT_BRAINS_ORGAN "zombie_organ"
+#define TRAIT_ABSTRACT_HANDS "abstract_hands"
 /// This human mob will not be affected by embedding of the thrown items
 #define TRAIT_EMBEDIMMUNE "embed_immunity"
 /// This human mob will not be affected by fracture effects

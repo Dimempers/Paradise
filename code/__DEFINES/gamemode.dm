@@ -86,6 +86,7 @@
 #define SPECIAL_ROLE_VAMPIRE "Vampire"
 #define SPECIAL_ROLE_VAMPIRE_THRALL "Vampire Thrall"
 #define SPECIAL_ROLE_WIZARD "Wizard"
+#define SPECIAL_ROLE_ZOMBIE "Zombie"
 #define SPECIAL_ROLE_HERETIC "Heretic"
 #define SPECIAL_ROLE_HERETIC_MONSTER "Heretic Monster"
 #define SPECIAL_ROLE_LUNATIC "Lunatic"

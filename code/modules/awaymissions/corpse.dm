@@ -904,3 +904,29 @@ GLOBAL_VAR_INIT(off_mob_spawns, FALSE)
 	icon_state = "stokkey1"
 	mob_species = /datum/species/monkey/unathi
 	mob_type = /mob/living/carbon/human/lesser/stok
+
+/obj/effect/mob_spawn/human/alive/zombie
+	name = "NPC Zombie (Infectious)"
+	icon = 'icons/mob/human.dmi'
+	icon_state = "zombie_s"
+	roundstart = TRUE
+
+/obj/effect/mob_spawn/human/alive/zombie/equip(mob/living/carbon/human/H, use_prefs = FALSE, _mob_name = FALSE, _mob_gender = FALSE, _mob_species = FALSE)
+	. = ..()
+	scramble(TRUE, H, 100)
+	ADD_TRAIT(H, TRAIT_NPC_ZOMBIE, ROUNDSTART_TRAIT)
+	var/datum/disease/virus/zombie/zombie_virus = new
+	zombie_virus.Contract(H)
+	H.zone_selected = BODY_ZONE_CHEST
+	for(var/datum/disease/virus/zombie/infection in H.diseases)
+		infection.stage = 8
+
+/obj/effect/mob_spawn/human/alive/zombie/non_infectious
+	name = "NPC Zombie (Non-infectious)"
+
+/obj/effect/mob_spawn/human/alive/zombie/non_infectious/equip(mob/living/carbon/human/H, use_prefs = FALSE, _mob_name = FALSE, _mob_gender = FALSE, _mob_species = FALSE)
+	ADD_TRAIT(H, TRAIT_NON_INFECTIOUS_ZOMBIE, ROUNDSTART_TRAIT)
+	. = ..()
+	for(var/datum/disease/virus/zombie/infection in H.diseases)
+		infection.spread_flags = NON_CONTAGIOUS
+		infection.visibility_flags = HIDDEN_PANDEMIC

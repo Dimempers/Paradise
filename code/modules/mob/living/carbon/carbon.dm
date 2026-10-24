@@ -503,7 +503,8 @@
 			var/atom/movable/AM = hit_atom
 			var/atom/throw_target = get_edge_target_turf(AM, dir)
 			if(!AM.anchored || ismecha(AM))
-				AM.throw_at(throw_target, 5, 12, src)
+				if(!HAS_TRAIT(src, TRAIT_PLAGUE_ZOMBIE))
+					AM.throw_at(throw_target, 5, 12, src)
 				hit_something = TRUE
 
 		if(isobj(hit_atom))
@@ -513,10 +514,15 @@
 
 		if(isliving(hit_atom))
 			var/mob/living/L = hit_atom
-			L.adjustBruteLoss(60)
-			L.Weaken(4 SECONDS)
-			L.Confused(10 SECONDS)
 			shake_camera(L, 4, 3)
+			if(HAS_TRAIT(src, TRAIT_PLAGUE_ZOMBIE))
+				var/obj/item/active_item = get_active_hand()
+				active_item?.attack(L, src)
+				L.Knockdown(1 SECONDS)
+			else
+				L.adjustBruteLoss(60)
+				L.Weaken(4 SECONDS)
+				L.Confused(10 SECONDS)
 			hit_something = TRUE
 
 		if(isturf(hit_atom))
