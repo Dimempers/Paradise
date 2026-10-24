@@ -110,7 +110,7 @@
 	activation_messages = list("Теперь все вокруг кажется больше...")
 	deactivation_messages = list("Кажется, что все вокруг уменьшается...")
 	instability = GENE_INSTABILITY_MINOR
-	traits_to_add = list(TRAIT_DWARF)
+	traits_to_add = list(TRAIT_DWARF, TRAIT_SMALL_MOB)
 
 /datum/dna/gene/basic/midget/New()
 	..()
