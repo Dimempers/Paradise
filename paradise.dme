@@ -2820,6 +2820,7 @@
 #include "code\modules\antagonists\xenomorth\xenomorph_objectives.dm"
 #include "code\modules\antagonists\xenomorth\xenomorph_team.dm"
 #include "code\modules\antagonists\zombie\zombie_datum.dm"
+#include "code\modules\antagonists\zombie\zombie_patient_zero.dm"
 #include "code\modules\antagonists\zombie\zombie_spells.dm"
 #include "code\modules\arcade\arcade_base.dm"
 #include "code\modules\arcade\arcade_prize.dm"

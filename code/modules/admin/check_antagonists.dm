@@ -233,6 +233,7 @@
 			"Event Roles" = get_antag_minds(/datum/antagonist/eventmisc),
 			"ERT" = get_antag_minds(/datum/antagonist/ert),
 			"Zombies" = get_antag_minds(/datum/antagonist/zombie),
+			"Patient Zero" = get_antag_minds(/datum/antagonist/zombie_patient_zero),
 		))
 
 		if(length(SSticker.mode.zombie_infected))
