@@ -13,6 +13,16 @@
 	QDEL_LIST(our_claws)
 	return ..()
 
+/datum/action/cooldown/spell/zombie_claws/Grant(mob/grant_to)
+	. = ..()
+	if(!owner)
+		return
+	RegisterSignals(owner, list(COMSIG_MOB_EQUIPPED_ITEM, COMSIG_MOB_UNEQUIPPED_ITEM, COMSIG_MOB_SWAP_HANDS), PROC_REF(update_status_on_signal), override = TRUE)
+
+/datum/action/cooldown/spell/zombie_claws/Remove(mob/living/remove_from)
+	UnregisterSignal(remove_from, COMSIG_MOB_SWAP_HANDS)
+	return ..()
+
 /datum/action/cooldown/spell/zombie_claws/cast(atom/cast_on)
 	. = ..()
 	if(dispel())
@@ -32,14 +42,14 @@
 		to_chat(owner, span_zombie_warning("У нас нет когтей..."))
 
 /datum/action/cooldown/spell/zombie_claws/proc/dispel()
-	var/obj/item/twohanded/required/zombie_claw/claw = owner.get_active_hand()
-	if(istype(claw))
+	var/obj/item/twohanded/required/zombie_claw/claw = owner.is_type_in_hands(/obj/item/twohanded/required/zombie_claw)
+	if(claw)
 		qdel(claw)
 		return TRUE
 	return FALSE
 
 /datum/action/cooldown/spell/zombie_claws/can_cast_spell(feedback = TRUE)
-	if(owner.get_active_hand() || owner.is_type_in_hands(/obj/item/twohanded/required/zombie_claw))
+	if(owner.get_active_hand() && !owner.is_type_in_hands(/obj/item/twohanded/required/zombie_claw))
 		return FALSE
 	return ..()
 
