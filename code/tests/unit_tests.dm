@@ -20,6 +20,7 @@
 #include "test_cliffs.dm"
 #include "test_components.dm"
 #include "test_detect_room.dm"
+#include "test_dna_genes.dm"
 #include "test_elements.dm"
 #include "test_emotes.dm"
 #include "test_get_turf_pixel.dm"
