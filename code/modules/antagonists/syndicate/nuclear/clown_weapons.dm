@@ -2,10 +2,7 @@
 	name = "bananium sword"
 	gender = MALE
 	desc = "Бананиевый энергетический меч. Не ранит, зато заставляет противника поскользнуться даже в противоскользящей обуви."
-	icon = 'icons/obj/clown_ops.dmi'
 	icon_state = "e_sword"
-	lefthand_file = 'icons/mob/inhands/clown_ops_lefthand.dmi'
-	righthand_file = 'icons/mob/inhands/clown_ops_righthand.dmi'
 	item_state = "e_sword"
 	icon_state_on = "e_sword_on_bananium"
 	item_color = "yellow"
@@ -75,10 +72,7 @@
 	gender = MALE
 	desc = "Бананиевый щит отражает энергетические снаряды, сбивает противников с ног и возвращается после броска. Не \
 		наступайте на включённый щит!"
-	icon = 'icons/obj/clown_ops.dmi'
 	icon_state = "bananaeshield"
-	lefthand_file = 'icons/mob/inhands/clown_ops_lefthand.dmi'
-	righthand_file = 'icons/mob/inhands/clown_ops_righthand.dmi'
 	item_state = "bananaeshield"
 	force = 0
 	throwforce = 0
@@ -216,7 +210,6 @@
 /obj/item/grenade/chem_grenade/teargas/moustache
 	name = "tear-stache grenade"
 	desc = "Газовая граната, разбрасывающая липкие усы. Они не отклеятся в течение минуты. Маски клоунов и мимов защищены от усов."
-	icon = 'icons/obj/clown_ops.dmi'
 	icon_state = "moustacheg"
 
 /obj/item/grenade/chem_grenade/teargas/moustache/get_ru_names()

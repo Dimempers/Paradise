@@ -11,9 +11,7 @@
 	name = "mk-honk combat shoes"
 	desc = "Боевые клоунские ботинки оставляют за собой банановую кожуру. Постепенно восстанавливают заряд и принимают \
 		бананиум для быстрой зарядки."
-	icon = 'icons/obj/clown_ops.dmi'
 	icon_state = "clown_prototype_off"
-	onmob_sheets = list(ITEM_SLOT_FEET_STRING = 'icons/mob/clothing/clown_ops_feet.dmi')
 	sprite_sheets = null
 	armor = list(MELEE = 25, BULLET = 25, LASER = 25, ENERGY = 25, BOMB = 50, BIO = 50, FIRE = 90, ACID = 50)
 	actions_types = list(/datum/action/item_action/toggle_banana_shoes)
@@ -97,7 +95,6 @@
 	name = "banana cream pie cannon"
 	gender = MALE
 	desc = "Пирогомёт с генератором банановых кремовых пирогов. Вмещает двадцать пирогов и создаёт новый каждые две секунды."
-	icon = 'icons/obj/clown_ops.dmi'
 	icon_state = "piecannon"
 	force = 10
 	maxWeightClass = PIE_CANNON_CAPACITY * /obj/item/reagent_containers/food/snacks/pie::w_class
@@ -213,7 +210,7 @@
 	name = "weapons grade pinata assembly kit"
 	gender = MALE
 	desc = "Набор для установки пиньяты, полной конфет и взрывчатки. Используйте в руке, чтобы установить."
-	icon = 'icons/obj/clown_ops.dmi'
+	icon = 'icons/obj/toy.dmi'
 	icon_state = "pinata_syndie"
 
 /obj/item/pinata/syndie/get_ru_names()
@@ -236,7 +233,7 @@
 	name = "syndicate corgi pinata"
 	gender = FEMALE
 	desc = "Пиньята в форме корги. Содержимое выпадает от ударов оружием с уроном не меньше 10."
-	icon = 'icons/obj/clown_ops.dmi'
+	icon = 'icons/obj/toy.dmi'
 	icon_state = "pinata_syndie_placed"
 	anchored = TRUE
 	var/list/candy_options = list(
