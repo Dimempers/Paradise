@@ -358,6 +358,8 @@
 #define TRAIT_NO_DECAY "no_decay"
 /// This human mob will not be affected by piercing, such as caltrops, prickles, needles etc.
 #define TRAIT_PIERCEIMMUNE "pierce_immunity"
+#define TRAIT_HYPERMETABOLIC_BLOOD "hypermetabolic_blood"
+#define TRAIT_HIGH_PAIN_THRESHOLD "high_pain_threshold"
 /// This human mob will not be affected by embedding of the thrown items
 #define TRAIT_EMBEDIMMUNE "embed_immunity"
 /// This human mob will not be affected by fracture effects
