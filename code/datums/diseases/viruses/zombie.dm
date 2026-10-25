@@ -38,15 +38,8 @@
 	return ..()
 
 /datum/disease/virus/zombie/stage_act()
-	if(stage == 8)
-		var/mob/living/carbon/human/human = affected_mob
-		if(!istype(human))
-			return FALSE
-		for(var/obj/item/organ/external/limb as anything in human.bodyparts)
-			if(!(limb.status & ORGAN_DEAD) && !limb.is_robotic())
-				limb.necrotize(TRUE, TRUE)
-			if(!HAS_TRAIT(limb, TRAIT_I_WANT_BRAINS_ORGAN))
-				ADD_TRAIT(limb, TRAIT_I_WANT_BRAINS_ORGAN, ZOMBIE_TRAIT)
+	if(stage == 8 && !rot_all_limbs())
+		return FALSE
 
 	if(!..())
 		return FALSE
@@ -122,6 +115,24 @@
 /datum/disease/virus/zombie/try_reduce_stage()
 	if(prob(cure_prob))
 		stage = max(stage - 1, 0)
+
+/datum/disease/virus/zombie/proc/rot_all_limbs()
+	var/mob/living/carbon/human/human = affected_mob
+	if(!istype(human))
+		return FALSE
+	for(var/obj/item/organ/external/limb as anything in human.bodyparts)
+		if(!(limb.status & ORGAN_DEAD) && !limb.is_robotic())
+			limb.necrotize(TRUE, TRUE)
+		if(!HAS_TRAIT(limb, TRAIT_I_WANT_BRAINS_ORGAN))
+			ADD_TRAIT(limb, TRAIT_I_WANT_BRAINS_ORGAN, ZOMBIE_TRAIT)
+	return TRUE
+
+/datum/disease/virus/zombie/proc/turn_instantly()
+	if(!rot_all_limbs())
+		return FALSE
+	stage = max_stages
+	SSticker.mode?.zombie_infected -= affected_mob
+	return handle_rot()
 
 /datum/disease/virus/zombie/proc/handle_rot()
 	var/mob/living/carbon/human/human = affected_mob
