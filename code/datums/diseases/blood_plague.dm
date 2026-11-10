@@ -11,8 +11,9 @@
 	can_progress_in_dead = TRUE
 	carrier = TRUE
 	virus_heal_resistant = TRUE
+	can_immunity = FALSE
 	stage_prob = 100 // It isn't actually 100%, but is instead based on a timer
-	cure_prob = 30
+	cure_prob = 10
 	/// Cooldown until the virus can advance to the next stage
 	COOLDOWN_DECLARE(stage_timer)
 
@@ -95,6 +96,8 @@
 
 /datum/disease/virus/blood_plague/has_cure()
 	if(affected_mob.can_block_magic(MAGIC_RESISTANCE_HOLY))
+		return TRUE
+	if(affected_mob.mind.has_antag_datum(/datum/antagonist/changeling))
 		return TRUE
 	return ..()
 

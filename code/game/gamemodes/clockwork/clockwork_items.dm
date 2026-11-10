@@ -130,7 +130,7 @@
 			visible_message(span_warning("[user]'s [src] sparks for a moment with bright light!"))
 			user.mob_light(LIGHT_COLOR_HOLY_MAGIC, 3, duration = 2) //No questions
 
-			if(living.can_block_magic())
+			if(living.can_block_magic(MAGIC_RESISTANCE_HOLY))
 				visible_message(span_warning("[target]'s holy weapon absorbs the light!"))
 				deplete_spell()
 				return
@@ -1004,7 +1004,7 @@
 		return
 	if(enchant_type == STUNHAND_SPELL && isliving(A))
 		var/mob/living/living = A
-		if(living.can_block_magic())
+		if(living.can_block_magic(MAGIC_RESISTANCE_HOLY))
 			src.visible_message(span_warning("[living]'s holy weapon absorbs the light!"))
 			deplete_spell()
 			return
@@ -1524,7 +1524,7 @@
 	clocker.heal_overall_damage(heal, heal, affect_robotic = robo_affect_heal)
 	if(!can_adv_heal)
 		return
-	clocker.reagents?.add_reagent("epinephrine", 5)
+	clocker.reagents?.add_reagent(/datum/reagent/medicine/epinephrine, 5)
 	var/mob/living/carbon/human/H = clocker
 	for(var/obj/item/organ/external/bodypart as anything in H.bodyparts)
 		bodypart.stop_internal_bleeding()
